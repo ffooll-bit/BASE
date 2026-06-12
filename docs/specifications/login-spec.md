@@ -1,8 +1,8 @@
 ---
 title: BASE - Login Feature
-status: approved
+status: draft
 date: 2026-06-12
-version: 0.4
+version: 0.5
 ---
 
 ## Introduction
@@ -16,7 +16,6 @@ The login system will authenticate users by calling the Neo Feeder Web Service A
 Without a proper authentication system, the BASE application has no way to:
 - Restrict access to authorized users only
 - Track which user performed which action
-- Provide role-based access to features
 
 ### Scope
 
@@ -24,7 +23,7 @@ This specification covers:
 - Login page with AdminLTE-styled user interface
 - Email/password authentication via Neo Feeder Web Service API
 - Session-based auth implementation using CodeIgniter 4 native sessions
-- Role-based access control using role data from Neo Feeder response (extensible)
+- Role information storage from Neo Feeder response (reserved for future access control)
 - Logout functionality
 - Auth filter/middleware to protect routes
 - HTTP Client integration for Neo Feeder API communication
@@ -73,15 +72,15 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 **Description**: The system shall implement a CodeIgniter 4 Filter (middleware) that intercepts incoming requests and verifies the user's session. Requests to protected routes without a valid authenticated session shall be redirected to the login page. Routes that are publicly accessible (login page, assets) must be explicitly whitelisted.
 **Traces to**: AC-04, AC-05
 
-### FR-04: Role-Based Access Control (RBAC)
-**Priority**: High
-**Description**: The system shall support role-based access control. The user's role is obtained from the Neo Feeder API response upon successful login and stored in the session. The RBAC system must be extensible so that roles and granular permissions can be added later without architectural changes.
-**Traces to**: AC-06, AC-07
+### FR-04: Role Information Storage
+**Priority**: Low
+**Description**: The system shall store the user's role (if provided by the Neo Feeder API response) in the session for potential future use. No role-based access control shall be enforced at this stage. The architecture must remain extensible so that RBAC can be added later without significant refactoring.
+**Traces to**: (reserved for future use)
 
 ### FR-05: Logout Functionality
 **Priority**: High
 **Description**: The system shall provide a logout action that destroys the current authenticated session and redirects the user to the login page. The logout button/link shall be accessible from the AdminLTE navigation bar when the user is authenticated.
-**Traces to**: AC-08
+**Traces to**: AC-06
 
 ### FR-06: Neo Feeder API Connection Configuration
 **Priority**: High
@@ -93,7 +92,7 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 ### NFR-01: Credential Security
 **Priority**: High
 **Description**: User credentials (username and password) must never be stored, logged, or cached locally. Passwords shall only be transmitted to the Neo Feeder API endpoint for validation. Note that the current Neo Feeder endpoint uses HTTP (not HTTPS); this is an accepted limitation of the external service.
-**Traces to**: AC-10
+**Traces to**: AC-08
 
 ### NFR-02: Session Security
 **Priority**: High
@@ -102,8 +101,8 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 
 ### NFR-03: Code Extensibility & Reusability
 **Priority**: High
-**Description**: The authentication logic must be encapsulated in a reusable service class (`app/Libraries/Auth.php` or similar) that is decoupled from controllers. This service shall expose methods for: login, logout, check authentication status, get current user, check role. Controllers and filters shall depend on this service, not on session manipulation directly.
-**Traces to**: AC-11
+**Description**: The authentication logic must be encapsulated in a reusable service class (`app/Libraries/Auth.php` or similar) that is decoupled from controllers. This service shall expose methods for: login, logout, check authentication status, get current user. Controllers and filters shall depend on this service, not on session manipulation directly.
+**Traces to**: AC-09
 
 ### NFR-04: AdminLTE Template Compliance
 **Priority**: Medium
@@ -118,7 +117,7 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 ### NFR-06: API Communication Reliability
 **Priority**: High
 **Description**: The system shall handle Neo Feeder API communication failures gracefully, including: connection timeout, HTTP error responses, malformed response data, and network errors. Appropriate error messages must be displayed to the user without exposing technical details. A configurable timeout (default 30 seconds) shall be applied to all API calls.
-**Traces to**: AC-10
+**Traces to**: AC-08
 
 ## Acceptance Criteria
 
@@ -167,17 +166,7 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 - Redirect to the login page
 - Optionally store the intended URL to redirect back after login
 
-### AC-06: Authorized Role Has Access (traces to FR-04)
-**Given** an authenticated user whose role permits access to a specific feature
-**When** they access a protected route or feature
-**Then** the system shall authorize the request based on the role stored in the session from Neo Feeder API
-
-### AC-07: Unauthorized Role Is Rejected (traces to FR-04)
-**Given** an authenticated user with an unknown or unauthorized role
-**When** they access a feature restricted to specific roles
-**Then** the system shall return a 403 Forbidden response or redirect with an access denied message
-
-### AC-08: Logout Destroys Session (traces to FR-05)
+### AC-06: Logout Destroys Session (traces to FR-05)
 **Given** an authenticated user
 **When** they click the "Logout" button
 **Then** the system shall:
@@ -185,12 +174,12 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 - Redirect to the login page
 - Require re-authentication for any subsequent protected route access
 
-### AC-09: Neo Feeder API Connection is Configurable (traces to FR-06)
+### AC-07: Neo Feeder API Connection is Configurable (traces to FR-06)
 **Given** a developer or system administrator
 **When** they configure the Neo Feeder API endpoint URL (default: `http://51.79.235.64:8100/ws/live2.php`) and connection parameters in `.env`
 **Then** the system shall use those parameters for all API communication without requiring code changes
 
-### AC-10: Credentials Are Not Stored or Logged (traces to NFR-01, NFR-06)
+### AC-08: Credentials Are Not Stored or Logged (traces to NFR-01, NFR-06)
 **Given** a user submitting their email and password via the login form
 **When** the login request is processed
 **Then** the system shall:
@@ -199,7 +188,7 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 - Not cache the password in session data
 - Handle API connection errors gracefully with user-friendly messages
 
-### AC-11: Auth and Neo Feeder Services Are Injectable (traces to NFR-03)
+### AC-09: Auth and Neo Feeder Services Are Injectable (traces to NFR-03)
 **Given** a controller or filter requiring authentication or API communication
 **When** it uses the Auth service or Neo Feeder API service
 **Then** it shall obtain the service via dependency injection or CI4 service configuration (e.g., `service('auth')`, `service('neo-feeder')`), not by instantiating a concrete class directly
@@ -230,4 +219,4 @@ On success (error_code: 0), the API returns a token. The system shall treat a va
 | 0.2 | 2026-06-12 | - | Revised authentication architecture: local DB changed to Neo Feeder API-based auth. Updated FR-02, FR-04, FR-06, NFR-01, NFR-05, AC-02, AC-03, AC-06, AC-09, AC-10, AC-11, Out of Scope, and Glossary accordingly. |
 | 0.3 | 2026-06-12 | - | Added specific Neo Feeder API endpoint details (URL, request/response format for GetToken). Updated FR-02, FR-06, AC-02, AC-03, AC-09, and Glossary. |
 | 0.4 | 2026-06-12 | - | Fixed NFR-01: changed HTTPS requirement to HTTP to match actual Neo Feeder endpoint. |
-| 0.4 | 2026-06-12 | Operator | **APPROVED** -- specification approved for Plan phase |
+| 0.5 | 2026-06-12 | - | Removed active RBAC enforcement (FR-04 simplified, AC-06/AC-07 removed). Renumbered ACs (now 9 items). Set status back to draft. |

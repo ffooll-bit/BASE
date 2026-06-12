@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Technical Plan
 status: draft
 date: 2026-06-12
-version: 0.1
+version: 0.2
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -10,7 +10,7 @@ spec-reference: docs/specifications/login-spec.md
 
 ### High-Level Flow
 
-The login feature follows a server-side rendering architecture using CodeIgniter 4. All authentication logic runs on the server; the browser receives fully rendered HTML pages. The Neo Feeder API is the sole source of truth for user credentials and roles.
+The login feature follows a server-side rendering architecture using CodeIgniter 4. All authentication logic runs on the server; the browser receives fully rendered HTML pages. The Neo Feeder API is the sole source of truth for user authentication.
 
 ```
 Sequence Diagram:
@@ -145,7 +145,6 @@ graph TD
 - `Auth::isLoggedIn(): bool` -- checks if `logged_in` key exists and is true in session
 - `Auth::getCurrentUser(): ?array` -- returns session user data (username, role, token) or null
 - `Auth::getToken(): ?string` -- returns the Neo Feeder API token from session
-- `Auth::hasRole(string|array $roles): bool` -- checks if current user has required role(s)
 
 **Dependencies:**
 - `Config\Services::neo-feeder()` -- NeoFeederApi library
@@ -201,8 +200,7 @@ graph TD
 - `Config\Services::auth()` -- Auth library
 
 **Key Behaviors:**
-- In `before()`: Call `Auth::isLoggedIn()`. If false, redirect to `/login` with the intended URL stored as a flashdata variable (`redirect_url`) so the user can be sent back after login. If true, allow request to proceed.
-- Optionally check role-based access if `$arguments` contains role requirements (for future use).
+- In `before()`: Call `Auth::isLoggedIn()`. If false, redirect to `/login` with the intended URL stored as a flashdata variable (`redirect_url`) so the user can be sent back after login. If true, allow request to proceed. Role-based access control is not enforced at this stage but the architecture supports it via future `$arguments` parameter.
 
 ### 2.6 Views
 
@@ -390,7 +388,7 @@ else (HTTP failure or exception):
 | CSS/JS Assets | AdminLTE bundled (Bootstrap 4.6, jQuery 3.x, Font Awesome 5) | Delivered via CDN or local assets. No build tooling required |
 | Configuration | `.env` file + CI4 Config classes | Standard CI4 approach for environment-specific configuration (FR-06) |
 | Authentication | Neo Feeder API (GetToken) | External authentication service (FR-02). No local user storage |
-| RBAC | Session-stored role + Auth::hasRole() | Lightweight, extensible role checking (FR-04). No external RBAC library |
+| Role Storage | Session-stored role | Role stored from Neo Feeder response for future use (FR-04). Not actively enforced. |
 
 ## 6. Directory Structure
 
@@ -476,7 +474,7 @@ Implementation is organized into logical task groups. Each group represents a de
 |---|-----------|-------------|--------------|------------------|
 | M1 | Configuration Layer | Create `Config/NeoFeeder.php`, update `.env` with Neo Feeder URL/timeout settings | None | Small |
 | M2 | NeoFeederApi Library | Create `Libraries/NeoFeederApi.php` with `getToken()` method, implement CI4 HTTP Client integration with error handling | M1 | Medium |
-| M3 | Auth Library | Create `Libraries/Auth.php` with login, logout, isLoggedIn, getCurrentUser, getToken, hasRole methods | M2 | Medium |
+| M3 | Auth Library | Create `Libraries/Auth.php` with login, logout, isLoggedIn, getCurrentUser, getToken methods | M2 | Medium |
 | M4 | AuthController + Login View | Create `Controllers/AuthController.php` (login GET/POST, logout) and `Views/auth/login.php` (AdminLTE login form) | M3 | Medium |
 | M5 | AuthFilter | Create `Filters/AuthFilter.php` with route interception | M3 | Small |
 | M6 | Dashboard + AdminLTE Layout | Create `Controllers/DashboardController.php`, `Views/layouts/adminlte.php`, `Views/dashboard/index.php` | M4 | Medium |
@@ -511,3 +509,4 @@ Implementation is organized into logical task groups. Each group represents a de
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1 | 2026-06-12 | - | Initial draft -- complete technical plan for Login feature |
+| 0.2 | 2026-06-12 | - | Removed hasRole method, RBAC references, and role-checking from AuthFilter following spec v0.5 (RBAC removed from active scope). |
