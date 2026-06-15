@@ -2,7 +2,7 @@
 title: BASE - Login Feature
 status: draft
 date: 2026-06-15
-version: 0.6
+version: 0.7
 ---
 
 ## Introduction
@@ -53,7 +53,7 @@ This specification covers:
 
 ### FR-02: User Authentication via Neo Feeder API
 **Priority**: High
-**Description**: The system shall authenticate users by sending a POST request to the Neo Feeder Web Service API. The API endpoint base URL is `https://neofeeder.example.com/`. All requests shall use `Content-Type: application/json`.
+**Description**: The system shall authenticate users by sending a POST request to the Neo Feeder Web Service API at `https://neofeeder.example.com/ws/live2.php`. All requests to this endpoint shall use `Content-Type: application/json` and the POST method.
 
 **Login (GetToken):**
 Request body format:
@@ -65,12 +65,11 @@ Request body format:
 }
 ```
 
-On success (error_code: 0), the API returns a token. The system shall treat a valid token response as successful authentication and create a CI4 session storing the token and username under the `auth` session namespace. On failed response (error_code != 0) or connection error, the system shall return an error message without revealing specifics about the cause.
+On success (error_code: 0), the API returns a token. The system shall treat a valid token response as successful authentication and immediately create a CI4 session storing the token, username, and a `lastValidatedAt` timestamp (set to the current time) under the `auth` session namespace. On failed response (error_code != 0) or connection error, the system shall return an error message without revealing specifics about the cause.
 
 **Token Validation (GetProfilPT):**
-The system shall validate the session token on protected route access by calling the Neo Feeder API as follows:
+The system shall validate the session token on protected route access by sending a POST request to the same endpoint with the following body:
 
-Request body format:
 ```json
 {
     "act": "GetProfilPT",
@@ -78,7 +77,14 @@ Request body format:
 }
 ```
 
-A response with `error_code: 0` indicates a valid token. A response with `error_code: 100` and message "Invalid Token. Token tidak ada atau token sudah expired." indicates an invalid or expired token. On invalid/expired token, the system shall clear the session and redirect the user to the login page. Token validation results shall be cached with a configurable TTL to minimize API calls. On connection failure, the cached validation result shall be used if available; if no cached result exists, the user shall be treated as unauthenticated.
+Response handling:
+- `error_code: 0` -- Valid token. The system shall update `auth.lastValidatedAt` to the current Unix timestamp (sliding TTL) and allow access.
+- `error_code: 100` -- Invalid or expired token with message "Invalid Token. Token tidak ada atau token sudah expired." The system shall clear the `auth` session namespace and redirect to `/login` with a "session expired" notification.
+- Any other `error_code` (e.g., 1, 99) -- The system shall deny access, display a generic error message ("Unable to verify session. Please try again later."), and keep the session intact. The user is not logged out.
+- Connection failure (timeout, network error, HTTP error) -- If a cached validation result exists within TTL, use it. If no valid cached result exists, deny access, display an error message ("Unable to verify session. Please try again later."), and keep the session intact. Only `error_code: 100` may clear the authentication session.
+
+**Validation Caching:**
+Token validation results shall be cached using the `auth.lastValidatedAt` timestamp stored in the session. Default TTL is 5 minutes, configurable via application settings. The TTL slides: each successful validation resets `lastValidatedAt` to the current time. The Auth Filter shall re-validate via GetProfilPT only when `lastValidatedAt + TTL < current time`.
 
 **Input Validation:**
 The system shall validate that both username and password are non-empty before submitting to the API. No additional format, length, or complexity validation shall be applied; credential validation is the responsibility of the Neo Feeder API. Empty input shall display the message: "Please enter your username and password."
@@ -87,7 +93,7 @@ The system shall validate that both username and password are non-empty before s
 
 ### FR-03: Protected Routes
 **Priority**: High
-**Description**: The system shall implement a CodeIgniter 4 Filter (middleware) that intercepts incoming requests and verifies the user's session. Requests to protected routes without a valid authenticated session shall be redirected to the login page with a "session expired" notification if applicable. Routes that are publicly accessible (`/login`) must be explicitly whitelisted in the filter configuration. Static assets (CSS, JS, images) are served directly by the web server from the `public/` directory and do not require CI4 route whitelisting.
+**Description**: The system shall implement a CodeIgniter 4 Filter (middleware) that intercepts incoming requests and verifies the user's session. Requests to protected routes without a valid authenticated session shall be redirected to the login page with a "session expired" notification if applicable. Routes that are publicly accessible (`/login`) must be explicitly whitelisted in the filter configuration. Static assets (CSS, JS, images) are served directly by the web server from the `public/` directory and do not require CI4 route whitelisting. An authenticated user navigating to `/login` shall be redirected to `/dashboard`.
 **Traces to**: AC-04, AC-05
 
 ### FR-05: Logout Functionality
@@ -97,7 +103,7 @@ The system shall validate that both username and password are non-empty before s
 
 ### FR-06: Neo Feeder API Connection Configuration
 **Priority**: High
-**Description**: The system shall provide a configuration interface (via `.env` file) for setting the Neo Feeder Web Service API base URL. Default value: `https://neofeeder.example.com/`. Additional connection parameters (timeout) must also be configurable. The system must handle connection failures gracefully and report meaningful errors to the user.
+**Description**: The system shall provide a configuration interface (via `.env` file) for setting the Neo Feeder Web Service API base URL. Default value: `https://neofeeder.example.com/ws/live2.php`. Additional connection parameters must also be configurable: connection timeout (default 10 seconds) and overall request timeout (default 30 seconds). The system must handle connection failures gracefully and report meaningful errors to the user.
 **Traces to**: AC-09
 
 ## Non-Functional Requirements
@@ -109,12 +115,12 @@ The system shall validate that both username and password are non-empty before s
 
 ### NFR-02: Session Security
 **Priority**: High
-**Description**: The authentication session must use CodeIgniter 4's native session handling with the following security measures: session encryption enabled, HTTP-only cookies, session regeneration upon login, CSRF protection enabled on the login route, and a reasonable session timeout (configurable, default 120 minutes of inactivity). On session timeout, the next request to a protected route shall redirect to the login page with a "session expired" notification message. The session shall not store a separate `logged_in` flag; authentication status is determined by the presence of a valid token in the `auth` session namespace.
+**Description**: The authentication session must use CodeIgniter 4's native session handling with the following security measures: session encryption enabled via a secret key set in `encryption.key` (`.env`), HTTP-only cookies, session regeneration upon login, CSRF protection enabled on the login route, and a reasonable session timeout (configurable, default 120 minutes of inactivity). On session timeout, the next request to a protected route shall redirect to the login page with a "session expired" notification message. The session shall not store a separate `logged_in` flag; authentication status is determined by the presence of a valid token in the `auth` session namespace.
 **Traces to**: AC-02, AC-05
 
 ### NFR-03: Code Extensibility & Reusability
 **Priority**: High
-**Description**: The authentication logic must be encapsulated in a reusable service class (`app/Libraries/Auth.php` or similar) that is decoupled from controllers. This service shall expose methods for: login, logout, check authentication status, get current user. Controllers and filters shall depend on this service, not on session manipulation directly.
+**Description**: The authentication logic must be encapsulated in a reusable service class (`app/Libraries/Auth.php` or similar) that is decoupled from controllers. This service shall expose methods for: login, logout, check authentication status (`isLoggedIn()` returns bool), get current user (`getCurrentUser()` returns the username string or null if not authenticated). Controllers and filters shall depend on this service, not on session manipulation directly.
 **Traces to**: AC-09
 
 ### NFR-04: AdminLTE Template Compliance
@@ -129,7 +135,7 @@ The system shall validate that both username and password are non-empty before s
 
 ### NFR-06: API Communication Reliability
 **Priority**: High
-**Description**: The system shall handle Neo Feeder API communication failures gracefully, including: connection timeout, HTTP error responses, malformed response data, and network errors. Appropriate error messages must be displayed to the user without exposing technical details. A configurable timeout (default 30 seconds) shall be applied to all API calls.
+**Description**: The system shall handle Neo Feeder API communication failures gracefully, including: connection timeout, HTTP error responses, malformed response data, and network errors. Appropriate error messages must be displayed to the user without exposing technical details. Configurable timeouts shall be applied to all API calls: connection timeout (default 10 seconds) and overall request timeout (default 30 seconds).
 **Traces to**: AC-08
 
 ## Acceptance Criteria
@@ -143,9 +149,9 @@ The system shall validate that both username and password are non-empty before s
 **Given** a registered user with valid Neo Feeder credentials (username and password)
 **When** they submit the login form with correct credentials
 **Then** the system shall:
-- Send a POST request to `https://neofeeder.example.com/` with `Content-Type: application/json` and body `{"act":"GetToken","username":"...","password":"..."}`
+- Send a POST request to `https://neofeeder.example.com/ws/live2.php` with `Content-Type: application/json` and body `{"act":"GetToken","username":"...","password":"..."}`
 - Receive a successful response: `{"error_code":0,"error_desc":"","data":{"token":"..."}}`
-- Store the token and username in the `auth` session namespace
+- Store the token, username, and current timestamp as `lastValidatedAt` in the `auth` session namespace
 - Redirect the user to `/dashboard`
 - Regenerate the session ID to prevent session fixation
 
@@ -204,7 +210,7 @@ The system shall validate that both username and password are non-empty before s
 
 ### AC-07: Neo Feeder API Connection is Configurable (traces to FR-06)
 **Given** a developer or system administrator
-**When** they configure the Neo Feeder API endpoint URL (default: `https://neofeeder.example.com/`) and connection parameters in `.env`
+**When** they configure the Neo Feeder API endpoint URL (default: `https://neofeeder.example.com/ws/live2.php`) and connection parameters in `.env`
 **Then** the system shall use those parameters for all API communication without requiring code changes
 
 ### AC-08: Credentials Are Not Stored or Logged (traces to NFR-01, NFR-06)
@@ -223,21 +229,23 @@ The system shall validate that both username and password are non-empty before s
 
 ### AC-10: Token Validation on Protected Route Access (traces to FR-02, NFR-02)
 **Given** an authenticated user with a valid token stored in the session
-**When** the Auth Filter checks authentication status on a protected route request
+**When** the Auth Filter checks authentication status on a protected route request and no valid cached result exists (lastValidatedAt + TTL < current time)
 **Then** the system shall:
-- Call the Neo Feeder API with `{"act":"GetProfilPT","token":"<session_token>"}`
-- On `error_code: 0` response: treat token as valid, allow access, cache validation result
+- Send a POST request with `Content-Type: application/json` and body `{"act":"GetProfilPT","token":"<session_token>"}` to `https://neofeeder.example.com/ws/live2.php`
+- On `error_code: 0` response: update `auth.lastValidatedAt` to current time, allow access
 - On `error_code: 100` response: clear the `auth` session namespace, redirect to `/login` with "session expired" notification
+- On any other `error_code` response: deny access, display "Unable to verify session. Please try again later.", keep session intact
 
 **Given** an authenticated user and a cached token validation result
-**When** the Auth Filter checks authentication status within the cache TTL
-**Then** the system shall use the cached result without calling the Neo Feeder API
+**When** the Auth Filter checks authentication status and `auth.lastValidatedAt + TTL >= current time`
+**Then** the system shall use the cached result and allow access without calling the Neo Feeder API
 
-**Given** an authenticated user and a cached token validation result
-**When** the Neo Feeder API is unreachable during token validation
+**Given** an authenticated user
+**When** the Auth Filter attempts token validation and the Neo Feeder API is unreachable (connection/timeout/network error)
 **Then** the system shall:
-- Use the cached validation result if available within TTL
-- If no cached result exists, treat the user as unauthenticated and redirect to `/login`
+- If a cached validation result exists within TTL (`lastValidatedAt + TTL >= current time`): use the cached result and allow access
+- If no valid cached result exists (`lastValidatedAt` is null or `lastValidatedAt + TTL < current time`): deny access, display "Unable to verify session. Please try again later.", keep the session intact
+- Under no circumstances shall a connection failure clear the `auth` session namespace -- only an explicit `error_code: 100` response may do so
 
 ## Out of Scope
 
@@ -267,3 +275,4 @@ The system shall validate that both username and password are non-empty before s
 | 0.4 | 2026-06-12 | - | Fixed NFR-01: changed HTTPS requirement to HTTP to match actual Neo Feeder endpoint. |
 | 0.5 | 2026-06-12 | - | Removed active RBAC enforcement (FR-04 simplified, AC-06/AC-07 removed). Renumbered ACs (now 9 items). Set status back to draft. |
 | 0.6 | 2026-06-15 | - | Spec review resolutions applied: migrated Neo Feeder endpoint to `https://neofeeder.example.com/`; removed FR-04 (role storage) entirely; enabled CSRF protection on login; added input validation (non-empty only); defined session schema (`auth` namespace with `username` and `token` only, no `logged_in` flag); added token validation via GetProfilPT with caching; clarified static assets do not require whitelisting; removed post-login URL redirect deferral; defined session timeout redirect behavior; corrected service naming to camelCase conventions. Renumbered ACs to 10 items. |
+| 0.7 | 2026-06-15 | - | Second review resolutions applied: added full endpoint path `/ws/live2.php`; defined GetProfilPT error handling (only error_code=100 clears session; other codes show error, keep session); set validation cache TTL default to 5 minutes with sliding TTL via `auth.lastValidatedAt`; added authenticated-user-at-login redirect to `/dashboard`; split timeout configuration into connection (10s) and request (30s); specified encryption key via `encryption.key` in `.env`; clarified `getCurrentUser()` returns username string; defined connection failure handling for token validation (deny access, keep session, show retry error); updated AC-10 scenarios. |
