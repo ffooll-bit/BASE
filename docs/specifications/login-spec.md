@@ -2,7 +2,7 @@
 title: BASE - Login Feature
 status: draft
 date: 2026-06-15
-version: 0.11
+version: 0.12
 ---
 
 ## Introduction
@@ -67,7 +67,8 @@ Request body format:
 ```
 
 Response handling:
-- `error_code: 0` with valid token -- Successful authentication. The system shall immediately create a CI4 session storing the token, username, and a `lastValidatedAt` Unix timestamp (set to the current time) under the `auth` session namespace, set the persistent prior-auth indicator, regenerate the session ID, and redirect to `/dashboard`.
+- `error_code: 0` with valid token present in response `data.token` -- Successful authentication. The system shall immediately create a CI4 session storing the token, username, and a `lastValidatedAt` Unix timestamp (set to the current time) under the `auth` session namespace, set the persistent prior-auth indicator, regenerate the session ID, and redirect to `/dashboard`.
+- `error_code: 0` without a valid token (missing or null `data.token` in response) -- Treat as failed login. Display message "Login failed. Please check your credentials." Do not create a session. Stay on login page.
 - `error_code` != 0 -- Invalid credentials. Display message "Login failed. Please check your credentials." Do not create a session. Stay on login page.
 - Connection failure (timeout, network error, HTTP error) -- Display message "Unable to connect to the authentication server. Please try again later." Do not create a session. Stay on login page.
 - Malformed or non-JSON response -- Treat as failed login. Display message "Login failed. Please check your credentials." Do not create a session. Stay on login page.
@@ -117,7 +118,7 @@ A minimal protected dashboard stub page shall be included as part of this featur
 
 ### FR-05: Logout Functionality
 **Priority**: High
-**Description**: The system shall provide a logout action that destroys the current authenticated session and redirects the user to the login page. The logout action shall use the POST HTTP method (for CSRF protection) and shall be accessible as a logout button in the AdminLTE navigation bar when the user is authenticated.
+**Description**: The system shall provide a logout action at route `/logout` (POST) that destroys the current authenticated session and redirects the user to the login page. The logout action shall use the POST HTTP method (for CSRF protection) and shall be accessible as a logout button in the AdminLTE navigation bar when the user is authenticated.
 **Traces to**: AC-06
 
 ### FR-06: Neo Feeder API Connection Configuration
@@ -317,3 +318,4 @@ API communication with Neo Feeder (HTTP requests, response parsing) shall be enc
 | 0.9 | 2026-06-15 | - | Planning review resolutions applied: restructured FR-02 GetToken response handling with per-case error messages matching AC-03 (M2); added malformed/non-JSON response guard for GetToken (M3); specified `.env` for TTL configuration (M5); defined global deny-by-default filter approach in FR-03 (C1); specified CI4 flashdata as notification transport mechanism (C2); detailed persistent prior-auth indicator implementation (CI4 Encryption service, 120-min lifetime) in NFR-02 (C3); specified CI4 native session config for timeout (M6); added minimal dashboard stub page to scope and FR-03 (C4); specified POST method for logout in FR-05 (m4); clarified Auth/NeoFeeder service boundaries in NFR-03 (M7); fixed AC-05 second scenario to include "session expired" notification (M1); added AC-11 for authenticated-user-at-login redirect (m3); updated AC-03 traces to include FR-06/NFR-06 (m8). |
 | 0.10 | 2026-06-15 | - | Minor findings resolutions applied: added inline note for FR-04 numbering gap (m1); added AC-04 sub-scenario for dashboard welcome message display (m7). |
 | 0.11 | 2026-06-15 | - | Fixed persistent indicator cookie lifetime to exceed session timeout (e.g., 24h) instead of matching it, ensuring reliable session expiration detection (M1). |
+| 0.12 | 2026-06-17 | - | Applied v0.11 planning review findings: added explicit `error_code: 0` without valid token case to FR-02 GetToken response handling (M1); added logout route URL (`/logout`) to FR-05 (m2). |
