@@ -1,8 +1,8 @@
 ---
 title: BASE - Login Feature
 status: draft
-date: 2026-06-15
-version: 0.13
+date: 2026-06-17
+version: 0.14
 ---
 
 ## Introduction
@@ -320,3 +320,4 @@ API communication with Neo Feeder (HTTP requests, response parsing) shall be enc
 | 0.11 | 2026-06-15 | - | Fixed persistent indicator cookie lifetime to exceed session timeout (e.g., 24h) instead of matching it, ensuring reliable session expiration detection (M1). |
 | 0.12 | 2026-06-17 | - | Applied v0.11 planning review findings: added explicit `error_code: 0` without valid token case to FR-02 GetToken response handling (M1); added logout route URL (`/logout`) to FR-05 (m2). |
 | 0.13 | 2026-06-17 | - | Fixed traceability error: FR-06 now traces to AC-07 (Neo Feeder API configuration) instead of AC-09 (service injection) (P-03). |
+| 0.14 | 2026-06-17 | - | Updated frontmatter date to match latest revision (2026-06-17). No content changes (R2-02). |
