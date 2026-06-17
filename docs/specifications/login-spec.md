@@ -2,7 +2,7 @@
 title: BASE - Login Feature
 status: draft
 date: 2026-06-15
-version: 0.9
+version: 0.10
 ---
 
 ## Introduction
@@ -113,6 +113,8 @@ The system shall validate that both username and password are non-empty before s
 A minimal protected dashboard stub page shall be included as part of this feature to provide a post-login landing target and a route for testing protected access. The stub shall render a simple welcome view (displaying the authenticated username) within the AdminLTE layout and shall not implement any dashboard-specific functionality beyond confirming authentication status.
 **Traces to**: AC-04, AC-05, AC-11
 
+> **Note:** FR-04 was removed in v0.6. It previously defined role storage, which is not needed -- all user management is handled by Neo Feeder / PDDIKTI. See changelog for history.
+
 ### FR-05: Logout Functionality
 **Priority**: High
 **Description**: The system shall provide a logout action that destroys the current authenticated session and redirects the user to the login page. The logout action shall use the POST HTTP method (for CSRF protection) and shall be accessible as a logout button in the AdminLTE navigation bar when the user is authenticated.
@@ -206,6 +208,10 @@ API communication with Neo Feeder (HTTP requests, response parsing) shall be enc
 **Given** an authenticated user with a valid session
 **When** they navigate to any protected route (e.g., `/dashboard`)
 **Then** the system shall allow access and render the requested page
+
+**Given** an authenticated user with a valid session
+**When** they navigate to `/dashboard`
+**Then** the system shall display a welcome message containing the authenticated username
 
 ### AC-05: Unauthenticated User Is Redirected to Login (traces to FR-03, NFR-02)
 **Given** a user who is not authenticated (no valid CI4 session)
@@ -309,3 +315,4 @@ API communication with Neo Feeder (HTTP requests, response parsing) shall be enc
 | 0.7 | 2026-06-15 | - | Second review resolutions applied: added full endpoint path `/ws/live2.php`; defined GetProfilPT error handling (only error_code=100 clears session; other codes show error, keep session); set validation cache TTL default to 5 minutes with sliding TTL via `auth.lastValidatedAt`; added authenticated-user-at-login redirect to `/dashboard`; split timeout configuration into connection (10s) and request (30s); specified encryption key via `encryption.key` in `.env`; clarified `getCurrentUser()` returns username string; defined connection failure handling for token validation (deny access, keep session, show retry error); updated AC-10 scenarios. |
 | 0.8 | 2026-06-15 | - | Third review resolutions applied: added persistent prior-auth indicator mechanism (signed/encrypted cookie) for session timeout detection (M1); clarified `lastValidatedAt` as Unix timestamp format across all occurrences (m1); added malformed/non-JSON response handling for GetProfilPT (m2); specified TTL explicitly in seconds: 300 seconds default (m3); added consolidated session schema table to FR-02 (m4); added null `lastValidatedAt` edge case to validation caching section (m5). Updated AC-02, AC-05, AC-06, AC-10, FR-02, NFR-02 accordingly. |
 | 0.9 | 2026-06-15 | - | Planning review resolutions applied: restructured FR-02 GetToken response handling with per-case error messages matching AC-03 (M2); added malformed/non-JSON response guard for GetToken (M3); specified `.env` for TTL configuration (M5); defined global deny-by-default filter approach in FR-03 (C1); specified CI4 flashdata as notification transport mechanism (C2); detailed persistent prior-auth indicator implementation (CI4 Encryption service, 120-min lifetime) in NFR-02 (C3); specified CI4 native session config for timeout (M6); added minimal dashboard stub page to scope and FR-03 (C4); specified POST method for logout in FR-05 (m4); clarified Auth/NeoFeeder service boundaries in NFR-03 (M7); fixed AC-05 second scenario to include "session expired" notification (M1); added AC-11 for authenticated-user-at-login redirect (m3); updated AC-03 traces to include FR-06/NFR-06 (m8). |
+| 0.10 | 2026-06-15 | - | Minor findings resolutions applied: added inline note for FR-04 numbering gap (m1); added AC-04 sub-scenario for dashboard welcome message display (m7). |
