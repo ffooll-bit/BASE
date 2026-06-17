@@ -2,7 +2,7 @@
 title: BASE - Login Feature
 status: draft
 date: 2026-06-15
-version: 0.8
+version: 0.9
 ---
 
 ## Introduction
@@ -27,6 +27,7 @@ This specification covers:
 - Logout functionality
 - Auth filter/middleware to protect routes
 - HTTP Client integration for Neo Feeder API communication
+- Minimal protected dashboard stub page as post-login landing target
 
 ## Glossary
 
@@ -65,7 +66,11 @@ Request body format:
 }
 ```
 
-On success (error_code: 0), the API returns a token. The system shall treat a valid token response as successful authentication and immediately create a CI4 session storing the token, username, and a `lastValidatedAt` Unix timestamp (set to the current time) under the `auth` session namespace. On failed response (error_code != 0) or connection error, the system shall return an error message without revealing specifics about the cause.
+Response handling:
+- `error_code: 0` with valid token -- Successful authentication. The system shall immediately create a CI4 session storing the token, username, and a `lastValidatedAt` Unix timestamp (set to the current time) under the `auth` session namespace, set the persistent prior-auth indicator, regenerate the session ID, and redirect to `/dashboard`.
+- `error_code` != 0 -- Invalid credentials. Display message "Login failed. Please check your credentials." Do not create a session. Stay on login page.
+- Connection failure (timeout, network error, HTTP error) -- Display message "Unable to connect to the authentication server. Please try again later." Do not create a session. Stay on login page.
+- Malformed or non-JSON response -- Treat as failed login. Display message "Login failed. Please check your credentials." Do not create a session. Stay on login page.
 
 **Token Validation (GetProfilPT):**
 The system shall validate the session token on protected route access by sending a POST request to the same endpoint with the following body:
@@ -85,7 +90,7 @@ Response handling:
 - Malformed or non-JSON response -- Treat as an invalid token. The system shall clear the `auth` session namespace and redirect to `/login` with a "session expired" notification. A broken API response cannot be trusted.
 
 **Validation Caching:**
-Token validation results shall be cached using the `auth.lastValidatedAt` Unix timestamp stored in the session. Default TTL is 5 minutes (300 seconds), configurable via application settings. The TTL slides: each successful validation resets `lastValidatedAt` to the current time. The Auth Filter shall re-validate via GetProfilPT only when `lastValidatedAt + TTL < current time`. If `lastValidatedAt` is null, the token shall be re-validated immediately via GetProfilPT.
+Token validation results shall be cached using the `auth.lastValidatedAt` Unix timestamp stored in the session. Default TTL is 5 minutes (300 seconds), configurable via `.env` setting. The TTL slides: each successful validation resets `lastValidatedAt` to the current time. The Auth Filter shall re-validate via GetProfilPT only when `lastValidatedAt + TTL < current time`. If `lastValidatedAt` is null, the token shall be re-validated immediately via GetProfilPT.
 
 **Session Schema (auth namespace):**
 The `auth` session namespace shall contain the following keys:
@@ -103,12 +108,14 @@ The system shall validate that both username and password are non-empty before s
 
 ### FR-03: Protected Routes
 **Priority**: High
-**Description**: The system shall implement a CodeIgniter 4 Filter (middleware) that intercepts incoming requests and verifies the user's session. Requests to protected routes without a valid authenticated session shall be redirected to the login page with a "session expired" notification if applicable. Routes that are publicly accessible (`/login`) must be explicitly whitelisted in the filter configuration. Static assets (CSS, JS, images) are served directly by the web server from the `public/` directory and do not require CI4 route whitelisting. An authenticated user navigating to `/login` shall be redirected to `/dashboard`.
-**Traces to**: AC-04, AC-05
+**Description**: The system shall implement a CodeIgniter 4 Filter (middleware) that intercepts incoming requests and verifies the user's session. The filter shall apply globally (deny-by-default): all routes are protected except those explicitly whitelisted. Requests to protected routes without a valid authenticated session shall be redirected to the login page with a "session expired" notification (delivered via CI4 flashdata) if applicable. Routes that are publicly accessible (`/login`) must be explicitly whitelisted in the filter configuration. Static assets (CSS, JS, images) are served directly by the web server from the `public/` directory and do not require CI4 route whitelisting. An authenticated user navigating to `/login` shall be redirected to `/dashboard`.
+
+A minimal protected dashboard stub page shall be included as part of this feature to provide a post-login landing target and a route for testing protected access. The stub shall render a simple welcome view (displaying the authenticated username) within the AdminLTE layout and shall not implement any dashboard-specific functionality beyond confirming authentication status.
+**Traces to**: AC-04, AC-05, AC-11
 
 ### FR-05: Logout Functionality
 **Priority**: High
-**Description**: The system shall provide a logout action that destroys the current authenticated session and redirects the user to the login page. The logout button/link shall be accessible from the AdminLTE navigation bar when the user is authenticated.
+**Description**: The system shall provide a logout action that destroys the current authenticated session and redirects the user to the login page. The logout action shall use the POST HTTP method (for CSRF protection) and shall be accessible as a logout button in the AdminLTE navigation bar when the user is authenticated.
 **Traces to**: AC-06
 
 ### FR-06: Neo Feeder API Connection Configuration
@@ -125,14 +132,16 @@ The system shall validate that both username and password are non-empty before s
 
 ### NFR-02: Session Security
 **Priority**: High
-**Description**: The authentication session must use CodeIgniter 4's native session handling with the following security measures: session encryption enabled via a secret key set in `encryption.key` (`.env`), HTTP-only cookies, session regeneration upon login, CSRF protection enabled on the login route, and a reasonable session timeout (configurable, default 120 minutes of inactivity). On session timeout, the next request to a protected route shall redirect to the login page with a "session expired" notification message. The session shall not store a separate `logged_in` flag; authentication status is determined by the presence of a valid token in the `auth` session namespace.
+**Description**: The authentication session must use CodeIgniter 4's native session handling with the following security measures: session encryption enabled via a secret key set in `encryption.key` (`.env`), HTTP-only cookies, session regeneration upon login, CSRF protection enabled on the login route, and a reasonable session timeout (configurable via CI4's native session expiration, default 120 minutes of inactivity). On session timeout, the next request to a protected route shall redirect to the login page with a "session expired" notification message delivered via CI4 flashdata. The session shall not store a separate `logged_in` flag; authentication status is determined by the presence of a valid token in the `auth` session namespace.
 
-To detect session timeout after the CI4 session has expired (e.g., due to inactivity exceeding the session timeout), the system shall maintain a **persistent prior-auth indicator** -- a signed/encrypted cookie set on successful login and cleared on logout. When the Auth Filter encounters a request without a valid CI4 session but with this persistent indicator present, it shall show a "session expired" notification and clear the indicator. When both session and indicator are absent, the user is simply redirected to login without notification.
-**Traces to**: AC-02, AC-05
+To detect session timeout after the CI4 session has expired (e.g., due to inactivity exceeding the session timeout), the system shall maintain a **persistent prior-auth indicator** -- a signed/encrypted cookie set on successful login and cleared on logout. The indicator shall use CI4's Encryption service (with the same `encryption.key` used for session encryption) for signing, and its lifetime shall match the 120-minute session timeout. When the Auth Filter encounters a request without a valid CI4 session but with this persistent indicator present, it shall show a "session expired" notification (via CI4 flashdata) and clear the indicator. When both session and indicator are absent, the user is simply redirected to login without notification.
+**Traces to**: AC-02, AC-05, AC-11
 
 ### NFR-03: Code Extensibility & Reusability
 **Priority**: High
-**Description**: The authentication logic must be encapsulated in a reusable service class (`app/Libraries/Auth.php` or similar) that is decoupled from controllers. This service shall expose methods for: login, logout, check authentication status (`isLoggedIn()` returns bool), get current user (`getCurrentUser()` returns the username string or null if not authenticated). Controllers and filters shall depend on this service, not on session manipulation directly.
+**Description**: The authentication logic must be encapsulated in a reusable service class (`app/Libraries/Auth.php` or similar) that is decoupled from controllers. This service shall expose methods for: login, logout, check authentication status (`isLoggedIn()` returns bool), get current user (`getCurrentUser()` returns the username string or null if not authenticated), and token validation. Controllers and filters shall depend on this service, not on session manipulation directly.
+
+API communication with Neo Feeder (HTTP requests, response parsing) shall be encapsulated in a separate `NeoFeeder` service (`app/Libraries/NeoFeeder.php` or similar). The Auth service shall depend on the NeoFeeder service for API calls, not on the HTTP client directly. This keeps auth logic decoupled from transport concerns.
 **Traces to**: AC-09
 
 ### NFR-04: AdminLTE Template Compliance
@@ -168,7 +177,7 @@ To detect session timeout after the CI4 session has expired (e.g., due to inacti
 - Redirect the user to `/dashboard`
 - Regenerate the session ID to prevent session fixation
 
-### AC-03: Failed Login Shows Appropriate Error (traces to FR-02)
+### AC-03: Failed Login Shows Appropriate Error (traces to FR-02, FR-06, NFR-06)
 **Given** a user on the login page
 **When** they submit the login form with empty username or password
 **Then** the system shall:
@@ -210,7 +219,7 @@ To detect session timeout after the CI4 session has expired (e.g., due to inacti
 **When** the Auth Filter checks authentication status
 **Then** the system shall:
 - Clear the `auth` session namespace
-- Redirect to the login page
+- Redirect to the login page with a "session expired" notification
 - Require re-authentication for any subsequent protected route access
 
 ### AC-06: Logout Destroys Session (traces to FR-05)
@@ -262,6 +271,13 @@ To detect session timeout after the CI4 session has expired (e.g., due to inacti
 - If no valid cached result exists (`lastValidatedAt` is null or `lastValidatedAt + TTL < current time`): deny access, display "Unable to verify session. Please try again later.", keep the session intact
 - Under no circumstances shall a connection failure clear the `auth` session namespace -- only an explicit `error_code: 100` response may do so
 
+### AC-11: Authenticated User at Login Redirects to Dashboard (traces to FR-03, NFR-02)
+**Given** an authenticated user with a valid session
+**When** they navigate to `/login`
+**Then** the system shall:
+- Detect the user is already authenticated
+- Redirect to `/dashboard` without rendering the login page
+
 ## Out of Scope
 
 - Public user self-registration (future feature)
@@ -292,3 +308,4 @@ To detect session timeout after the CI4 session has expired (e.g., due to inacti
 | 0.6 | 2026-06-15 | - | Spec review resolutions applied: migrated Neo Feeder endpoint to `https://neofeeder.example.com/`; removed FR-04 (role storage) entirely; enabled CSRF protection on login; added input validation (non-empty only); defined session schema (`auth` namespace with `username` and `token` only, no `logged_in` flag); added token validation via GetProfilPT with caching; clarified static assets do not require whitelisting; removed post-login URL redirect deferral; defined session timeout redirect behavior; corrected service naming to camelCase conventions. Renumbered ACs to 10 items. |
 | 0.7 | 2026-06-15 | - | Second review resolutions applied: added full endpoint path `/ws/live2.php`; defined GetProfilPT error handling (only error_code=100 clears session; other codes show error, keep session); set validation cache TTL default to 5 minutes with sliding TTL via `auth.lastValidatedAt`; added authenticated-user-at-login redirect to `/dashboard`; split timeout configuration into connection (10s) and request (30s); specified encryption key via `encryption.key` in `.env`; clarified `getCurrentUser()` returns username string; defined connection failure handling for token validation (deny access, keep session, show retry error); updated AC-10 scenarios. |
 | 0.8 | 2026-06-15 | - | Third review resolutions applied: added persistent prior-auth indicator mechanism (signed/encrypted cookie) for session timeout detection (M1); clarified `lastValidatedAt` as Unix timestamp format across all occurrences (m1); added malformed/non-JSON response handling for GetProfilPT (m2); specified TTL explicitly in seconds: 300 seconds default (m3); added consolidated session schema table to FR-02 (m4); added null `lastValidatedAt` edge case to validation caching section (m5). Updated AC-02, AC-05, AC-06, AC-10, FR-02, NFR-02 accordingly. |
+| 0.9 | 2026-06-15 | - | Planning review resolutions applied: restructured FR-02 GetToken response handling with per-case error messages matching AC-03 (M2); added malformed/non-JSON response guard for GetToken (M3); specified `.env` for TTL configuration (M5); defined global deny-by-default filter approach in FR-03 (C1); specified CI4 flashdata as notification transport mechanism (C2); detailed persistent prior-auth indicator implementation (CI4 Encryption service, 120-min lifetime) in NFR-02 (C3); specified CI4 native session config for timeout (M6); added minimal dashboard stub page to scope and FR-03 (C4); specified POST method for logout in FR-05 (m4); clarified Auth/NeoFeeder service boundaries in NFR-03 (M7); fixed AC-05 second scenario to include "session expired" notification (M1); added AC-11 for authenticated-user-at-login redirect (m3); updated AC-03 traces to include FR-06/NFR-06 (m8). |
