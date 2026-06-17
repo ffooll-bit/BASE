@@ -2,7 +2,7 @@
 title: BASE - Login Feature
 status: draft
 date: 2026-06-15
-version: 0.12
+version: 0.13
 ---
 
 ## Introduction
@@ -124,7 +124,7 @@ A minimal protected dashboard stub page shall be included as part of this featur
 ### FR-06: Neo Feeder API Connection Configuration
 **Priority**: High
 **Description**: The system shall provide a configuration interface (via `.env` file) for setting the Neo Feeder Web Service API base URL. Default value: `https://neofeeder.stiem-bongaya.ac.id/ws/live2.php`. Additional connection parameters must also be configurable: connection timeout (default 10 seconds) and overall request timeout (default 30 seconds). The system must handle connection failures gracefully and report meaningful errors to the user.
-**Traces to**: AC-09
+**Traces to**: AC-07
 
 ## Non-Functional Requirements
 
@@ -319,3 +319,4 @@ API communication with Neo Feeder (HTTP requests, response parsing) shall be enc
 | 0.10 | 2026-06-15 | - | Minor findings resolutions applied: added inline note for FR-04 numbering gap (m1); added AC-04 sub-scenario for dashboard welcome message display (m7). |
 | 0.11 | 2026-06-15 | - | Fixed persistent indicator cookie lifetime to exceed session timeout (e.g., 24h) instead of matching it, ensuring reliable session expiration detection (M1). |
 | 0.12 | 2026-06-17 | - | Applied v0.11 planning review findings: added explicit `error_code: 0` without valid token case to FR-02 GetToken response handling (M1); added logout route URL (`/logout`) to FR-05 (m2). |
+| 0.13 | 2026-06-17 | - | Fixed traceability error: FR-06 now traces to AC-07 (Neo Feeder API configuration) instead of AC-09 (service injection) (P-03). |
