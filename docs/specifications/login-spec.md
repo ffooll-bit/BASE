@@ -2,7 +2,7 @@
 title: BASE - Login Feature
 status: draft
 date: 2026-06-15
-version: 0.7
+version: 0.8
 ---
 
 ## Introduction
@@ -65,7 +65,7 @@ Request body format:
 }
 ```
 
-On success (error_code: 0), the API returns a token. The system shall treat a valid token response as successful authentication and immediately create a CI4 session storing the token, username, and a `lastValidatedAt` timestamp (set to the current time) under the `auth` session namespace. On failed response (error_code != 0) or connection error, the system shall return an error message without revealing specifics about the cause.
+On success (error_code: 0), the API returns a token. The system shall treat a valid token response as successful authentication and immediately create a CI4 session storing the token, username, and a `lastValidatedAt` Unix timestamp (set to the current time) under the `auth` session namespace. On failed response (error_code != 0) or connection error, the system shall return an error message without revealing specifics about the cause.
 
 **Token Validation (GetProfilPT):**
 The system shall validate the session token on protected route access by sending a POST request to the same endpoint with the following body:
@@ -82,9 +82,19 @@ Response handling:
 - `error_code: 100` -- Invalid or expired token with message "Invalid Token. Token tidak ada atau token sudah expired." The system shall clear the `auth` session namespace and redirect to `/login` with a "session expired" notification.
 - Any other `error_code` (e.g., 1, 99) -- The system shall deny access, display a generic error message ("Unable to verify session. Please try again later."), and keep the session intact. The user is not logged out.
 - Connection failure (timeout, network error, HTTP error) -- If a cached validation result exists within TTL, use it. If no valid cached result exists, deny access, display an error message ("Unable to verify session. Please try again later."), and keep the session intact. Only `error_code: 100` may clear the authentication session.
+- Malformed or non-JSON response -- Treat as an invalid token. The system shall clear the `auth` session namespace and redirect to `/login` with a "session expired" notification. A broken API response cannot be trusted.
 
 **Validation Caching:**
-Token validation results shall be cached using the `auth.lastValidatedAt` timestamp stored in the session. Default TTL is 5 minutes, configurable via application settings. The TTL slides: each successful validation resets `lastValidatedAt` to the current time. The Auth Filter shall re-validate via GetProfilPT only when `lastValidatedAt + TTL < current time`.
+Token validation results shall be cached using the `auth.lastValidatedAt` Unix timestamp stored in the session. Default TTL is 5 minutes (300 seconds), configurable via application settings. The TTL slides: each successful validation resets `lastValidatedAt` to the current time. The Auth Filter shall re-validate via GetProfilPT only when `lastValidatedAt + TTL < current time`. If `lastValidatedAt` is null, the token shall be re-validated immediately via GetProfilPT.
+
+**Session Schema (auth namespace):**
+The `auth` session namespace shall contain the following keys:
+
+| Key | Type | Description | Set At |
+|-----|------|-------------|--------|
+| `username` | string | The authenticated user's email/username | Login (GetToken success) |
+| `token` | string | Neo Feeder API token returned by GetToken | Login (GetToken success) |
+| `lastValidatedAt` | int (Unix timestamp) | Timestamp of last successful token validation | Login (GetToken success); updated on each successful GetProfilPT validation |
 
 **Input Validation:**
 The system shall validate that both username and password are non-empty before submitting to the API. No additional format, length, or complexity validation shall be applied; credential validation is the responsibility of the Neo Feeder API. Empty input shall display the message: "Please enter your username and password."
@@ -116,6 +126,8 @@ The system shall validate that both username and password are non-empty before s
 ### NFR-02: Session Security
 **Priority**: High
 **Description**: The authentication session must use CodeIgniter 4's native session handling with the following security measures: session encryption enabled via a secret key set in `encryption.key` (`.env`), HTTP-only cookies, session regeneration upon login, CSRF protection enabled on the login route, and a reasonable session timeout (configurable, default 120 minutes of inactivity). On session timeout, the next request to a protected route shall redirect to the login page with a "session expired" notification message. The session shall not store a separate `logged_in` flag; authentication status is determined by the presence of a valid token in the `auth` session namespace.
+
+To detect session timeout after the CI4 session has expired (e.g., due to inactivity exceeding the session timeout), the system shall maintain a **persistent prior-auth indicator** -- a signed/encrypted cookie set on successful login and cleared on logout. When the Auth Filter encounters a request without a valid CI4 session but with this persistent indicator present, it shall show a "session expired" notification and clear the indicator. When both session and indicator are absent, the user is simply redirected to login without notification.
 **Traces to**: AC-02, AC-05
 
 ### NFR-03: Code Extensibility & Reusability
@@ -151,7 +163,8 @@ The system shall validate that both username and password are non-empty before s
 **Then** the system shall:
 - Send a POST request to `https://neofeeder.stiem-bongaya.ac.id/ws/live2.php` with `Content-Type: application/json` and body `{"act":"GetToken","username":"...","password":"..."}`
 - Receive a successful response: `{"error_code":0,"error_desc":"","data":{"token":"..."}}`
-- Store the token, username, and current timestamp as `lastValidatedAt` in the `auth` session namespace
+- Store the token, username, and current Unix timestamp as `lastValidatedAt` in the `auth` session namespace
+- Set a persistent prior-auth indicator (signed/encrypted cookie) to track that the user was authenticated
 - Redirect the user to `/dashboard`
 - Regenerate the session ID to prevent session fixation
 
@@ -186,12 +199,12 @@ The system shall validate that both username and password are non-empty before s
 **Then** the system shall allow access and render the requested page
 
 ### AC-05: Unauthenticated User Is Redirected to Login (traces to FR-03, NFR-02)
-**Given** a user who is not authenticated (no valid session)
+**Given** a user who is not authenticated (no valid CI4 session)
 **When** they attempt to access any protected route
 **Then** the system shall:
 - Intercept the request via the Auth Filter
-- Redirect to the login page
-- Display a "session expired" notification message if a prior valid session existed but has timed out
+- If the persistent prior-auth indicator (signed/encrypted cookie) is present: display a "session expired" notification message, clear the indicator, and redirect to login
+- If both the CI4 session and the persistent indicator are absent: redirect to login without any notification message
 
 **Given** a user whose session token is invalid or expired (error_code 100 from GetProfilPT)
 **When** the Auth Filter checks authentication status
@@ -205,6 +218,7 @@ The system shall validate that both username and password are non-empty before s
 **When** they click the "Logout" button
 **Then** the system shall:
 - Destroy the current session completely
+- Clear the persistent prior-auth indicator
 - Redirect to the login page
 - Require re-authentication for any subsequent protected route access
 
@@ -232,12 +246,13 @@ The system shall validate that both username and password are non-empty before s
 **When** the Auth Filter checks authentication status on a protected route request and no valid cached result exists (lastValidatedAt + TTL < current time)
 **Then** the system shall:
 - Send a POST request with `Content-Type: application/json` and body `{"act":"GetProfilPT","token":"<session_token>"}` to `https://neofeeder.stiem-bongaya.ac.id/ws/live2.php`
-- On `error_code: 0` response: update `auth.lastValidatedAt` to current time, allow access
+- On `error_code: 0` response: update `auth.lastValidatedAt` to current Unix timestamp, allow access
 - On `error_code: 100` response: clear the `auth` session namespace, redirect to `/login` with "session expired" notification
 - On any other `error_code` response: deny access, display "Unable to verify session. Please try again later.", keep session intact
+- On malformed or non-JSON response: treat as invalid token, clear the `auth` session namespace, redirect to `/login` with "session expired" notification
 
 **Given** an authenticated user and a cached token validation result
-**When** the Auth Filter checks authentication status and `auth.lastValidatedAt + TTL >= current time`
+**When** the Auth Filter checks authentication status and `auth.lastValidatedAt + TTL >= current time` (TTL default is 300 seconds)
 **Then** the system shall use the cached result and allow access without calling the Neo Feeder API
 
 **Given** an authenticated user
@@ -276,3 +291,4 @@ The system shall validate that both username and password are non-empty before s
 | 0.5 | 2026-06-12 | - | Removed active RBAC enforcement (FR-04 simplified, AC-06/AC-07 removed). Renumbered ACs (now 9 items). Set status back to draft. |
 | 0.6 | 2026-06-15 | - | Spec review resolutions applied: migrated Neo Feeder endpoint to `https://neofeeder.stiem-bongaya.ac.id/`; removed FR-04 (role storage) entirely; enabled CSRF protection on login; added input validation (non-empty only); defined session schema (`auth` namespace with `username` and `token` only, no `logged_in` flag); added token validation via GetProfilPT with caching; clarified static assets do not require whitelisting; removed post-login URL redirect deferral; defined session timeout redirect behavior; corrected service naming to camelCase conventions. Renumbered ACs to 10 items. |
 | 0.7 | 2026-06-15 | - | Second review resolutions applied: added full endpoint path `/ws/live2.php`; defined GetProfilPT error handling (only error_code=100 clears session; other codes show error, keep session); set validation cache TTL default to 5 minutes with sliding TTL via `auth.lastValidatedAt`; added authenticated-user-at-login redirect to `/dashboard`; split timeout configuration into connection (10s) and request (30s); specified encryption key via `encryption.key` in `.env`; clarified `getCurrentUser()` returns username string; defined connection failure handling for token validation (deny access, keep session, show retry error); updated AC-10 scenarios. |
+| 0.8 | 2026-06-15 | - | Third review resolutions applied: added persistent prior-auth indicator mechanism (signed/encrypted cookie) for session timeout detection (M1); clarified `lastValidatedAt` as Unix timestamp format across all occurrences (m1); added malformed/non-JSON response handling for GetProfilPT (m2); specified TTL explicitly in seconds: 300 seconds default (m3); added consolidated session schema table to FR-02 (m4); added null `lastValidatedAt` edge case to validation caching section (m5). Updated AC-02, AC-05, AC-06, AC-10, FR-02, NFR-02 accordingly. |
