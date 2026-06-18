@@ -288,7 +288,7 @@ All three partials should reference `session('auth.username')` where needed. The
 
 **`app/Controllers/Dashboard.php`** extending `CodeIgniter\Controller` with a single method `index()` (GET `/dashboard`):
 1. Retrieve the authenticated username via `service('auth')->getCurrentUser()`.
-2. Load the AdminLTE layout: include `app/Views/layout/header.php`, then the dashboard content view, then `app/Views/layout/sidebar.php`, then `app/Views/layout/footer.php`.
+2. Load the AdminLTE layout: include `app/Views/layout/header.php`, then `app/Views/layout/sidebar.php`, then the dashboard content view, then `app/Views/layout/footer.php`.
 3. Pass the username to the view for display.
 
 **`app/Views/dashboard/index.php`**:
