@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 0.5
+version: 0.6
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -96,7 +96,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-02, AC-03
 **Verification**: `php -l app/Libraries/NeoFeeder.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-008 | Implement getProfilPT() method in NeoFeeder service
 **Description**: Implement `getProfilPT(string $token): array` method that calls the internal `sendRequest()` with payload `{"act":"GetProfilPT","token":"..."}`. Return the structured array from `sendRequest()` directly. The response handling is identical to getToken -- all error cases are handled by `sendRequest()`.
@@ -104,7 +104,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-10
 **Verification**: `php -l app/Libraries/NeoFeeder.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-09
 **Verification**: `php -l app/Libraries/Auth.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-010 | Implement login() and logout() methods in Auth service
 **Description**: Implement `login(string $username, string $password): bool` and `logout(): void` methods.
@@ -378,3 +378,4 @@ Document any failures found and create issue notes for remediation.
 | 0.3 | 2026-06-18 | Operator | **APPROVED** - backlog approved for Implement phase |
 | 0.4 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 1 complete: TASK-001 (config), TASK-002 (env), TASK-004 (routes), TASK-005 (security review), TASK-015 (login view), TASK-016 (layout partials) |
 | 0.5 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 2 complete: TASK-003 (services registration), TASK-006 (NeoFeeder library class) |
+| 0.6 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 3 complete: TASK-007 (getToken), TASK-008 (getProfilPT), TASK-009 (Auth skeleton) |
