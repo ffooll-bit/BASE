@@ -55,7 +55,7 @@ class NeoFeeder
                 ],
                 'timeout'         => $this->config->requestTimeout,
                 'connect_timeout' => $this->config->connectionTimeout,
-                'body'            => json_encode($payload),
+                'body'            => $this->encodeJsonPayload($payload),
             ]);
 
             $body = $response->getBody();
@@ -70,7 +70,7 @@ class NeoFeeder
 
             $decoded = json_decode($body, true);
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
                 return [
                     'error_code' => -2,
                     'error_msg'  => 'Invalid response from server.',
@@ -86,5 +86,27 @@ class NeoFeeder
                 'data'       => null,
             ];
         }
+    }
+
+    /**
+     * Encodes a payload as JSON, returning a validated string.
+     *
+     * @param array $payload The payload to encode.
+     *
+     * @return string The JSON-encoded string.
+     *
+     * @throws \RuntimeException If the payload cannot be encoded as JSON.
+     */
+    private function encodeJsonPayload(array $payload): string
+    {
+        $json = json_encode($payload);
+
+        if ($json === false) {
+            throw new \RuntimeException(
+                'Failed to encode request payload as JSON: ' . json_last_error_msg()
+            );
+        }
+
+        return $json;
     }
 }
