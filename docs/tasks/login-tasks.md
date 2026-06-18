@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: draft
 date: 2026-06-18
-version: 0.1
+version: 0.2
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -131,9 +131,11 @@ flowchart LR
 6. On connection failure (`error_code === -1`): set `$lastError` to `"Unable to connect to the authentication server. Please try again later."`, return false.
 7. On malformed response (`error_code === -2`): set `$lastError` to `"Login failed. Please check your credentials."`, return false.
 
+Implement private helper methods: `setPriorAuthCookie()` (encrypts and signs `"username|token_hash"` using CI4 Encryption service, sets cookie with 24-hour lifetime, HTTPOnly, SameSite=Lax), `clearPriorAuthCookie()` (deletes the cookie), and `hasPriorAuthCookie(): bool` (checks for presence of the cookie).
+
 **logout()** logic:
 1. Destroy the session via `session()->destroy()`.
-2. Clear the persistent prior-auth cookie (via a private `clearPriorAuthCookie()` helper).
+2. Clear the persistent prior-auth cookie (via `clearPriorAuthCookie()`).
 
 Neither method shall log, cache, or store the password at any point.
 **Dependencies**: TASK-007, TASK-009
@@ -183,8 +185,8 @@ Neither method shall log, cache, or store the password at any point.
    - Otherwise, allow the request (return `null`).
 3. For all other (protected) routes:
    - Call `service('auth')->isLoggedIn()`. If true, allow the request.
-   - If not logged in, check for prior-auth indicator via a private helper `hasPriorAuthCookie()`:
-     - If present (session expired scenario): set CI4 flashdata `message` to `"Your session has expired. Please log in again."`, clear the cookie, redirect to `/login`.
+   - If not logged in, check for prior-auth indicator via `service('auth')->hasPriorAuthCookie()`:
+     - If present (session expired scenario): set CI4 flashdata `message` to `"Your session has expired. Please log in again."`, call `service('auth')->clearPriorAuthCookie()`, redirect to `/login`.
      - If absent (never logged in scenario): redirect to `/login` without flashdata.
 **Dependencies**: TASK-010, TASK-011
 **Priority**: High
@@ -225,7 +227,7 @@ The `'except' => ['login*']` pattern whitelists all routes starting with `/login
 **logout()** (POST `/logout`):
 1. Call `service('auth')->logout()`.
 2. Redirect to `/login`.
-**Dependencies**: TASK-013, TASK-015, TASK-016
+**Dependencies**: TASK-010, TASK-011, TASK-013, TASK-015, TASK-016
 **Priority**: High
 **Traces to AC**: AC-01, AC-02, AC-03, AC-06, AC-11
 **Verification**: `php -l app/Controllers/Login.php`
@@ -371,3 +373,4 @@ Document any failures found and create issue notes for remediation.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1 | 2026-06-18 | tasks-orchestrator (big-pickle) | Initial draft -- 18 tasks across 6 groups mapped to approved plan milestones |
+| 0.2 | 2026-06-18 | tasks-orchestrator (big-pickle) | Review fixes: added TASK-010, TASK-011 to TASK-014 dependencies (controller uses auth service directly); added `hasPriorAuthCookie()` to TASK-010 auth service and updated TASK-012 to reference `service('auth')->hasPriorAuthCookie()` instead of local helper |
