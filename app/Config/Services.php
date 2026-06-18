@@ -19,14 +19,48 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
-    /*
-     * public static function example($getShared = true)
-     * {
-     *     if ($getShared) {
-     *         return static::getSharedInstance('example');
-     *     }
+    /**
+     * Neo Feeder API Service
      *
-     *     return new \CodeIgniter\Example();
-     * }
+     * Returns a singleton instance of the Neo Feeder API service
+     * with its configuration and HTTP client dependencies injected.
+     *
+     * @param bool $getShared
+     *
+     * @return \App\Libraries\NeoFeeder
      */
+    public static function neoFeeder($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('neoFeeder');
+        }
+
+        $config = config('NeoFeeder');
+        $curl   = service('curlrequest');
+
+        return new \App\Libraries\NeoFeeder($config, $curl);
+    }
+
+    /**
+     * Authentication Service
+     *
+     * Returns a singleton instance of the Authentication service
+     * with its NeoFeeder, Session, and Encryption dependencies injected.
+     *
+     * @param bool $getShared
+     *
+     * @return \App\Libraries\Auth
+     */
+    public static function auth($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('auth');
+        }
+
+        $neoFeeder  = service('neoFeeder');
+        $session    = service('session');
+        $encryption = service('encrypter');
+
+        return new \App\Libraries\Auth($neoFeeder, $session, $encryption);
+    }
 }

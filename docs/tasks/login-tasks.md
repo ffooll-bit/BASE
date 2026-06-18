@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 0.4
+version: 0.5
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -59,7 +59,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-09
 **Verification**: `php -l app/Config/Services.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-004 | Define application routes
 **Description**: Modify `app/Config/Routes.php` to add four route definitions: `GET /login` mapped to `Login::index`, `POST /login` mapped to `Login::attemptLogin`, `POST /logout` mapped to `Login::logout`, and `GET /dashboard` mapped to `Dashboard::index`. Use CI4's `$routes->get()` and `$routes->post()` methods. Ensure routes are defined outside of any route group that might add prefixes.
@@ -88,7 +88,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-07, AC-09
 **Verification**: `php -l app/Libraries/NeoFeeder.php` ; `Test-Path -LiteralPath "app/Libraries/NeoFeeder.php"`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-007 | Implement getToken() method in NeoFeeder service
 **Description**: Implement `getToken(string $username, string $password): array` method that calls the internal `sendRequest()` with payload `{"act":"GetToken","username":"...","password":"..."}`. Return the structured array from `sendRequest()` directly. Ensure that credentials are not logged or stored beyond the single HTTP request call (the password is only passed to `sendRequest()` and never retained). Handle all error cases documented in the plan: API error, connection failure, malformed response.
@@ -377,3 +377,4 @@ Document any failures found and create issue notes for remediation.
 | 0.3 | 2026-06-18 | tasks-orchestrator (big-pickle) | Review fix: added TASK-011 to TASK-017 dependencies (Dashboard controller uses `service('auth')->getCurrentUser()` from TASK-011) |
 | 0.3 | 2026-06-18 | Operator | **APPROVED** - backlog approved for Implement phase |
 | 0.4 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 1 complete: TASK-001 (config), TASK-002 (env), TASK-004 (routes), TASK-005 (security review), TASK-015 (login view), TASK-016 (layout partials) |
+| 0.5 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 2 complete: TASK-003 (services registration), TASK-006 (NeoFeeder library class) |
