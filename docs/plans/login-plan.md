@@ -2,7 +2,7 @@
 title: BASE - Login Feature - Technical Plan
 status: draft
 date: 2026-06-18
-version: 0.3
+version: 0.4
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -199,7 +199,8 @@ sequenceDiagram
 **Responsibility**: Encapsulates all authentication logic. Used by controllers and filters. Depends on NeoFeeder service for API calls.
 
 **Interfaces**:
-- `login(string $username, string $password): bool` -- Authenticates via NeoFeeder, creates session on success, returns bool
+- `login(string $username, string $password): bool` -- Authenticates via NeoFeeder, creates session on success, returns true. On failure returns false; call `getLastError()` to retrieve the error message string for display.
+- `getLastError(): ?string` -- Returns the last error message (e.g., "Login failed. Please check your credentials.") or null if no error.
 - `logout(): void` -- Destroys session, clears prior-auth cookie
 - `isLoggedIn(): bool` -- Checks session for auth.token (with optional validation caching)
 - `getCurrentUser(): ?string` -- Returns username from session or null
@@ -618,52 +619,30 @@ flowchart TD
 
 ## Directory Structure
 
-### Files to Create
+### File Inventory (all affected files)
 
-```
-app/
-|-- Config/
-|   |-- NeoFeeder.php                    (NEW) Neo Feeder API configuration
-|   |-- Filters.php                      (MODIFY) Add auth filter alias + global before
-|   |-- Services.php                     (MODIFY) Register auth + neoFeeder services
-|   |-- Routes.php                       (MODIFY) Add login, logout, dashboard routes
-|
-|-- Controllers/
-|   |-- Login.php                        (NEW) Login/logout controller
-|   |-- Dashboard.php                    (NEW) Protected dashboard stub
-|
-|-- Filters/
-|   |-- AuthFilter.php                   (NEW) Global auth filter (deny-by-default)
-|
-|-- Libraries/
-|   |-- Auth.php                         (NEW) Authentication service
-|   |-- NeoFeeder.php                    (NEW) Neo Feeder API communication service
-|
-|-- Views/
-|   |-- login/
-|   |   |-- login.php                    (NEW) AdminLTE login page
-|   |
-|   |-- dashboard/
-|   |   |-- index.php                    (NEW) Dashboard welcome stub
-|   |
-|   |-- layout/
-|       |-- header.php                   (NEW) AdminLTE header/navbar partial
-|       |-- footer.php                   (NEW) AdminLTE footer/scripts partial
-|       |-- sidebar.php                  (NEW) AdminLTE sidebar partial
-```
+**NEW files to create** (8 files):
+- `app/Config/NeoFeeder.php`
+- `app/Controllers/Login.php`
+- `app/Controllers/Dashboard.php`
+- `app/Filters/AuthFilter.php`
+- `app/Libraries/Auth.php`
+- `app/Libraries/NeoFeeder.php`
+- `app/Views/login/login.php`
+- `app/Views/dashboard/index.php`
+- `app/Views/layout/header.php`
+- `app/Views/layout/footer.php`
+- `app/Views/layout/sidebar.php`
 
-### Files to Modify
+**MODIFY files** (4 files):
+- `app/Config/Filters.php`
+- `app/Config/Services.php`
+- `app/Config/Routes.php`
+- `.env`
 
-```
-|-- .env                                 (MODIFY) Add NeoFeeder config, encryption.key
-```
-
-### Files to Review (no changes expected)
-
-```
-|-- app/Config/Security.php              (REVIEW) Ensure CSRF is enabled for POST
-|-- app/Config/Session.php               (REVIEW) Verify expiration and encryption settings
-```
+**REVIEW files** (2 files, no changes expected):
+- `app/Config/Security.php`
+- `app/Config/Session.php`
 
 ### Directory Tree
 
@@ -790,3 +769,4 @@ app/
 | 0.1 | 2026-06-18 | sdd-plan (big-pickle) | Initial draft -- technical plan for login feature based on approved specification v0.14 |
 | 0.2 | 2026-06-18 | plan-orchestrator (big-pickle) | Added Requirements Traceability Matrix (P-01); added Traces-to annotations to all components (P-02); added requirement mappings to milestones (P-03) |
 | 0.3 | 2026-06-18 | plan-orchestrator (big-pickle) | Review fixes: fixed logout route to use Login::logout; made layout views required (not optional); added flashdata key naming convention; added filter whitelist config syntax example |
+| 0.4 | 2026-06-18 | plan-orchestrator (big-pickle) | Second review fixes: added getLastError() method to Auth service for error differentiation; consolidated file inventory section (removed redundant Files to Modify/Review/Tree sections); fixed directory tree formatting |
