@@ -2,7 +2,7 @@
 title: BASE - Login Feature - Technical Plan
 status: draft
 date: 2026-06-18
-version: 0.4
+version: 0.5
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -621,7 +621,7 @@ flowchart TD
 
 ### File Inventory (all affected files)
 
-**NEW files to create** (8 files):
+**NEW files to create** (11 files):
 - `app/Config/NeoFeeder.php`
 - `app/Controllers/Login.php`
 - `app/Controllers/Dashboard.php`
@@ -770,3 +770,4 @@ app/
 | 0.2 | 2026-06-18 | plan-orchestrator (big-pickle) | Added Requirements Traceability Matrix (P-01); added Traces-to annotations to all components (P-02); added requirement mappings to milestones (P-03) |
 | 0.3 | 2026-06-18 | plan-orchestrator (big-pickle) | Review fixes: fixed logout route to use Login::logout; made layout views required (not optional); added flashdata key naming convention; added filter whitelist config syntax example |
 | 0.4 | 2026-06-18 | plan-orchestrator (big-pickle) | Second review fixes: added getLastError() method to Auth service for error differentiation; consolidated file inventory section (removed redundant Files to Modify/Review/Tree sections); fixed directory tree formatting |
+| 0.5 | 2026-06-18 | plan-orchestrator (big-pickle) | Third review fix: corrected NEW file count from 8 to 11 in file inventory header |
