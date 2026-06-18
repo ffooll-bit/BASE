@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 0.3
+version: 0.4
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -43,7 +43,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-07
 **Verification**: `php -l app/Config/NeoFeeder.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-002 | Configure environment variables
 **Description**: Add the following entries to the `.env` file: `neofeeder.apiBaseUrl`, `neofeeder.connectionTimeout`, `neofeeder.requestTimeout`, `neofeeder.validationTTL`, and `encryption.key` (with a generated random base64 key). Each entry must include a meaningful comment above it. Ensure CI4's `.env` file parsing is active (verified by checking that `CI_ENVIRONMENT` is set).
@@ -51,7 +51,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-07, AC-08
 **Verification**: `Select-String -Path ".env" -Pattern "neofeeder\."` ; `Select-String -Path ".env" -Pattern "encryption\.key"`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-003 | Register services in Services configuration
 **Description**: Modify `app/Config/Services.php` to register two services as singletons: `'neoFeeder'` returning `\App\Libraries\NeoFeeder` (with `Config\NeoFeeder` and `CURLRequest` dependencies injected) and `'auth'` returning `\App\Libraries\Auth` (with `neoFeeder` service, CI4 `session`, and `encryption` services injected). Use CI4's `$services->register()` pattern with closure factories.
@@ -67,7 +67,7 @@ flowchart LR
 **Priority**: High
 **Traces to AC**: AC-01, AC-04
 **Verification**: `php spark routes`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-005 | Review and verify Security and Session configuration
 **Description**: Review `app/Config/Security.php` to confirm CSRF protection is enabled and set to `'cookie'` mode (CI4 default). Review `app/Config/Session.php` to confirm `$expiration` is set to `7200` (120 minutes), session driver is appropriate, and encryption is enabled. Document any changes needed (if any) in a comment block. No functional changes expected -- this is a verification-only task.
@@ -75,7 +75,7 @@ flowchart LR
 **Priority**: Medium
 **Traces to AC**: N/A
 **Verification**: `php -l app/Config/Security.php` ; `php -l app/Config/Session.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ---
 
@@ -249,7 +249,7 @@ The `'except' => ['login*']` pattern whitelists all routes starting with `/login
 **Priority**: High
 **Traces to AC**: AC-01
 **Verification**: `php -l app/Views/login/login.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-016 | Create AdminLTE layout partials (header, footer, sidebar)
 **Description**: Create three layout partial files under `app/Views/layout/`:
@@ -276,7 +276,7 @@ All three partials should reference `session('auth.username')` where needed. The
 **Priority**: High
 **Traces to AC**: AC-01, AC-04
 **Verification**: `php -l app/Views/layout/header.php` ; `php -l app/Views/layout/footer.php` ; `php -l app/Views/layout/sidebar.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ---
 
@@ -376,3 +376,4 @@ Document any failures found and create issue notes for remediation.
 | 0.2 | 2026-06-18 | tasks-orchestrator (big-pickle) | Review fixes: added TASK-010, TASK-011 to TASK-014 dependencies (controller uses auth service directly); added `hasPriorAuthCookie()` to TASK-010 auth service and updated TASK-012 to reference `service('auth')->hasPriorAuthCookie()` instead of local helper |
 | 0.3 | 2026-06-18 | tasks-orchestrator (big-pickle) | Review fix: added TASK-011 to TASK-017 dependencies (Dashboard controller uses `service('auth')->getCurrentUser()` from TASK-011) |
 | 0.3 | 2026-06-18 | Operator | **APPROVED** - backlog approved for Implement phase |
+| 0.4 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 1 complete: TASK-001 (config), TASK-002 (env), TASK-004 (routes), TASK-005 (security review), TASK-015 (login view), TASK-016 (layout partials) |
