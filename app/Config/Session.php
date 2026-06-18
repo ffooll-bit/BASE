@@ -9,6 +9,16 @@ use CodeIgniter\Session\Handlers\FileHandler;
 class Session extends BaseConfig
 {
     /**
+     * TASK-005 Verification (2026-06-18):
+     *   - $expiration = 7200 (120 minutes) -- matches requirement.
+     *   - $driver = FileHandler::class -- appropriate CI4 default driver.
+     *   - Session encryption is not a property of Session config in CI4.
+     *     The Encryption service key ($key in Config\Encryption.php) is
+     *     currently empty and will be set via encryption.key in .env by
+     *     TASK-002 (Group 1). No blocking issues found.
+     */
+
+    /**
      * --------------------------------------------------------------------------
      * Session Driver
      * --------------------------------------------------------------------------
