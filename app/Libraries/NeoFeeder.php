@@ -89,6 +89,48 @@ class NeoFeeder
     }
 
     /**
+     * Retrieves the institution (PT) profile from the Neo Feeder API.
+     *
+     * Calls the API with the "GetProfilPT" action and the provided token.
+     * All error cases (API error, connection failure, malformed response) are
+     * handled by {@see sendRequest()} and returned as a structured error array.
+     *
+     * @param string $token The authentication token obtained from getToken().
+     *
+     * @return array The decoded API response on success, or a structured error array on failure.
+     */
+    public function getProfilPT(string $token): array
+    {
+        return $this->sendRequest([
+            'act'   => 'GetProfilPT',
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Authenticates a user against the Neo Feeder API.
+     *
+     * Sends a GetToken action with the provided username and password.
+     * Returns the raw response array from sendRequest().
+     *
+     * The password is passed directly to the HTTP request and is never
+     * stored, logged, or retained beyond the single API call.
+     *
+     * @param string $username The user's email or username.
+     * @param string $password The user's password.
+     *
+     * @return array The response array from the API or a structured error array.
+     */
+    public function getToken(string $username, string $password): array
+    {
+        return $this->sendRequest([
+            'act'      => 'GetToken',
+            'username' => $username,
+            'password' => $password,
+        ]);
+    }
+
+    /**
      * Encodes a payload as JSON, returning a validated string.
      *
      * @param array $payload The payload to encode.
