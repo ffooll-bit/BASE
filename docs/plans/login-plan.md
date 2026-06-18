@@ -2,7 +2,7 @@
 title: BASE - Login Feature - Technical Plan
 status: draft
 date: 2026-06-18
-version: 0.2
+version: 0.3
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -242,8 +242,22 @@ sequenceDiagram
 4. If logged in: allow request
 
 **Whitelist**:
-- `login` (GET/POST)
-- Static assets are served by web server, not through CI4 routing
+- Login routes: `'login'` (matches both GET and POST to `/login`)
+- Static assets are served by the web server directly from `public/`, not through CI4 routing — no whitelist needed
+
+**Filter Config Syntax** (in `app/Config/Filters.php`):
+```php
+public $aliases = [
+    'auth' => \App\Filters\AuthFilter::class,
+];
+
+public $globals = [
+    'before' => [
+        'auth' => ['except' => ['login*']],
+    ],
+];
+```
+The `'except' => ['login*']` pattern whitelists all routes starting with `login`. This covers both GET and POST `/login`.
 
 ### 4. Login Controller (`app/Controllers/Login.php`)
 
@@ -259,6 +273,11 @@ sequenceDiagram
 **Input Validation**:
 - Username and password must be non-empty strings
 - No format/length validation beyond non-empty (delegated to Neo Feeder)
+
+**Flashdata Keys** (CI4 flashdata for view notifications):
+- `error` -- Error message string (login failure, connection error, validation error)
+- `message` -- Success/info message string (session expired notification)
+- Keys are set via `session()->setFlashdata('error', '...')` and displayed in the login view
 
 ### 5. Dashboard Controller (`app/Controllers/Dashboard.php`)
 
@@ -285,8 +304,11 @@ sequenceDiagram
 - Welcome message displaying authenticated username
 - Navigation bar with logout button
 
-**`app/Views/layout/` (optional)**:
-- If AdminLTE template parts need to be shared, consider a base layout
+**`app/Views/layout/`**:
+- Shared AdminLTE template partials used by all authenticated pages
+- `header.php` -- navbar with logout button, CSS includes
+- `footer.php` -- JavaScript includes, closing tags
+- `sidebar.php` -- AdminLTE sidebar (can be minimal/stub for now)
 
 ### 7. Routes (`app/Config/Routes.php`)
 
@@ -295,7 +317,7 @@ sequenceDiagram
 ```php
 $routes->get('/login', 'Login::index');
 $routes->post('/login', 'Login::attemptLogin');
-$routes->post('/logout', 'Logout::logout');  // or Login::logout
+$routes->post('/logout', 'Login::logout');
 $routes->get('/dashboard', 'Dashboard::index');
 ```
 
@@ -767,3 +789,4 @@ app/
 |---------|------|--------|---------|
 | 0.1 | 2026-06-18 | sdd-plan (big-pickle) | Initial draft -- technical plan for login feature based on approved specification v0.14 |
 | 0.2 | 2026-06-18 | plan-orchestrator (big-pickle) | Added Requirements Traceability Matrix (P-01); added Traces-to annotations to all components (P-02); added requirement mappings to milestones (P-03) |
+| 0.3 | 2026-06-18 | plan-orchestrator (big-pickle) | Review fixes: fixed logout route to use Login::logout; made layout views required (not optional); added flashdata key naming convention; added filter whitelist config syntax example |
