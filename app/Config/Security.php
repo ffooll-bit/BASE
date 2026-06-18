@@ -7,6 +7,14 @@ use CodeIgniter\Config\BaseConfig;
 class Security extends BaseConfig
 {
     /**
+     * TASK-005 Verification (2026-06-18):
+     *   - CSRF protection is enabled ('cookie' mode) -- matches CI4 default.
+     *   - $tokenRandomize = false (default), $regenerate = true (recommended).
+     *   - $expires = 7200 (2 hours) -- appropriate default.
+     *   - No changes required. All security config values are acceptable.
+     */
+
+    /**
      * --------------------------------------------------------------------------
      * CSRF Protection Method
      * --------------------------------------------------------------------------
