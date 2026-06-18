@@ -2,7 +2,7 @@
 title: BASE - Login Feature - Technical Plan
 status: draft
 date: 2026-06-18
-version: 0.1
+version: 0.2
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -129,9 +129,38 @@ sequenceDiagram
 | API communication | CI4 HTTP Client (CURLRequest) | Built-in; no external HTTP library needed; configurable timeouts |
 | Service layer | Two dedicated classes (Auth, NeoFeeder) | Separation of concerns: Auth handles auth logic, NeoFeeder handles HTTP transport |
 
+## Requirements Traceability
+
+| Requirement | Plan Section(s) |
+|-------------|-----------------|
+| FR-01: Login Page Display | Component Design §4 (Login Controller), §6 (Views), Architecture Overview |
+| FR-02: User Authentication via Neo Feeder API | Component Design §1 (NeoFeeder Service), §2 (Auth Service), §4 (Login Controller), API Design (GetToken, GetProfilPT) |
+| FR-03: Protected Routes | Component Design §3 (Auth Filter), §5 (Dashboard Controller), §7 (Routes) |
+| FR-05: Logout Functionality | Component Design §4 (Login Controller), §2 (Auth Service) |
+| FR-06: Neo Feeder API Connection Configuration | Component Design §8 (Configuration), Milestone 1 |
+| NFR-01: Credential Security | Component Design §2 (Auth Service), API Design, Data Model |
+| NFR-02: Session Security | Component Design §2 (Auth Service), §3 (Auth Filter), Data Model (prior-auth cookie) |
+| NFR-03: Code Extensibility & Reusability | Component Design §1 (NeoFeeder Service), §2 (Auth Service) — service layer decoupling |
+| NFR-04: AdminLTE Template Compliance | Component Design §6 (Views), Technology Stack |
+| NFR-05: Framework Compatibility | Technology Stack, Directory Structure |
+| NFR-06: API Communication Reliability | Component Design §1 (NeoFeeder Service), API Design (error handling), Risks |
+| AC-01: Login Page Renders Correctly | Component Design §4 (Login Controller), §6 (Views) |
+| AC-02: Successful Login Creates Session | Component Design §1 (NeoFeeder), §2 (Auth Service), API Design §GetToken |
+| AC-03: Failed Login Shows Error | Component Design §1 (NeoFeeder), §2 (Auth Service), §4 (Login Controller) |
+| AC-04: Authenticated User Access | Component Design §3 (Auth Filter), §5 (Dashboard Controller) |
+| AC-05: Unauthenticated Redirect | Component Design §3 (Auth Filter), §2 (Auth Service — prior-auth cookie) |
+| AC-06: Logout Destroys Session | Component Design §4 (Login Controller), §2 (Auth Service) |
+| AC-07: API Connection Configurable | Component Design §8 (Configuration), Directory Structure |
+| AC-08: Credentials Not Stored/Logged | Component Design §2 (Auth Service), NFR-01 coverage |
+| AC-09: Services Are Injectable | Component Design §8 (Configuration — Services.php), Architecture Overview |
+| AC-10: Token Validation on Protected Route Access | Component Design §3 (Auth Filter), §2 (Auth Service — validateToken), API Design §GetProfilPT, Validation Caching Logic |
+| AC-11: Authenticated User at Login Redirects | Component Design §3 (Auth Filter), §4 (Login Controller — index()) |
+
 ## Component Design
 
 ### 1. NeoFeeder Service (`app/Libraries/NeoFeeder.php`)
+
+**Traces to**: FR-02, FR-06, NFR-06, AC-02, AC-03, AC-07, AC-10
 
 **Responsibility**: Encapsulates all HTTP communication with the Neo Feeder Web Service API. Controllers and Auth service should never call the HTTP client directly.
 
@@ -165,6 +194,8 @@ sequenceDiagram
 
 ### 2. Auth Service (`app/Libraries/Auth.php`)
 
+**Traces to**: FR-02, FR-05, NFR-01, NFR-02, NFR-03, AC-02, AC-03, AC-05, AC-06, AC-08, AC-10, AC-11
+
 **Responsibility**: Encapsulates all authentication logic. Used by controllers and filters. Depends on NeoFeeder service for API calls.
 
 **Interfaces**:
@@ -195,6 +226,8 @@ sequenceDiagram
 
 ### 3. Auth Filter (`app/Filters/AuthFilter.php`)
 
+**Traces to**: FR-03, NFR-02, AC-04, AC-05, AC-10, AC-11
+
 **Responsibility**: CI4 Filter that protects routes. Applied globally via filter config.
 
 **Interfaces**:
@@ -214,6 +247,8 @@ sequenceDiagram
 
 ### 4. Login Controller (`app/Controllers/Login.php`)
 
+**Traces to**: FR-01, FR-02, FR-05, AC-01, AC-02, AC-03, AC-06, AC-11
+
 **Responsibility**: Handles login page display, login form submission, and logout.
 
 **Methods**:
@@ -227,12 +262,16 @@ sequenceDiagram
 
 ### 5. Dashboard Controller (`app/Controllers/Dashboard.php`)
 
+**Traces to**: FR-03, AC-04
+
 **Responsibility**: Minimal protected stub page as post-login landing target.
 
 **Methods**:
 - `index()` -- GET `/dashboard`: Render welcome view with authenticated username within AdminLTE layout.
 
 ### 6. Views
+
+**Traces to**: FR-01, NFR-04, AC-01
 
 **`app/Views/login/login.php`**:
 - AdminLTE 3.2 login page template
@@ -251,6 +290,8 @@ sequenceDiagram
 
 ### 7. Routes (`app/Config/Routes.php`)
 
+**Traces to**: FR-01, FR-03, FR-05, AC-01, AC-04
+
 ```php
 $routes->get('/login', 'Login::index');
 $routes->post('/login', 'Login::attemptLogin');
@@ -259,6 +300,8 @@ $routes->get('/dashboard', 'Dashboard::index');
 ```
 
 ### 8. Configuration
+
+**Traces to**: FR-06, NFR-02, NFR-05, AC-07, AC-09
 
 **`app/Config/NeoFeeder.php`** (new config file):
 ```php
@@ -633,6 +676,7 @@ app/
 ## Milestones
 
 ### Milestone 1: Foundation and Configuration
+**Requirement(s)**: FR-06, NFR-02, NFR-05, AC-07, AC-09
 **Goal**: Set up configuration files, service registrations, and route definitions.
 
 - Create `app/Config/NeoFeeder.php` with API base URL, timeouts, TTL
@@ -644,6 +688,7 @@ app/
 **Deliverables**: Config files, service registration, routes
 
 ### Milestone 2: Neo Feeder API Service
+**Requirement(s)**: FR-02, FR-06, NFR-06, AC-02, AC-03, AC-07, AC-10
 **Goal**: Implement the HTTP communication layer for Neo Feeder Web Service.
 
 - Create `app/Libraries/NeoFeeder.php` with `getToken()` and `getProfilPT()` methods
@@ -654,6 +699,7 @@ app/
 **Deliverables**: NeoFeeder library ready for integration
 
 ### Milestone 3: Authentication Service
+**Requirement(s)**: FR-02, FR-05, NFR-01, NFR-02, NFR-03, AC-02, AC-03, AC-05, AC-06, AC-08, AC-10, AC-11
 **Goal**: Implement the authentication logic layer.
 
 - Create `app/Libraries/Auth.php` with `login()`, `logout()`, `isLoggedIn()`, `getCurrentUser()`, `validateToken()`
@@ -665,6 +711,7 @@ app/
 **Deliverables**: Auth library ready for controller/filter integration
 
 ### Milestone 4: Auth Filter (Route Protection)
+**Requirement(s)**: FR-03, NFR-02, AC-04, AC-05, AC-10, AC-11
 **Goal**: Implement the global route protection filter.
 
 - Create `app/Filters/AuthFilter.php`
@@ -675,6 +722,7 @@ app/
 **Deliverables**: Route protection active, filter integration complete
 
 ### Milestone 5: Login Controller and Views
+**Requirement(s)**: FR-01, FR-02, FR-05, NFR-04, AC-01, AC-02, AC-03, AC-06, AC-11
 **Goal**: Implement the login page UI and form handling.
 
 - Create `app/Controllers/Login.php` with `index()`, `attemptLogin()`, `logout()`
@@ -690,6 +738,7 @@ app/
 **Deliverables**: Working login page and authentication flow
 
 ### Milestone 6: Dashboard Stub Page
+**Requirement(s)**: FR-03, AC-04
 **Goal**: Implement the protected dashboard landing page.
 
 - Create `app/Controllers/Dashboard.php` with `index()`
@@ -717,3 +766,4 @@ app/
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1 | 2026-06-18 | sdd-plan (big-pickle) | Initial draft -- technical plan for login feature based on approved specification v0.14 |
+| 0.2 | 2026-06-18 | plan-orchestrator (big-pickle) | Added Requirements Traceability Matrix (P-01); added Traces-to annotations to all components (P-02); added requirement mappings to milestones (P-03) |
