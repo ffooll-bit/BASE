@@ -1,6 +1,6 @@
 ---
 title: BASE - Login Feature -- Task Backlog
-status: draft
+status: approved
 date: 2026-06-18
 version: 0.3
 spec-reference: docs/specifications/login-spec.md
@@ -375,3 +375,4 @@ Document any failures found and create issue notes for remediation.
 | 0.1 | 2026-06-18 | tasks-orchestrator (big-pickle) | Initial draft -- 18 tasks across 6 groups mapped to approved plan milestones |
 | 0.2 | 2026-06-18 | tasks-orchestrator (big-pickle) | Review fixes: added TASK-010, TASK-011 to TASK-014 dependencies (controller uses auth service directly); added `hasPriorAuthCookie()` to TASK-010 auth service and updated TASK-012 to reference `service('auth')->hasPriorAuthCookie()` instead of local helper |
 | 0.3 | 2026-06-18 | tasks-orchestrator (big-pickle) | Review fix: added TASK-011 to TASK-017 dependencies (Dashboard controller uses `service('auth')->getCurrentUser()` from TASK-011) |
+| 0.3 | 2026-06-18 | Operator | **APPROVED** - backlog approved for Implement phase |
