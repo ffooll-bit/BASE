@@ -2,7 +2,7 @@
 title: BASE - Login Feature - Technical Plan
 status: approved
 date: 2026-06-18
-version: 0.5
+version: 0.6
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -12,52 +12,31 @@ spec-reference: docs/specifications/login-spec.md
 
 The Login feature follows a layered architecture within the CodeIgniter 4 MVC framework. Authentication is session-based, with the Neo Feeder Web Service as the external identity provider. No local user database is used.
 
-```
-                +-------------------+
-                |   Web Browser     |
-                | (AdminLTE UI)     |
-                +--------+----------+
-                         |
-               HTTP Request/Response
-                         |
-                +--------v----------+
-                |   CI4 Router      |
-                +--------+----------+
-                         |
-            +------------+------------+
-            |                         |
-    +-------v--------+       +--------v-------+
-    | Auth Filter    |       |  Public        |
-    | (global before)|       |  /login route  |
-    +-------+--------+       +--------+-------+
-            |                         |
-            | (if not auth)           |
-            | redirect /login         |
-            |                         |
-    +-------v--------+       +--------v-------+
-    | Controllers    |       | LoginController|
-    | (protected)    |       | (unauthenticated)
-    +-------+--------+       +--------+-------+
-            |                         |
-            |                    +----v----+
-            |                    | Auth    |
-            |                    | Service |
-            |                    +----+----+
-            |                         |
-            |                    +----v----+
-            |                    |NeoFeeder|
-            |                    | Service |
-            |                    +----+----+
-            |                         |
-            |              +----------v----------+
-            |              | Neo Feeder WS API   |
-            |              | (external)          |
-            |              +---------------------+
-            |
-    +-------v--------+
-    | Session         |
-    | (CI4 native)    |
-    +-----------------+
+```mermaid
+flowchart TD
+    Browser["Web Browser (AdminLTE UI)"]
+    Router["CI4 Router"]
+    AuthFilter["Auth Filter (global before)"]
+    PublicLogin["Public /login route"]
+    ProtectedCtrl["Controllers (protected)"]
+    LoginCtrl["LoginController (unauthenticated)"]
+    AuthSvc["Auth Service"]
+    NeoFeederSvc["NeoFeeder Service"]
+    NeoFeederAPI["Neo Feeder WS API (external)"]
+    Session["Session (CI4 native)"]
+
+    Browser <-->|HTTP Request/Response| Router
+    Router --> AuthFilter
+    Router --> PublicLogin
+    AuthFilter -->|if not auth, redirect /login| PublicLogin
+    AuthFilter --> ProtectedCtrl
+    PublicLogin --> LoginCtrl
+    LoginCtrl --> AuthSvc
+    ProtectedCtrl --> AuthSvc
+    AuthSvc --> NeoFeederSvc
+    NeoFeederSvc --> NeoFeederAPI
+    AuthSvc -.->|reads/writes| Session
+    AuthFilter -.->|reads/writes| Session
 ```
 
 ### Request Flow Diagram
@@ -772,3 +751,4 @@ app/
 | 0.4 | 2026-06-18 | plan-orchestrator (big-pickle) | Second review fixes: added getLastError() method to Auth service for error differentiation; consolidated file inventory section (removed redundant Files to Modify/Review/Tree sections); fixed directory tree formatting |
 | 0.5 | 2026-06-18 | plan-orchestrator (big-pickle) | Third review fix: corrected NEW file count from 8 to 11 in file inventory header |
 | 0.5 | 2026-06-18 | Operator | **APPROVED** - plan approved for Task phase |
+| 0.6 | 2026-06-18 | plan-orchestrator (big-pickle) | Audit redo fix: converted ASCII architecture diagram to mermaid flowchart for SDD format compliance |
