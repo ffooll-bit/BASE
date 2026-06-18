@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Technical Plan
 status: draft
 date: 2026-06-18
-version: 0.1
+version: 0.2
 spec-reference: docs/specifications/login-spec.md
 ---
 
@@ -362,13 +362,15 @@ This ensures the auth filter runs on all routes EXCEPT `/login`.
 
 **Validation Logic in `before()`:**
 
+The filter handles two separate concerns: (A) session presence detection including persistent prior-auth indicator, and (B) token validity via the Auth library.
+
 ```
 1. Get current URI path
 2. If path is '/login':
        Allow (skip all checks)
-3. Call service('auth')->isLoggedIn():
-   a. Check session('auth.token') exists and is non-empty
-      - If NO token:
+
+3. Check session('auth.token') exists and is non-empty:
+   a. If NO token:
           Check for persistent prior-auth cookie (auth_prior)
           - If cookie exists:
               Decrypt cookie using service('encrypter')
@@ -381,37 +383,41 @@ This ensures the auth filter runs on all routes EXCEPT `/login`.
                   Redirect to /login (no notification)
           - If no cookie:
               Redirect to /login (no notification)
-      - If token exists:
-          Check cached validation:
-          Read session('auth.lastValidatedAt')
-          - If null (edge case): skip cache, call GetProfilPT
-          - If lastValidatedAt + TTL >= current time: allow (cache valid)
-          - Else: call GetProfilPT via service('auth')->validateToken()
+          (Stop here -- do NOT proceed to step 4)
 
-          GetProfilPT result handling:
-          - error_code == 0:
-              Update session('auth.lastValidatedAt') to now()
-              Allow request
-          - error_code == 100:
-              Clear auth session namespace
-              Delete persistent cookie
-              Set flashdata "Session expired. Please log in again."
-              Redirect to /login
-          - Other error_code (1, 99, etc):
-              Deny (show error view or redirect with flashdata)
-              Keep session intact
+4. Token exists in session -- now validate:
+   a. Read session('auth.lastValidatedAt')
+   b. Check cached validation:
+      - If lastValidatedAt + TTL >= current time: allow (cache valid, skip API call)
+      - If null (edge case): skip cache, call GetProfilPT via service('auth')->validateToken()
+      - If expired (lastValidatedAt + TTL < current time): call GetProfilPT via
+        service('auth')->validateToken()
+
+   c. GetProfilPT result handling via validateToken():
+      - error_code == 0:
+          Update session('auth.lastValidatedAt') to now()
+          Allow request
+      - error_code == 100 (invalid/expired token):
+          Clear auth session namespace
+          Delete persistent cookie
+          Set flashdata "Session expired. Please log in again."
+          Redirect to /login
+      - Other error_code (1, 99, etc):
+          Deny access, keep session intact
+          Set flashdata "Unable to verify session. Please try again later."
+          Redirect to previous page or show error
+      - Connection failure (timeout/network error):
+          If cached result available (lastValidatedAt + TTL >= current time):
+              allow (use stale cache)
+          Else:
+              deny, keep session intact
               Set flashdata "Unable to verify session. Please try again later."
-              Redirect to previous page or show error
-          - Connection failure (timeout/network error):
-              If lastValidatedAt + TTL >= current time: allow (use stale cache)
-              Else: deny, show error "Unable to verify session. Please try again later."
-              In both cases: keep session intact (do NOT clear auth)
-          - Malformed/non-JSON response:
-              Clear auth session namespace
-              Delete persistent cookie
-              Set flashdata "Session expired. Please log in again."
-              Redirect to /login
-4. If allowed, continue to requested controller
+      - Malformed/non-JSON response:
+          Clear auth session namespace
+          Delete persistent cookie
+          Set flashdata "Session expired. Please log in again."
+          Redirect to /login
+5. If allowed, continue to requested controller
 ```
 
 **Key Principles:**
@@ -1019,3 +1025,4 @@ Implementation is organized into logical task groups. Each group represents a de
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1 | 2026-06-18 | sdd-plan (big-pickle) | Initial draft -- complete technical plan for Login feature v0.14 spec |
+| 0.2 | 2026-06-18 | plan-orchestrator (big-pickle) | Clarified AuthFilter validation logic: separated session/cookie checks from token validation delegation; corrected step labeling to reflect filter-level vs auth-library-level responsibilities |
