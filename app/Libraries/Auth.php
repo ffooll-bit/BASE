@@ -143,7 +143,7 @@ class Auth
      */
     private function setPriorAuthCookie(string $username, string $token): void
     {
-        $value = $this->encryption->encrypt($username . '|' . hash_hmac('sha256', $token, $this->encryption->key ?? ''));
+        $value = $this->encryption->encrypt($username . '|' . hash_hmac('sha256', $token, $this->encryption->key));
 
         // ponytail: setcookie with array-options form avoids cookie-helper dependency
         setcookie('prior_auth', base64_encode($value), [
