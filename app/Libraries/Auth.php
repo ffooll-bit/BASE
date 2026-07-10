@@ -160,7 +160,7 @@ class Auth
      *
      * @return void
      */
-    private function clearPriorAuthCookie(): void
+    public function clearPriorAuthCookie(): void
     {
         setcookie('prior_auth', '', [
             'expires'  => 1,
@@ -175,7 +175,7 @@ class Auth
      *
      * @return bool True if the cookie exists.
      */
-    private function hasPriorAuthCookie(): bool
+    public function hasPriorAuthCookie(): bool
     {
         return isset($_COOKIE['prior_auth']);
     }
