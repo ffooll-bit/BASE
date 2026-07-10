@@ -4,13 +4,13 @@ namespace App\Controllers;
 
 class Dashboard extends BaseController
 {
-    public function index(): void
+    public function index()
     {
         $username = service('auth')->getCurrentUser();
 
-        echo view('layout/header');
-        echo view('layout/sidebar');
-        echo view('dashboard/index', ['username' => $username]);
-        echo view('layout/footer');
+        return view('layout/header')
+            . view('layout/sidebar')
+            . view('dashboard/index', ['username' => $username])
+            . view('layout/footer');
     }
 }
