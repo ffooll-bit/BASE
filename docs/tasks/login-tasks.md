@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 0.7
+version: 0.9
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -203,7 +203,7 @@ The `'except' => ['login*']` pattern whitelists all routes starting with `/login
 **Priority**: High
 **Traces to AC**: AC-04, AC-05
 **Verification**: `php -l app/Config/Filters.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-10)
 
 ---
 
@@ -381,3 +381,4 @@ Document any failures found and create issue notes for remediation.
 | 0.6 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 3 complete: TASK-007 (getToken), TASK-008 (getProfilPT), TASK-009 (Auth skeleton) |
 | 0.7 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 4 complete: TASK-010 (login/logout), TASK-011 (isLoggedIn/validateToken) |
 | 0.8 | 2026-07-10 | implement-orchestrator (big-pickle) | Fix TASK-010 description: `clearPriorAuthCookie()` and `hasPriorAuthCookie()` marked public (needed by AuthFilter TASK-012). TASK-012 complete: AuthFilter created. |
+| 0.9 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 6 complete: TASK-013 (register auth filter in Filters.php) |
