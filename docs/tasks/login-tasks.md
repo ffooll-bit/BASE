@@ -131,7 +131,7 @@ flowchart LR
 6. On connection failure (`error_code === -1`): set `$lastError` to `"Unable to connect to the authentication server. Please try again later."`, return false.
 7. On malformed response (`error_code === -2`): set `$lastError` to `"Login failed. Please check your credentials."`, return false.
 
-Implement private helper methods: `setPriorAuthCookie()` (encrypts and signs `"username|token_hash"` using CI4 Encryption service, sets cookie with 24-hour lifetime, HTTPOnly, SameSite=Lax), `clearPriorAuthCookie()` (deletes the cookie), and `hasPriorAuthCookie(): bool` (checks for presence of the cookie).
+Implement helper methods: `setPriorAuthCookie()` (private; encrypts and signs `"username|token_hash"` using CI4 Encryption service, sets cookie with 24-hour lifetime, HTTPOnly, SameSite=Lax), `clearPriorAuthCookie()` (public; deletes the cookie), and `hasPriorAuthCookie(): bool` (public; checks for presence of the cookie). `clearPriorAuthCookie()` and `hasPriorAuthCookie()` are public so they can be called from AuthFilter (TASK-012).
 
 **logout()** logic:
 1. Destroy the session via `session()->destroy()`.
@@ -192,7 +192,7 @@ Neither method shall log, cache, or store the password at any point.
 **Priority**: High
 **Traces to AC**: AC-04, AC-05, AC-10, AC-11
 **Verification**: `php -l app/Filters/AuthFilter.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-10)
 
 ### TASK-013 | Register auth filter in Filters configuration
 **Description**: Modify `app/Config/Filters.php` to:
@@ -380,3 +380,4 @@ Document any failures found and create issue notes for remediation.
 | 0.5 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 2 complete: TASK-003 (services registration), TASK-006 (NeoFeeder library class) |
 | 0.6 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 3 complete: TASK-007 (getToken), TASK-008 (getProfilPT), TASK-009 (Auth skeleton) |
 | 0.7 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 4 complete: TASK-010 (login/logout), TASK-011 (isLoggedIn/validateToken) |
+| 0.8 | 2026-07-10 | implement-orchestrator (big-pickle) | Fix TASK-010 description: `clearPriorAuthCookie()` and `hasPriorAuthCookie()` marked public (needed by AuthFilter TASK-012). TASK-012 complete: AuthFilter created. |
