@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 0.6
+version: 0.7
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -142,7 +142,7 @@ Neither method shall log, cache, or store the password at any point.
 **Priority**: High
 **Traces to AC**: AC-02, AC-03, AC-06, AC-08
 **Verification**: `php -l app/Libraries/Auth.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-06-18)
 
 ### TASK-011 | Implement isLoggedIn(), getCurrentUser(), and validateToken() with caching
 **Description**: Implement three methods:
@@ -168,7 +168,7 @@ Neither method shall log, cache, or store the password at any point.
 **Priority**: High
 **Traces to AC**: AC-05, AC-10, AC-11
 **Verification**: `php -l app/Libraries/Auth.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-10)
 
 ---
 
@@ -379,3 +379,4 @@ Document any failures found and create issue notes for remediation.
 | 0.4 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 1 complete: TASK-001 (config), TASK-002 (env), TASK-004 (routes), TASK-005 (security review), TASK-015 (login view), TASK-016 (layout partials) |
 | 0.5 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 2 complete: TASK-003 (services registration), TASK-006 (NeoFeeder library class) |
 | 0.6 | 2026-06-18 | implement-orchestrator (big-pickle) | Batch 3 complete: TASK-007 (getToken), TASK-008 (getProfilPT), TASK-009 (Auth skeleton) |
+| 0.7 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 4 complete: TASK-010 (login/logout), TASK-011 (isLoggedIn/validateToken) |
