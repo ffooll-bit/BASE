@@ -11,10 +11,10 @@ class AuthFilter implements FilterInterface
     /**
      * Runs before every request to enforce authentication.
      *
-     * Whitelisted routes (login) allow unauthenticated access but redirect
-     * authenticated users to /dashboard. All other routes require a valid
-     * session; the prior-auth cookie detects session expiry and shows a
-     * message.
+     * The login route whitelist is handled by CI4's `except` config
+     * in Filters.php (TASK-013). This filter only protects non-login
+     * routes. The prior-auth cookie detects session expiry and shows
+     * a flashdata message.
      *
      * @param RequestInterface $request
      * @param array|null       $arguments
@@ -23,24 +23,13 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $auth   = service('auth');
-        $path   = $request->uri->getPath();
-        $isLogin = $path === 'login';
+        $auth = service('auth');
 
-        // Whitelisted routes: /login (GET and POST)
-        if ($isLogin) {
-            if ($auth->isLoggedIn()) {
-                return redirect()->to('/dashboard');
-            }
-            return null;
-        }
-
-        // Protected routes
         if ($auth->isLoggedIn()) {
             return null;
         }
 
-        // Not logged in — check prior-auth cookie for session-expiry hint
+        // Check prior-auth cookie for session-expiry hint
         if ($auth->hasPriorAuthCookie()) {
             $auth->clearPriorAuthCookie();
             session()->setFlashdata('message', 'Your session has expired. Please log in again.');
