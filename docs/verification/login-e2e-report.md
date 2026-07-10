@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- End-to-End Verification Report
 status: approved
 date: 2026-07-10
-version: 1.1
+version: 1.2
 task-reference: TASK-018
 ---
 
@@ -10,7 +10,7 @@ task-reference: TASK-018
 
 **Task**: TASK-018 | Verify end-to-end login flow  
 **Date**: 2026-07-10  
-**Status**: ✅ Automated checks PASS · Manual tests: 8/10 PASS, 2 untested
+**Status**: ✅ Automated checks PASS · Manual tests: 9/10 PASS, 1 untested
 
 ---
 
@@ -21,7 +21,7 @@ task-reference: TASK-018
 | 1. Route Listing | ✅ PASS |
 | 2. PHP Syntax Check | ✅ PASS (all 16 files) |
 | 3. Service Registration | ✅ PASS |
-| 4. Manual Browser Verification | ✅ 8/10 PASS (2 untested — see §4) |
+| 4. Manual Browser Verification | ✅ 9/10 PASS (1 untested — see §4) |
 
 ---
 
@@ -138,30 +138,34 @@ Tests executed on `php spark serve` at `http://localhost:8080`.
 | 4.7 | **Protected route access (authenticated)** | While logged in, navigate to `/dashboard` | Access allowed, dashboard renders with welcome message | ✅ PASS — dashboard loads correctly |
 | 4.8 | **Authenticated user at /login** | While logged in, navigate to `/login` | Redirect to `/dashboard` | ✅ PASS — redirects to `/index.php/dashboard` |
 | 4.9 | **Logout** | Click Logout button (POST `/logout`) | Redirect to `/login`. Subsequent `/dashboard` access redirects to `/login` (no flashdata) | ✅ PASS — session destroyed, protected routes redirect to login |
-| 4.10 | **Session timeout detection** | After logout, manually set `prior_auth` cookie, access `/dashboard` | Redirect to `/login` with "Your session has expired. Please log in again." flashdata, cookie cleared | ⏳ Not tested — requires manually creating the cookie via DevTools (see §4.10 note) |
+| 4.10 | **Session timeout detection** | After logout, manually set `prior_auth` cookie, access `/dashboard` | Redirect to `/login` with "Your session has expired. Please log in again." flashdata, cookie cleared | ✅ PASS — redirects to `/login` with expiration message, cookie cleared |
 
-### Notes on Untested Scenarios
+### Notes
 
 **4.3 — Empty field submission:**
-HTML `required` attributes prevent form submission with empty fields. To verify the server-side validation, use:
+HTML `required` attributes prevent form submission with empty fields. Additionally, the CSRF filter blocks POST requests without a valid token. To verify the server-side validation, use this two-step script that first extracts the CSRF token:
+
 ```js
-// Browser console:
-fetch('/index.php/login', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: 'username=&password='
-}).then(r => r.text()).then(html => {
-  console.log(html.includes('enter your username') ? '✅ PASS' : '❌ FAIL')
-})
+// Browser console — run to test empty field validation via CSRF-aware fetch:
+fetch('/login').then(r => r.text()).then(html => {
+  const m = html.match(/<input type="hidden" name="csrf_test_name" value="([^"]+)"\s*\/?>/);
+  if (!m) return console.log('❌ FAIL — could not find CSRF token');
+  const token = m[1];
+  fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'csrf_test_name=' + encodeURIComponent(token) + '&username=&password='
+  }).then(r => r.text()).then(html2 => {
+    if (html2.includes('Please enter your username and password') || html2.includes('enter your username')) {
+      console.log('✅ PASS — empty field validation triggered');
+    } else {
+      console.log('❌ FAIL');
+    }
+  });
+});
 ```
 
-**4.10 — Session timeout via prior-auth cookie:**
-1. Log in, then open DevTools → Application → Cookies → `http://localhost:8080`
-2. Copy the `prior_auth` cookie value
-3. Log out (this clears the session)
-4. Re-create the `prior_auth` cookie with the copied value
-5. Visit `/dashboard` — expected: "Your session has expired. Please log in again." + redirect to `/login`
-
+Alternatively, via DevTools: remove the `required` attribute from both `<input>` fields and submit the form normally — the CSRF token is already included in the form.
 ---
 
 ## Traceability
@@ -188,11 +192,10 @@ fetch('/index.php/login', {
 
 All automated verification steps (routing, syntax, service registration) pass without error. The `ini_set()` warning observed during CLI testing of Auth service is a known CI4 testing environment artifact -- it does not affect web runtime behavior.
 
-### Manual Checks: 8/10 PASS, 2 untested
+### Manual Checks: 9/10 PASS, 1 untested
 
-Eight of ten browser-based test scenarios pass. Two scenarios remain untested:
-- **4.3** (empty field validation) — HTML `required` blocks browser submission; can be verified via `fetch()`/`curl`
-- **4.10** (session timeout detection) — requires manually setting the `prior_auth` cookie via DevTools
+Nine of ten browser-based test scenarios pass. One scenario remains untested:
+- **4.3** (empty field validation) — HTML `required` blocks browser submission; verify via CSRF-aware `fetch()` script in §Notes
 
 ### Minor Observations
 
@@ -207,3 +210,4 @@ Eight of ten browser-based test scenarios pass. Two scenarios remain untested:
 |---------|------|--------|---------|
 | 1.0 | 2026-07-10 | implement-orchestrator (big-pickle) | Initial verification report for TASK-018 |
 | 1.1 | 2026-07-10 | Operator | Manual test results: 8/10 PASS, 2 untested; added autocomplete fix note, `index.php` note |
+| 1.2 | 2026-07-10 | implement-orchestrator | 4.10 confirmed PASS; updated 4.3 test script with CSRF token extraction; summary: 9/10 PASS |
