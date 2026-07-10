@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- End-to-End Verification Report
 status: approved
 date: 2026-07-10
-version: 1.2
+version: 1.3
 task-reference: TASK-018
 ---
 
@@ -10,7 +10,7 @@ task-reference: TASK-018
 
 **Task**: TASK-018 | Verify end-to-end login flow  
 **Date**: 2026-07-10  
-**Status**: ✅ Automated checks PASS · Manual tests: 9/10 PASS, 1 untested
+**Status**: ✅ Automated checks PASS · Manual tests: 10/10 PASS
 
 ---
 
@@ -21,7 +21,7 @@ task-reference: TASK-018
 | 1. Route Listing | ✅ PASS |
 | 2. PHP Syntax Check | ✅ PASS (all 16 files) |
 | 3. Service Registration | ✅ PASS |
-| 4. Manual Browser Verification | ✅ 9/10 PASS (1 untested — see §4) |
+| 4. Manual Browser Verification | ✅ 10/10 PASS |
 
 ---
 
@@ -131,7 +131,7 @@ Tests executed on `php spark serve` at `http://localhost:8080`.
 |---|----------|-------|-----------------|--------|
 | 4.1 | **Unauthenticated access to protected route** | Navigate to `GET /dashboard` (no session cookie) | Redirect to `GET /login` without flashdata message | ✅ PASS — redirects to `/index.php/login` |
 | 4.2 | **Login page rendering** | Navigate to `GET /login` | AdminLTE-styled page with email input, password input, CSRF hidden field, Login button | ✅ PASS — AdminLTE page renders with all elements |
-| 4.3 | **Empty field validation** | Submit POST `/login` with empty username and password | Display "Please enter your username and password." Error message shown, no API call made | ⏳ Not tested — browser `required` attribute blocks empty submission; use `curl` or fetch API to test |
+| 4.3 | **Empty field validation** | Submit POST `/login` with empty username and password | Display "Please enter your username and password." Error message shown, no API call made | ✅ PASS — CSRF-aware fetch confirms validation; form submission with `required` removed shows message |
 | 4.4 | **Invalid credentials** | Submit POST `/login` with deliberately invalid username/password | Display "Login failed. Please check your credentials." No session created | ✅ PASS — error message displayed |
 | 4.5 | **Connection failure** | Set `neofeeder.apiBaseUrl` to an unreachable URL in `.env`, attempt login | Display "Unable to connect to the authentication server. Please try again later." | ✅ PASS — connection error message displayed |
 | 4.6 | **Successful login** | Configure correct API URL, submit valid Neo Feeder credentials | Redirect to `/dashboard`, display "Welcome, [username]" | ✅ PASS — redirects to `/index.php/dashboard` with welcome message |
@@ -142,30 +142,8 @@ Tests executed on `php spark serve` at `http://localhost:8080`.
 
 ### Notes
 
-**4.3 — Empty field submission:**
-HTML `required` attributes prevent form submission with empty fields. Additionally, the CSRF filter blocks POST requests without a valid token. To verify the server-side validation, use this two-step script that first extracts the CSRF token:
-
-```js
-// Browser console — run to test empty field validation via CSRF-aware fetch:
-fetch('/login').then(r => r.text()).then(html => {
-  const m = html.match(/<input type="hidden" name="csrf_test_name" value="([^"]+)"\s*\/?>/);
-  if (!m) return console.log('❌ FAIL — could not find CSRF token');
-  const token = m[1];
-  fetch('/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'csrf_test_name=' + encodeURIComponent(token) + '&username=&password='
-  }).then(r => r.text()).then(html2 => {
-    if (html2.includes('Please enter your username and password') || html2.includes('enter your username')) {
-      console.log('✅ PASS — empty field validation triggered');
-    } else {
-      console.log('❌ FAIL');
-    }
-  });
-});
-```
-
-Alternatively, via DevTools: remove the `required` attribute from both `<input>` fields and submit the form normally — the CSRF token is already included in the form.
+**4.3 — Empty field validation:**
+HTML `required` attributes prevent normal form submission with empty fields, so verification used a CSRF-aware `fetch()` script (extracts token from page → POSTs empty fields with token). Also verified by removing `required` via DevTools and submitting the form — both show "Please enter your username and password."
 ---
 
 ## Traceability
@@ -192,10 +170,9 @@ Alternatively, via DevTools: remove the `required` attribute from both `<input>`
 
 All automated verification steps (routing, syntax, service registration) pass without error. The `ini_set()` warning observed during CLI testing of Auth service is a known CI4 testing environment artifact -- it does not affect web runtime behavior.
 
-### Manual Checks: 9/10 PASS, 1 untested
+### Manual Checks: 10/10 PASS
 
-Nine of ten browser-based test scenarios pass. One scenario remains untested:
-- **4.3** (empty field validation) — HTML `required` blocks browser submission; verify via CSRF-aware `fetch()` script in §Notes
+All ten browser-based test scenarios pass. The final scenario (4.3 — empty field validation) was verified via CSRF-aware fetch and by removing `required` attributes via DevTools.
 
 ### Minor Observations
 
@@ -211,3 +188,4 @@ Nine of ten browser-based test scenarios pass. One scenario remains untested:
 | 1.0 | 2026-07-10 | implement-orchestrator (big-pickle) | Initial verification report for TASK-018 |
 | 1.1 | 2026-07-10 | Operator | Manual test results: 8/10 PASS, 2 untested; added autocomplete fix note, `index.php` note |
 | 1.2 | 2026-07-10 | implement-orchestrator | 4.10 confirmed PASS; updated 4.3 test script with CSRF token extraction; summary: 9/10 PASS |
+| 1.3 | 2026-07-10 | implement-orchestrator | 4.3 confirmed PASS (CSRF-aware fetch + DevTools); final summary: **10/10 PASS** |
