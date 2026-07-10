@@ -1,8 +1,8 @@
 ---
 title: BASE - Login Feature -- End-to-End Verification Report
-status: draft
+status: approved
 date: 2026-07-10
-version: 1.0
+version: 1.1
 task-reference: TASK-018
 ---
 
@@ -10,7 +10,7 @@ task-reference: TASK-018
 
 **Task**: TASK-018 | Verify end-to-end login flow  
 **Date**: 2026-07-10  
-**Status**: Verification Complete (automated checks); Manual verification pending
+**Status**: ✅ Automated checks PASS · Manual tests: 8/10 PASS, 2 untested
 
 ---
 
@@ -21,7 +21,7 @@ task-reference: TASK-018
 | 1. Route Listing | ✅ PASS |
 | 2. PHP Syntax Check | ✅ PASS (all 16 files) |
 | 3. Service Registration | ✅ PASS |
-| 4. Manual Browser Verification | ⏳ Pending (see below) |
+| 4. Manual Browser Verification | ✅ 8/10 PASS (2 untested — see §4) |
 
 ---
 
@@ -115,12 +115,12 @@ task-reference: TASK-018
 
 ---
 
-## 4. Manual Browser Verification (Pending)
+## 4. Manual Browser Verification
 
-These steps require a running web server and browser. Documented here for manual execution.
+Tests executed on `php spark serve` at `http://localhost:8080`.
 
 ### Prerequisites
-- Web server running (e.g., `php spark serve`)
+- Web server running (`php spark serve`)
 - Browser with developer tools access
 - Valid Neo Feeder credentials for success test
 - `.env` configured with correct Neo Feeder API URL
@@ -129,16 +129,38 @@ These steps require a running web server and browser. Documented here for manual
 
 | # | Scenario | Steps | Expected Result | Status |
 |---|----------|-------|-----------------|--------|
-| 4.1 | **Unauthenticated access to protected route** | Navigate to `GET /dashboard` (no session cookie) | Redirect to `GET /login` without flashdata message | ⏳ Pending |
-| 4.2 | **Login page rendering** | Navigate to `GET /login` | AdminLTE-styled page with email input, password input, CSRF hidden field, Login button | ⏳ Pending |
-| 4.3 | **Empty field validation** | Submit POST `/login` with empty username and password | Display "Please enter your username and password." Error message shown, no API call made | ⏳ Pending |
-| 4.4 | **Invalid credentials** | Submit POST `/login` with deliberately invalid username/password | Display "Login failed. Please check your credentials." No session created | ⏳ Pending |
-| 4.5 | **Connection failure** | Set `neofeeder.apiBaseUrl` to an unreachable URL in `.env`, attempt login | Display "Unable to connect to the authentication server. Please try again later." | ⏳ Pending |
-| 4.6 | **Successful login** | Configure correct API URL, submit valid Neo Feeder credentials | Redirect to `/dashboard`, display "Welcome, [username]" | ⏳ Pending |
-| 4.7 | **Protected route access (authenticated)** | While logged in, navigate to `/dashboard` | Access allowed, dashboard renders with welcome message | ⏳ Pending |
-| 4.8 | **Authenticated user at /login** | While logged in, navigate to `/login` | Redirect to `/dashboard` | ⏳ Pending |
-| 4.9 | **Logout** | Click Logout button (POST `/logout`) | Redirect to `/login`. Subsequent `/dashboard` access redirects to `/login` (no flashdata) | ⏳ Pending |
-| 4.10 | **Session timeout detection** | After logout, manually set `base_auth_indicator` cookie, access `/dashboard` | Redirect to `/login` with "Your session has expired. Please log in again." flashdata, cookie cleared | ⏳ Pending |
+| 4.1 | **Unauthenticated access to protected route** | Navigate to `GET /dashboard` (no session cookie) | Redirect to `GET /login` without flashdata message | ✅ PASS — redirects to `/index.php/login` |
+| 4.2 | **Login page rendering** | Navigate to `GET /login` | AdminLTE-styled page with email input, password input, CSRF hidden field, Login button | ✅ PASS — AdminLTE page renders with all elements |
+| 4.3 | **Empty field validation** | Submit POST `/login` with empty username and password | Display "Please enter your username and password." Error message shown, no API call made | ⏳ Not tested — browser `required` attribute blocks empty submission; use `curl` or fetch API to test |
+| 4.4 | **Invalid credentials** | Submit POST `/login` with deliberately invalid username/password | Display "Login failed. Please check your credentials." No session created | ✅ PASS — error message displayed |
+| 4.5 | **Connection failure** | Set `neofeeder.apiBaseUrl` to an unreachable URL in `.env`, attempt login | Display "Unable to connect to the authentication server. Please try again later." | ✅ PASS — connection error message displayed |
+| 4.6 | **Successful login** | Configure correct API URL, submit valid Neo Feeder credentials | Redirect to `/dashboard`, display "Welcome, [username]" | ✅ PASS — redirects to `/index.php/dashboard` with welcome message |
+| 4.7 | **Protected route access (authenticated)** | While logged in, navigate to `/dashboard` | Access allowed, dashboard renders with welcome message | ✅ PASS — dashboard loads correctly |
+| 4.8 | **Authenticated user at /login** | While logged in, navigate to `/login` | Redirect to `/dashboard` | ✅ PASS — redirects to `/index.php/dashboard` |
+| 4.9 | **Logout** | Click Logout button (POST `/logout`) | Redirect to `/login`. Subsequent `/dashboard` access redirects to `/login` (no flashdata) | ✅ PASS — session destroyed, protected routes redirect to login |
+| 4.10 | **Session timeout detection** | After logout, manually set `prior_auth` cookie, access `/dashboard` | Redirect to `/login` with "Your session has expired. Please log in again." flashdata, cookie cleared | ⏳ Not tested — requires manually creating the cookie via DevTools (see §4.10 note) |
+
+### Notes on Untested Scenarios
+
+**4.3 — Empty field submission:**
+HTML `required` attributes prevent form submission with empty fields. To verify the server-side validation, use:
+```js
+// Browser console:
+fetch('/index.php/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  body: 'username=&password='
+}).then(r => r.text()).then(html => {
+  console.log(html.includes('enter your username') ? '✅ PASS' : '❌ FAIL')
+})
+```
+
+**4.10 — Session timeout via prior-auth cookie:**
+1. Log in, then open DevTools → Application → Cookies → `http://localhost:8080`
+2. Copy the `prior_auth` cookie value
+3. Log out (this clears the session)
+4. Re-create the `prior_auth` cookie with the copied value
+5. Visit `/dashboard` — expected: "Your session has expired. Please log in again." + redirect to `/login`
 
 ---
 
@@ -166,9 +188,16 @@ These steps require a running web server and browser. Documented here for manual
 
 All automated verification steps (routing, syntax, service registration) pass without error. The `ini_set()` warning observed during CLI testing of Auth service is a known CI4 testing environment artifact -- it does not affect web runtime behavior.
 
-### Manual Checks: Pending execution.
+### Manual Checks: 8/10 PASS, 2 untested
 
-All 10 browser-based test scenarios require manual execution with a running web server and valid Neo Feeder credentials. See section 4 above for detailed test procedures.
+Eight of ten browser-based test scenarios pass. Two scenarios remain untested:
+- **4.3** (empty field validation) — HTML `required` blocks browser submission; can be verified via `fetch()`/`curl`
+- **4.10** (session timeout detection) — requires manually setting the `prior_auth` cookie via DevTools
+
+### Minor Observations
+
+- **`index.php` in URLs** — `php spark serve` does not process `.htaccess`. The `index.php` segment is cosmetic on the built-in server; clean URLs work automatically when deployed to Apache. To remove in dev, switch to XAMPP Apache or set `$indexPage = ''` in `app/Config/App.php` (Apache only).
+- **Console warning** — Browser warned about missing `autocomplete` attributes on email/password inputs. Fixed by adding `autocomplete="email"` and `autocomplete="current-password"` to the login form.
 
 ---
 
@@ -177,3 +206,4 @@ All 10 browser-based test scenarios require manual execution with a running web 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-07-10 | implement-orchestrator (big-pickle) | Initial verification report for TASK-018 |
+| 1.1 | 2026-07-10 | Operator | Manual test results: 8/10 PASS, 2 untested; added autocomplete fix note, `index.php` note |
