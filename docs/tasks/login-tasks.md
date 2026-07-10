@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 1.0
+version: 1.1
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -336,7 +336,7 @@ Document any failures found and create issue notes for remediation.
 **Priority**: Medium
 **Traces to AC**: AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-07, AC-08, AC-09, AC-10, AC-11
 **Verification**: See step-by-step procedure above (manual and automated checks)
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-10)
 
 ---
 
@@ -383,3 +383,4 @@ Document any failures found and create issue notes for remediation.
 | 0.8 | 2026-07-10 | implement-orchestrator (big-pickle) | Fix TASK-010 description: `clearPriorAuthCookie()` and `hasPriorAuthCookie()` marked public (needed by AuthFilter TASK-012). TASK-012 complete: AuthFilter created. |
 | 0.9 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 6 complete: TASK-013 (register auth filter in Filters.php) |
 | 1.0 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 7 complete: TASK-014 (Login controller), TASK-017 (Dashboard controller + view) |
+| 1.1 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 8 complete: TASK-018 (E2E verification) -- all automated checks pass, report created |
