@@ -148,12 +148,12 @@ These steps require a running web server and browser. Documented here for manual
 |---------------------|-----------------|--------------|
 | AC-01: Login Page Renders Correctly | Route listing (GET /login) | 4.1, 4.2 |
 | AC-02: Successful Login Creates Session | Service registration (Auth::login) | 4.6 |
-| AC-03: Failed Login Shows Error | Syntax check | 4.3, 4.4, 4.5 |
+| AC-03: Failed Login Shows Error | Syntax + code review (Auth::login branches) | 4.3, 4.4, 4.5 |
 | AC-04: Authenticated User Access | Route listing (GET /dashboard) | 4.7 |
 | AC-05: Unauthenticated Redirect | Filter registration | 4.1, 4.10 |
 | AC-06: Logout Destroys Session | Route listing (POST /logout) | 4.9 |
 | AC-07: API Connection Configurable | Service registration (NeoFeeder) | 4.5 |
-| AC-08: Credentials Not Stored/Logged | Syntax check | Code review |
+| AC-08: Credentials Not Stored/Logged | — | Code review |
 | AC-09: Services Are Injectable | Service registration | — |
 | AC-10: Token Validation | Service registration (Auth::validateToken) | 4.7, 4.10 |
 | AC-11: Authenticated User at Login Redirects | Route listing | 4.8 |
