@@ -96,13 +96,13 @@ class Auth
         if ($response['error_code'] === 0 && isset($response['data']['token'])) {
             $token = $response['data']['token'];
 
+            $this->session->regenerate();
             $this->session->set('auth', [
                 'token'           => $token,
                 'username'        => $username,
                 'lastValidatedAt' => time(),
             ]);
 
-            $this->session->regenerate();
             $this->setPriorAuthCookie($username, $token);
 
             return true;
@@ -143,12 +143,13 @@ class Auth
      */
     private function setPriorAuthCookie(string $username, string $token): void
     {
-        $value = $this->encryption->encrypt($username . '|' . hash('sha256', $token));
+        $value = $this->encryption->encrypt($username . '|' . hash_hmac('sha256', $token, $this->encryption->key ?? ''));
 
         // ponytail: setcookie with array-options form avoids cookie-helper dependency
         setcookie('prior_auth', base64_encode($value), [
             'expires'  => time() + 86400, // 24 hours
             'path'     => '/',
+            'secure'   => ENVIRONMENT === 'production',
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -225,7 +226,11 @@ class Auth
      */
     public function validateToken(): bool
     {
-        $response   = $this->neoFeeder->getProfilPT($this->session->get('auth.token'));
+        $token = $this->session->get('auth.token');
+        if ($token === null) {
+            return false;
+        }
+        $response   = $this->neoFeeder->getProfilPT($token);
         $errorCode  = $response['error_code'] ?? null;
         $lastValidatedAt = $this->session->get('auth.lastValidatedAt');
         $ttl = $this->getValidationTTL();
@@ -242,6 +247,8 @@ class Auth
         }
 
         if ($errorCode === -1) {
+            // ponytail: sliding window extends indefinitely during outage.
+            // Upgrade: cap max extension to 2x TTL, or fall back to offline-mode token.
             if ($lastValidatedAt !== null && (time() - $lastValidatedAt) < $ttl) {
                 $this->session->set('auth.lastValidatedAt', time());
                 return true;
