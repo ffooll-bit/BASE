@@ -44,7 +44,7 @@
                 <?= csrf_field() ?>
 
                 <div class="input-group mb-3">
-                    <input type="email" name="username" class="form-control" placeholder="Email" required autofocus>
+                    <input type="email" name="username" class="form-control" placeholder="Email" required autofocus autocomplete="email">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-envelope"></span>
@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="input-group mb-3">
-                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required autocomplete="current-password">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
