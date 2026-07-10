@@ -2,7 +2,7 @@
 title: BASE - Login Feature -- Task Backlog
 status: approved
 date: 2026-06-18
-version: 0.9
+version: 1.0
 spec-reference: docs/specifications/login-spec.md
 plan-reference: docs/plans/login-plan.md
 ---
@@ -231,7 +231,7 @@ The `'except' => ['login*']` pattern whitelists all routes starting with `/login
 **Priority**: High
 **Traces to AC**: AC-01, AC-02, AC-03, AC-06, AC-11
 **Verification**: `php -l app/Controllers/Login.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-10)
 
 ### TASK-015 | Create login page view with AdminLTE styling
 **Description**: Create `app/Views/login/login.php` as a standalone AdminLTE 3.2 login page. The view must contain:
@@ -300,7 +300,7 @@ The Dashboard controller relies on the Auth Filter (Group 4) for route protectio
 **Priority**: High
 **Traces to AC**: AC-04
 **Verification**: `php -l app/Controllers/Dashboard.php` ; `php -l app/Views/dashboard/index.php`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-10)
 
 ### TASK-018 | Verify end-to-end login flow
 **Description**: Perform a comprehensive end-to-end verification of the complete login feature. Execute the following checks in order:
@@ -382,3 +382,4 @@ Document any failures found and create issue notes for remediation.
 | 0.7 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 4 complete: TASK-010 (login/logout), TASK-011 (isLoggedIn/validateToken) |
 | 0.8 | 2026-07-10 | implement-orchestrator (big-pickle) | Fix TASK-010 description: `clearPriorAuthCookie()` and `hasPriorAuthCookie()` marked public (needed by AuthFilter TASK-012). TASK-012 complete: AuthFilter created. |
 | 0.9 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 6 complete: TASK-013 (register auth filter in Filters.php) |
+| 1.0 | 2026-07-10 | implement-orchestrator (big-pickle) | Batch 7 complete: TASK-014 (Login controller), TASK-017 (Dashboard controller + view) |
