@@ -2,7 +2,7 @@
 title: AdminLTE 3 to AdminLTE 4 Migration
 status: draft
 date: 2026-07-11
-version: 0.1
+version: 0.2
 ---
 
 ## Introduction
@@ -230,3 +230,4 @@ A build script (npm script or shell script) may be used for this step.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1 | 2026-07-11 | sdd-specify (big-pickle) | Initial draft |
+| 0.2 | 2026-07-11 | Operator | Fix line wrapping in descriptions — no mid-sentence newlines |
