@@ -64,6 +64,12 @@ class Format extends BaseConfig
     ];
 
     /**
+     * jsonEncodeDepth is the depth for json_encode() calls.
+     * Default: 512 (same as PHP's default).
+     */
+    public int $jsonEncodeDepth = 512;
+
+    /**
      * A Factory method to return the appropriate formatter for the given mime type.
      *
      * @return FormatterInterface
