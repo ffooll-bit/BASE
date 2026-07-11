@@ -7,17 +7,9 @@ version: 0.1
 
 ## Introduction
 
-BASE is a CodeIgniter 4 web application using AdminLTE 3.2 (Composer),
-Bootstrap 4.6.2 (CDN), jQuery 3.6 (CDN), Font Awesome 5.15.4 (CDN), and
-Icheck Bootstrap 3.0.1 (CDN, login page only). This specification defines the
-migration of the UI layer from AdminLTE 3 to AdminLTE 4, which carries
-Bootstrap 5.3 and Font Awesome 6 as dependencies and uses vanilla JavaScript
-(no jQuery).
+BASE is a CodeIgniter 4 web application using AdminLTE 3.2 (Composer), Bootstrap 4.6.2 (CDN), jQuery 3.6 (CDN), Font Awesome 5.15.4 (CDN), and Icheck Bootstrap 3.0.1 (CDN, login page only). This specification defines the migration of the UI layer from AdminLTE 3 to AdminLTE 4, which carries Bootstrap 5.3 and Font Awesome 6 as dependencies and uses vanilla JavaScript (no jQuery).
 
-The migration is strictly a UI template change -- no backend logic,
-controllers, models, routes, or authentication code will be modified. Only 5
-views are affected: login page, layout header, layout sidebar, layout footer,
-and dashboard index page.
+The migration is strictly a UI template change -- no backend logic, controllers, models, routes, or authentication code will be modified. Only 5 views are affected: login page, layout header, layout sidebar, layout footer, and dashboard index page.
 
 ### Problem Statement
 
@@ -27,8 +19,7 @@ AdminLTE 3 is in maintenance mode. AdminLTE 4 provides:
 - Font Awesome 6 (latest icon set)
 - Improved component structure and accessibility
 
-Continuing on AdminLTE 3 means accumulating tech debt and missing security
-and compatibility updates from the Bootstrap/AdminLTE ecosystem.
+Continuing on AdminLTE 3 means accumulating tech debt and missing security and compatibility updates from the Bootstrap/AdminLTE ecosystem.
 
 ### Scope
 
@@ -44,54 +35,32 @@ This specification covers:
 
 ### FR-01: Login Page Migration
 **Priority**: High
-**Description**: Migrate `app/Views/login/login.php` from AdminLTE 3 login page
-markup to AdminLTE 4 login page markup. The page is a standalone full HTML
-document (not loaded inside the layout wrapper). It must use AdminLTE 4 CSS
-classes, Bootstrap 5 form markup, and Font Awesome 6 icons. The login form
-must POST to `/login` with CSRF token. Flash error/message alerts must use
-Bootstrap 5 alert dismissal (`data-bs-dismiss` instead of `data-dismiss`).
-No jQuery or icheck-bootstrap shall be included.
+**Description**: Migrate `app/Views/login/login.php` from AdminLTE 3 login page markup to AdminLTE 4 login page markup. The page is a standalone full HTML document (not loaded inside the layout wrapper). It must use AdminLTE 4 CSS classes, Bootstrap 5 form markup, and Font Awesome 6 icons. The login form must POST to `/login` with CSRF token. Flash error/message alerts must use Bootstrap 5 alert dismissal (`data-bs-dismiss` instead of `data-dismiss`). No jQuery or icheck-bootstrap shall be included.
 **Traces to**: AC-01, AC-02
 
 ### FR-02: Layout Header Migration
 **Priority**: High
-**Description**: Migrate `app/Views/layout/header.php` from AdminLTE 3 navbar
-markup to AdminLTE 4 navbar markup. Must include the pushmenu sidebar toggle
-button, the application branding, and a logout button. Must use Bootstrap 5
-classes and data attributes. The header opens the HTML document (DOCTYPE, html,
-head with CSS links, body tag, wrapper div).
+**Description**: Migrate `app/Views/layout/header.php` from AdminLTE 3 navbar markup to AdminLTE 4 navbar markup. Must include the pushmenu sidebar toggle button, the application branding, and a logout button. Must use Bootstrap 5 classes and data attributes. The header opens the HTML document (DOCTYPE, html, head with CSS links, body tag, wrapper div).
 **Traces to**: AC-03
 
 ### FR-03: Layout Sidebar Migration
 **Priority**: High
-**Description**: Migrate `app/Views/layout/sidebar.php` from AdminLTE 3 sidebar
-markup to AdminLTE 4 sidebar markup. Must include the user panel (showing
-authenticated username), navigation menu items, and Bootstrap 5 data attributes
-for collapse/accordion behavior. The sidebar opens the content-wrapper div.
+**Description**: Migrate `app/Views/layout/sidebar.php` from AdminLTE 3 sidebar markup to AdminLTE 4 sidebar markup. Must include the user panel (showing authenticated username), navigation menu items, and Bootstrap 5 data attributes for collapse/accordion behavior. The sidebar opens the content-wrapper div.
 **Traces to**: AC-04
 
 ### FR-04: Layout Footer Migration
 **Priority**: High
-**Description**: Migrate `app/Views/layout/footer.php` from AdminLTE 3 footer
-markup to AdminLTE 4 footer markup. Must close the content-wrapper div, render
-the AdminLTE 4 footer, close the wrapper, and load JavaScript assets (Bootstrap
-5 bundle, AdminLTE 4 JS) from local npm-built paths (public/). Must close the
-HTML document.
+**Description**: Migrate `app/Views/layout/footer.php` from AdminLTE 3 footer markup to AdminLTE 4 footer markup. Must close the content-wrapper div, render the AdminLTE 4 footer, close the wrapper, and load JavaScript assets (Bootstrap 5 bundle, AdminLTE 4 JS) from local npm-built paths (public/). Must close the HTML document.
 **Traces to**: AC-05
 
 ### FR-05: Dashboard Index Migration
 **Priority**: High
-**Description**: Migrate `app/Views/dashboard/index.php` from AdminLTE 3 content
-markup to AdminLTE 4 content markup. Must render inside the content-wrapper
-using Bootstrap 5 card components. No functional changes -- purely visual.
+**Description**: Migrate `app/Views/dashboard/index.php` from AdminLTE 3 content markup to AdminLTE 4 content markup. Must render inside the content-wrapper using Bootstrap 5 card components. No functional changes -- purely visual.
 **Traces to**: AC-06
 
 ### FR-06: Composer Dependency Replacement
 **Priority**: High
-**Description**: Remove the Composer dependency `almasaeed2010/adminlte ~3.2`
-from `composer.json`. Create or update `package.json` with npm dependencies:
-AdminLTE 4 (provides Bootstrap 5.3), and Font Awesome 6. The npm install must
-succeed and populate `node_modules/` with the required packages.
+**Description**: Remove the Composer dependency `almasaeed2010/adminlte ~3.2` from `composer.json`. Create or update `package.json` with npm dependencies: AdminLTE 4 (provides Bootstrap 5.3), and Font Awesome 6. The npm install must succeed and populate `node_modules/` with the required packages.
 **Traces to**: AC-07
 
 ### FR-07: NPM Asset Setup
@@ -100,15 +69,12 @@ succeed and populate `node_modules/` with the required packages.
 - `admin-lte` (AdminLTE 4, includes Bootstrap 5.3 JS/CSS)
 - `@fortawesome/fontawesome-free` (Font Awesome 6)
 
-No other runtime dependencies shall be added. jQuery must not appear in
-`package.json` dependencies.
+No other runtime dependencies shall be added. jQuery must not appear in `package.json` dependencies.
 **Traces to**: AC-07
 
 ### FR-08: Asset Bundling to Public Directory
 **Priority**: High
-**Description**: Copy or bundle required CSS and JS assets from `node_modules/`
-into the `public/` directory so they are served by the web server. The
-following assets must be available:
+**Description**: Copy or bundle required CSS and JS assets from `node_modules/` into the `public/` directory so they are served by the web server. The following assets must be available:
 - AdminLTE CSS (`public/adminlte/css/adminlte.min.css`)
 - AdminLTE JS (`public/adminlte/js/adminlte.min.js`)
 - Bootstrap 5 CSS (`public/bootstrap/css/bootstrap.min.css`)
@@ -123,47 +89,32 @@ A build script (npm script or shell script) may be used for this step.
 
 ### NFR-01: Remove All jQuery
 **Priority**: High
-**Description**: No jQuery shall be loaded or referenced in any of the 5 views.
-AdminLTE 4 uses vanilla JavaScript natively. No jQuery plugins (Bootstrap JS
-plugins, icheck, etc.) shall be included.
+**Description**: No jQuery shall be loaded or referenced in any of the 5 views. AdminLTE 4 uses vanilla JavaScript natively. No jQuery plugins (Bootstrap JS plugins, icheck, etc.) shall be included.
 **Traces to**: AC-01, AC-03, AC-04, AC-09, AC-10
 
 ### NFR-02: No Backend Logic Changes
 **Priority**: High
-**Description**: Controllers, models, routes, authentication logic, sessions,
-flashdata handling, and all other backend code shall remain untouched. The
-migration is limited to view files and asset management (composer.json,
-package.json, build scripts).
+**Description**: Controllers, models, routes, authentication logic, sessions, flashdata handling, and all other backend code shall remain untouched. The migration is limited to view files and asset management (composer.json, package.json, build scripts).
 **Traces to**: AC-02, AC-06
 
 ### NFR-03: Visual Consistency
 **Priority**: High
-**Description**: All migrated views shall follow AdminLTE 4's default markup,
-CSS class names, and component structure. The appearance shall match AdminLTE
-4's default look, not a retro-fit of the AdminLTE 3 appearance. Custom CSS
-beyond what AdminLTE 4 provides by default is out of scope.
+**Description**: All migrated views shall follow AdminLTE 4's default markup, CSS class names, and component structure. The appearance shall match AdminLTE 4's default look, not a retro-fit of the AdminLTE 3 appearance. Custom CSS beyond what AdminLTE 4 provides by default is out of scope.
 **Traces to**: AC-11
 
 ### NFR-04: No New Features
 **Priority**: High
-**Description**: No new functionality shall be introduced. The 5 views shall
-preserve all existing behavior (login form submit, flash messages, navigation,
-logout). Only the markup and asset references change.
+**Description**: No new functionality shall be introduced. The 5 views shall preserve all existing behavior (login form submit, flash messages, navigation, logout). Only the markup and asset references change.
 **Traces to**: AC-02, AC-03, AC-04, AC-05, AC-06
 
 ### NFR-05: Remove Icheck Bootstrap
 **Priority**: Medium
-**Description**: The icheck-bootstrap dependency (used on the login page for
-"Remember Me" checkbox styling) shall be removed. Bootstrap 5 native checkbox
-styling replaces it.
+**Description**: The icheck-bootstrap dependency (used on the login page for "Remember Me" checkbox styling) shall be removed. Bootstrap 5 native checkbox styling replaces it.
 **Traces to**: AC-01
 
 ### NFR-06: Font Awesome Upgrade
 **Priority**: Medium
-**Description**: Font Awesome shall be upgraded from version 5.15.4 to version
-6.x (as provided by `@fortawesome/fontawesome-free`), aligned with AdminLTE
-4's dependency. All icon class references in the 5 views shall use the v6
-syntax (`fas`, `far`, `fab` prefix conventions remain compatible).
+**Description**: Font Awesome shall be upgraded from version 5.15.4 to version 6.x (as provided by `@fortawesome/fontawesome-free`), aligned with AdminLTE 4's dependency. All icon class references in the 5 views shall use the v6 syntax (`fas`, `far`, `fab` prefix conventions remain compatible).
 **Traces to**: AC-01, AC-03, AC-04
 
 ## Acceptance Criteria
@@ -243,12 +194,10 @@ syntax (`fas`, `far`, `fab` prefix conventions remain compatible).
 - `public/fontawesome/webfonts/` (directory with webfont files)
 
 ### AC-09: No jQuery in Any View (traces to NFR-01)
-**Given** each of the 5 views (`login.php`, `header.php`, `sidebar.php`,
-`footer.php`, `dashboard/index.php`)
+**Given** each of the 5 views (`login.php`, `header.php`, `sidebar.php`, `footer.php`, `dashboard/index.php`)
 **When** the view is rendered
 **Then** the HTML output shall contain NO `<script` tag loading jQuery
-**And** no JavaScript code referencing `$()` or `jQuery` from the AdminLTE
-template
+**And** no JavaScript code referencing `$()` or `jQuery` from the AdminLTE template
 
 ### AC-10: No Console JS Errors (traces to NFR-01)
 **Given** an authenticated user viewing any layout page
@@ -262,20 +211,17 @@ template
 **Given** an authenticated user
 **When** they view any of the 5 pages
 **Then** the visual appearance shall match AdminLTE 4's default styling
-**And** not resemble AdminLTE 3's look (different sidebar, navbar, card
-component styles)
+**And** not resemble AdminLTE 3's look (different sidebar, navbar, card component styles)
 
 ## Out of Scope
 
-- Any views or pages beyond the 5 listed (login, header, sidebar, footer,
-  dashboard/index)
+- Any views or pages beyond the 5 listed (login, header, sidebar, footer, dashboard/index)
 - New features or functionality changes
 - Backend, controller, model, or route changes
 - Custom CSS beyond what AdminLTE 4 provides by default
 - Unit tests or E2E tests (manual visual verification only)
 - CI/CD pipeline changes
-- Migration of any JavaScript plugin logic present in original AdminLTE 3
-  views beyond what AdminLTE 4 provides natively
+- Migration of any JavaScript plugin logic present in original AdminLTE 3 views beyond what AdminLTE 4 provides natively
 - Performance optimization beyond what ships with AdminLTE 4 defaults
 - Accessibility audit or remediation
 
