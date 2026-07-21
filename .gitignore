@@ -100,6 +100,10 @@ _modules/*
 .idea/
 *.iml
 
+# SDD Workflow Output
+audit/
+reports/
+
 # Netbeans
 nbproject/
 build/
