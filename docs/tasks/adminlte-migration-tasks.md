@@ -2,7 +2,7 @@
 title: adminlte-migration -- Task Backlog
 status: draft
 date: 2026-07-21
-version: 0.1
+version: 0.2
 spec-reference: docs/specifications/adminlte-migration-spec.md
 plan-reference: docs/plans/adminlte-migration-plan.md
 ---
@@ -23,7 +23,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-001
 **Priority**: High
 **Traces to AC**: AC-08
-**Verification**: `cd base && npm run build && test -f public/adminlte/css/adminlte.min.css && test -f public/adminlte/js/adminlte.min.js && test -f public/bootstrap/css/bootstrap.min.css && test -f public/bootstrap/js/bootstrap.bundle.min.js && test -f public/fontawesome/css/all.min.css && test -f (Get-ChildItem public/fontawesome/webfonts/*).Count -gt 0`
+**Verification**: `npm run build; if ($?) { $files='public/adminlte/css/adminlte.min.css','public/adminlte/js/adminlte.min.js','public/bootstrap/css/bootstrap.min.css','public/bootstrap/js/bootstrap.bundle.min.js','public/fontawesome/css/all.min.css'; $ok=$true; $files.ForEach({ if (-not (Test-Path $_)) { Write-Host "MISSING: $_"; $ok=$false } }); if ((Get-ChildItem public/fontawesome/webfonts/*).Count -eq 0) { Write-Host 'MISSING: webfonts/ empty'; $ok=$false }; if ($ok) { Write-Host 'All assets present' } }`
 **Status**: [ ] Not started
 
 ## Group 2: Login Page Migration
@@ -90,3 +90,4 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 | Version | Timestamp | Editor | Changes |
 |---------|-----------|--------|---------|
 | 0.1 | 2026-07-21 10:21:57 | sdd-tasks (deepseek-v4-flash-free) | Initial draft |
+| 0.2 | 2026-07-21 10:25:54 | organizer (deepseek-v4-flash-free) | Review: fix TASK-002 verification command to pure PowerShell for Windows compatibility (was mixed Unix/PowerShell) |
