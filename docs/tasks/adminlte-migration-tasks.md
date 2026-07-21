@@ -2,7 +2,7 @@
 title: adminlte-migration -- Task Backlog
 status: draft
 date: 2026-07-21
-version: 0.2
+version: 0.3
 spec-reference: docs/specifications/adminlte-migration-spec.md
 plan-reference: docs/plans/adminlte-migration-plan.md
 ---
@@ -15,7 +15,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: None
 **Priority**: High
 **Traces to AC**: AC-07
-**Verification**: `cd base && grep -q '"admin-lte"' package.json && grep -q '"@fortawesome/fontawesome-free"' package.json && test -d node_modules/admin-lte && test -d node_modules/bootstrap && test -d node_modules/@fortawesome/fontawesome-free && ! ls node_modules | grep -qi jquery`
+**Verification**: `(Select-String -Path package.json -Pattern '"admin-lte"' -Quiet) -and (Select-String -Path package.json -Pattern '"@fortawesome/fontawesome-free"' -Quiet) -and (Test-Path node_modules/admin-lte) -and (Test-Path node_modules/bootstrap) -and (Test-Path node_modules/@fortawesome/fontawesome-free) -and -not (Get-ChildItem node_modules | Where-Object Name -like '*jquery*')`
 **Status**: [ ] Not started
 
 ### TASK-002 | Create Asset Build Script and Populate Public Directory
@@ -34,7 +34,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-002
 **Priority**: High
 **Traces to AC**: AC-01, AC-02
-**Verification**: `cd base && grep -q 'adminlte.min.css' app/Views/login/login.php && grep -q 'data-bs-dismiss' app/Views/login/login.php && grep -q 'csrf' app/Views/login/login.php && ! grep -qi 'jquery\|icheck' app/Views/login/login.php`
+**Verification**: `(Select-String -Path app/Views/login/login.php -Pattern 'adminlte\.min\.css' -Quiet) -and (Select-String -Path app/Views/login/login.php -Pattern 'data-bs-dismiss' -Quiet) -and (Select-String -Path app/Views/login/login.php -Pattern 'csrf' -Quiet) -and -not (Select-String -Path app/Views/login/login.php -Pattern 'jquery|icheck' -Quiet)`
 **Status**: [ ] Not started
 
 ## Group 3: Layout Views Migration
@@ -45,7 +45,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-003
 **Priority**: High
 **Traces to AC**: AC-03
-**Verification**: `cd base && grep -q 'adminlte.min.css' app/Views/layout/header.php && grep -q 'data-bs-toggle' app/Views/layout/header.php && grep -q 'layout-fixed' app/Views/layout/header.php && ! grep -qi 'jquery' app/Views/layout/header.php`
+**Verification**: `(Select-String -Path app/Views/layout/header.php -Pattern 'adminlte\.min\.css' -Quiet) -and (Select-String -Path app/Views/layout/header.php -Pattern 'data-bs-toggle' -Quiet) -and (Select-String -Path app/Views/layout/header.php -Pattern 'layout-fixed' -Quiet) -and -not (Select-String -Path app/Views/layout/header.php -Pattern 'jquery' -Quiet)`
 **Status**: [ ] Not started
 
 ### TASK-005 | Migrate Sidebar View to AdminLTE 4
@@ -53,7 +53,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-003
 **Priority**: High
 **Traces to AC**: AC-04
-**Verification**: `cd base && grep -q 'nav-sidebar' app/Views/layout/sidebar.php && grep -q 'data-bs-toggle.*collapse' app/Views/layout/sidebar.php && grep -q 'user-panel' app/Views/layout/sidebar.php && ! grep -qi 'jquery' app/Views/layout/sidebar.php`
+**Verification**: `(Select-String -Path app/Views/layout/sidebar.php -Pattern 'nav-sidebar' -Quiet) -and (Select-String -Path app/Views/layout/sidebar.php -Pattern 'data-bs-toggle.*collapse' -Quiet) -and (Select-String -Path app/Views/layout/sidebar.php -Pattern 'user-panel' -Quiet) -and -not (Select-String -Path app/Views/layout/sidebar.php -Pattern 'jquery' -Quiet)`
 **Status**: [ ] Not started
 
 ### TASK-006 | Migrate Footer View to AdminLTE 4
@@ -61,7 +61,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-003
 **Priority**: High
 **Traces to AC**: AC-05
-**Verification**: `cd base && grep -q 'adminlte.min.js' app/Views/layout/footer.php && grep -q 'bootstrap.bundle.min.js' app/Views/layout/footer.php && ! grep -qi 'jquery\|icheck' app/Views/layout/footer.php`
+**Verification**: `(Select-String -Path app/Views/layout/footer.php -Pattern 'adminlte\.min\.js' -Quiet) -and (Select-String -Path app/Views/layout/footer.php -Pattern 'bootstrap\.bundle\.min\.js' -Quiet) -and -not (Select-String -Path app/Views/layout/footer.php -Pattern 'jquery|icheck' -Quiet)`
 **Status**: [ ] Not started
 
 ## Group 4: Dashboard Migration
@@ -72,7 +72,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-006
 **Priority**: High
 **Traces to AC**: AC-06
-**Verification**: `cd base && grep -q 'content-wrapper' app/Views/dashboard/index.php && grep -q 'card' app/Views/dashboard/index.php && grep -q '<?=.*\$username' app/Views/dashboard/index.php`
+**Verification**: `(Select-String -Path app/Views/dashboard/index.php -Pattern 'content-wrapper' -Quiet) -and (Select-String -Path app/Views/dashboard/index.php -Pattern '\bcard\b' -Quiet) -and (Select-String -Path app/Views/dashboard/index.php -Pattern '\$username' -Quiet)`
 **Status**: [ ] Not started
 
 ## Group 5: Verification and Polish
@@ -83,7 +83,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Dependencies**: TASK-007
 **Priority**: High
 **Traces to AC**: AC-09, AC-10, AC-11
-**Verification**: `cd base && $views=@('app/Views/login/login.php','app/Views/layout/header.php','app/Views/layout/sidebar.php','app/Views/layout/footer.php','app/Views/dashboard/index.php'); $fail=$false; foreach ($v in $views) { if (Select-String -Path $v -Pattern 'jQuery|\$\(|jquery\.' -Quiet) { Write-Host "FAIL: jQuery ref in $v"; $fail=$true } }; if (-not $fail) { Write-Host 'PASS: No jQuery in any view' }`
+**Verification**: `$views='app/Views/login/login.php','app/Views/layout/header.php','app/Views/layout/sidebar.php','app/Views/layout/footer.php','app/Views/dashboard/index.php'; $ok=$true; $views.ForEach({ if (Select-String -Path $_ -Pattern 'jQuery|\$\(|jquery\.' -Quiet) { Write-Host "FAIL: jQuery ref in $_"; $ok=$false } }); if ($ok) { Write-Host 'PASS: No jQuery in any view' }`
 **Status**: [ ] Not started
 
 ## Changelog
@@ -91,3 +91,4 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 |---------|-----------|--------|---------|
 | 0.1 | 2026-07-21 10:21:57 | sdd-tasks (deepseek-v4-flash-free) | Initial draft |
 | 0.2 | 2026-07-21 10:25:54 | organizer (deepseek-v4-flash-free) | Review: fix TASK-002 verification command to pure PowerShell for Windows compatibility (was mixed Unix/PowerShell) |
+| 0.3 | 2026-07-21 10:29:25 | organizer (deepseek-v4-flash-free) | Review again: fix all remaining verification commands (TASK-001, TASK-003, TASK-004, TASK-005, TASK-006, TASK-007, TASK-008) from Unix/bash to pure PowerShell for Windows consistency; remove erroneous 'cd base &&' prefixes |
