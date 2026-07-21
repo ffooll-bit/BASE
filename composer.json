@@ -11,7 +11,6 @@
     },
     "require": {
         "php": "^8.2",
-        "almasaeed2010/adminlte": "~3.2",
         "codeigniter4/framework": "^4.0"
     },
     "require-dev": {
