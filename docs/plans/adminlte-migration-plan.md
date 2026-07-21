@@ -2,7 +2,7 @@
 title: adminlte-migration -- Technical Plan
 status: draft
 date: 2026-07-21
-version: 0.1
+version: 0.2
 spec-reference: docs/specifications/adminlte-migration-spec.md
 ---
 
@@ -59,7 +59,7 @@ graph TD
 - **Interfaces**: Receives PHP `$flashMessage` (string), `$flashType` (string: "error"|"message"), `$config` (for CSRF). POSTs to `/login`.
 
 ### 2. Layout Header View (`header.php`)
-- **Responsibility**: Opens the HTML document (`<!DOCTYPE html>`, `<html>`, `<head>` with CSS link tags, `<body class="hold-transition sidebar-mini">`, `<div class="wrapper">`). Renders AdminLTE 4 navbar with pushmenu sidebar toggle button, application branding text, and logout button.
+- **Responsibility**: Opens the HTML document (`<!DOCTYPE html>`, `<html>`, `<head>` with CSS link tags, `<body class="layout-fixed">`, `<div class="wrapper">`). Renders AdminLTE 4 navbar with pushmenu sidebar toggle button, application branding text, and logout button.
 - **Key changes from AdminLTE 3**: Replace AdminLTE 3 `main-header` / `navbar` classes with AdminLTE 4 `navbar` structure. Use `data-bs-toggle` instead of `data-toggle`. Replace FA 5 CDN link with local FA 6 CSS. Remove jQuery CDN script. Add local bootstrap CSS and adminlte CSS links.
 - **Dependencies**: Bootstrap 5 CSS (from `public/bootstrap/css/`), Font Awesome 6 CSS (from `public/fontawesome/css/`), AdminLTE 4 CSS (from `public/adminlte/css/`).
 - **Interfaces**: Receives PHP `$username` (string) for display in logout area.
@@ -72,7 +72,7 @@ graph TD
 
 ### 4. Layout Footer View (`footer.php`)
 - **Responsibility**: Closes the `content-wrapper` div, renders the AdminLTE 4 footer bar, closes the `wrapper` div, loads JavaScript assets (Bootstrap 5 bundle JS, AdminLTE 4 JS), closes `</body></html>`.
-- **Key changes from AdminLTE 3**: Replace AdminLTE 3 footer classes (`main-footer`) with AdminLTE 4 footer. Replace CDN JS references with local copies from `public/`. Remove jQuery CDN script. Remove any icheck JS initialization. Add `adminlte.min.js` initialization (AdminLTE 4 auto-initializes via its JS).
+- **Key changes from AdminLTE 3**: Replace AdminLTE 3 footer classes (`main-footer`) with AdminLTE 4 footer. Replace CDN JS references with local copies from `public/`. Remove jQuery CDN script. Remove any icheck JS initialization. Add `adminlte.min.js` script tag (AdminLTE 4 JS initializes on DOMContentLoaded; it requires specific `data-*` attributes on navbar/sidebar elements in the header/sidebar views to function -- no manual JS init call needed).
 - **Dependencies**: Bootstrap 5 JS bundle (`public/bootstrap/js/bootstrap.bundle.min.js`), AdminLTE 4 JS (`public/adminlte/js/adminlte.min.js`).
 - **Interfaces**: No PHP variables. Renders static footer text.
 
@@ -222,3 +222,4 @@ base/
 | Version | Timestamp | Editor | Changes |
 |---------|-----------|--------|---------|
 | 0.1 | 2026-07-21 10:00:16 | sdd-plan (deepseek-v4-flash-free) | Initial technical plan draft from approved spec v0.2 |
+| 0.2 | 2026-07-21 10:05:12 | designer (deepseek-v4-flash-free) | Fix body class reference to AdminLTE 4 (hold-transition sidebar-mini -> layout-fixed). Clarify AdminLTE 4 JS initialization mechanism (data-* attributes, no manual init). |
