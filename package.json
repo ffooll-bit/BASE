@@ -1,0 +1,11 @@
+{
+    "name": "codeigniter4-appstarter",
+    "private": true,
+    "scripts": {
+        "test": "echo \"No test specified\""
+    },
+    "dependencies": {
+        "admin-lte": "^4.0",
+        "@fortawesome/fontawesome-free": "^6.0"
+    }
+}
