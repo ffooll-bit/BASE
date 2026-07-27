@@ -1,12 +1,11 @@
-    <!-- Main Sidebar Container -->
-    <aside class="main-sidebar">
-        <!-- Brand Logo -->
-        <a href="<?= base_url('dashboard') ?>" class="brand-link">
-            <span class="brand-text font-weight-light">BASE</span>
-        </a>
+    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <div class="sidebar-brand">
+            <a href="<?= base_url('dashboard') ?>" class="brand-link">
+                <span class="brand-text fw-light">BASE</span>
+            </a>
+        </div>
 
-        <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar-wrapper">
             <!-- Sidebar user panel -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
@@ -21,7 +20,7 @@
 
             <!-- Sidebar Menu -->
             <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
+                <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
                     <li class="nav-item">
                         <a href="<?= base_url('dashboard') ?>" class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -30,10 +29,7 @@
                     </li>
                 </ul>
             </nav>
-            <!-- /.sidebar-menu -->
         </div>
-        <!-- /.sidebar -->
     </aside>
 
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <main class="app-main">
