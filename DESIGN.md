@@ -290,10 +290,12 @@ Every page view starts with `app-content-header` followed by `app-content`.
                 <h3 class="mb-0"><?= esc($title) ?></h3>
             </div>
             <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="<?= base_url('dashboard') ?>">Home</a></li>
-                    <li class="breadcrumb-item active"><?= esc($title) ?></li>
-                </ol>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="<?= base_url('dashboard') ?>">Home</a></li>
+                        <li class="breadcrumb-item active"><?= esc($title) ?></li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
@@ -329,10 +331,12 @@ Use two elements in `col-sm-6`:
 
 ```html
 <div class="col-sm-6 d-flex align-items-center">
-    <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item active">Current</li>
-    </ol>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Current</li>
+        </ol>
+    </nav>
 </div>
 <div class="col-sm-6">
     <a href="#" class="btn btn-primary float-sm-end">

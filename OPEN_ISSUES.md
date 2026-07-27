@@ -100,12 +100,6 @@ Create coding standards document and tooling configuration files.
 - [ ] `.php-cs-fixer.dist.php` exists with PSR-12 ruleset
 - [ ] `.editorconfig` exists with consistent indent, charset, line endings
 
-### Output
-
-- `CODING_STANDARDS.md` — PHP (PSR-12, type hints, CI4 conventions), JS (vanilla, no jQuery), views (`esc()`, alternate syntax), CSS (Bootstrap utility-first, BEM for custom)
-- `.php-cs-fixer.dist.php` — PHP CS Fixer config
-- `.editorconfig` — indent, charset, line endings
-
 ---
 
 ## ISS-004: CHANGELOG.md — P-2
@@ -124,10 +118,6 @@ Create release history following Keep a Changelog format.
 - [ ] `CHANGELOG.md` exists with `[Unreleased]` section
 - [ ] Entry mencakup: Login Feature + AdminLTE Migration
 - [ ] Agent knows to update `[Unreleased]` every commit
-
-### Output
-
-`CHANGELOG.md` — release history with Keep a Changelog format.
 
 ---
 
