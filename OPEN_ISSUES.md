@@ -200,8 +200,7 @@ CIUnitTestCase + mocking
 
 ### Description
 
-Role-Based Access Control was removed from active project scope during
-Login Feature planning. Revisit when authorization requirements are defined.
+Role-Based Access Control was removed from active project scope during Login Feature planning. Revisit when authorization requirements are defined.
 
 ### Acceptance Criteria
 
@@ -218,10 +217,7 @@ Login Feature planning. Revisit when authorization requirements are defined.
 
 ### Description
 
-`Dashboard::index()` concatenates 4 partial views but only passes `$username`
-to `dashboard/index`. The `header.php` partial also uses `$username` (line 35),
-causing "Undefined variable $username" on every dashboard page load after
-login.
+`Dashboard::index()` concatenates 4 partial views but only passes `$username` to `dashboard/index`. The `header.php` partial also uses `$username` (line 35), causing "Undefined variable $username" on every dashboard page load after login.
 
 ### Root Cause
 
