@@ -19,7 +19,7 @@ Dua fitur utama telah selesai:
 
 | Komponen | Teknologi | Versi |
 |----------|-----------|-------|
-| Framework | CodeIgniter 4 | ^4.0 (terinstall v4.5.3) |
+| Framework | CodeIgniter 4 | ^4.0 (terinstall v4.7.4) |
 | Template UI | AdminLTE 4 | ^4.0 (Bootstrap 5) |
 | Frontend Package | npm / Node.js | - |
 | Database | MySQL / SQLite3 (testing) | - |
@@ -87,5 +87,5 @@ Endpoint: `https://neofeeder.stiem-bongaya.ac.id/ws/live2.php`
 
 ## Server Requirements
 
-- PHP version 8.1 or higher
+- PHP version 8.2 or higher
 - Extensions: intl, mbstring, json, mysqlnd, libcurl
