@@ -10,7 +10,7 @@ BASE is a CodeIgniter 4 web application that serves as a Web Service Client for 
 
 | Layer | Technology | Version | Role |
 |-------|-----------|---------|------|
-| Framework | CodeIgniter 4 | ^4.0 | MVC, routing, filters, HTTP client |
+| Framework | CodeIgniter 4 | ^4.7 | MVC, routing, filters, HTTP client |
 | Identity Provider | Neo Feeder WS API | — | Authentication & token validation |
 | UI Template | AdminLTE 4 | ^4.0 | Dashboard layout, sidebar, navbar |
 | CSS Framework | Bootstrap 5 | 5.3.x | Components, grid, utilities |

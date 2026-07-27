@@ -28,7 +28,7 @@ _None yet._
 ### Security
 _None yet._
 
-## [0.1.0] — 2026-07-27 — Initial Development Release
+## [0.1.0] - 2026-07-27 - Initial Development Release
 
 > Initial development release. Project started as a CodeIgniter 4 scaffold and evolved through Login Feature implementation and AdminLTE migration.
 
@@ -73,7 +73,7 @@ _None yet._
 - **CSRF protection:** enabled on all POST routes via CI4 CSRF filter
 - **Output escaping:** `esc()` enforced on every HTML output across all views
 - **Session fixation:** session ID regenerated on every login
-- **Secure cookies:** `Secure` and `HttpOnly` flags enabled for session cookies
+- **HTTP-only flag:** enabled on session cookies
 
 [unreleased]: https://github.com/ffooll-bit/BASE/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/ffooll-bit/BASE/compare/v0.0.0...v0.1.0
