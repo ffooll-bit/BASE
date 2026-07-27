@@ -13,11 +13,11 @@
     <!-- AdminLTE 4 Theme -->
     <link rel="stylesheet" href="<?= base_url('adminlte/css/adminlte.min.css') ?>">
 </head>
-<body class="layout-fixed">
-<div class="wrapper">
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
 
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <nav class="app-header navbar navbar-expand bg-body">
         <!-- Left navbar links -->
         <ul class="navbar-nav">
             <li class="nav-item">

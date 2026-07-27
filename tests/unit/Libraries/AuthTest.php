@@ -23,7 +23,7 @@ class AuthTest extends CIUnitTestCase
         $this->neoFeeder    = $this->createMock(NeoFeeder::class);
         $this->mockSession = $this->createMock(Session::class);
 
-        $encryption = new class implements EncrypterInterface {
+        $encryption = new class () implements EncrypterInterface {
             public string $key = 'test-key-32-chars-for-hmac!!!!!';
 
             public function encrypt($data, $params = null): string
@@ -145,7 +145,7 @@ class AuthTest extends CIUnitTestCase
 
     public function testLogoutClearsAuthSession(): void
     {
-        $this->mockSession->expects($this->once())->method('remove')->with('auth');
+        $this->mockSession->expects($this->once())->method('destroy');
 
         $this->auth->logout();
     }

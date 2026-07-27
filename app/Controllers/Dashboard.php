@@ -8,7 +8,7 @@ class Dashboard extends BaseController
     {
         $username = service('auth')->getCurrentUser();
 
-        return view('layout/header')
+        return view('layout/header', ['username' => $username])
             . view('layout/sidebar')
             . view('dashboard/index', ['username' => $username])
             . view('layout/footer');

@@ -1,5 +1,4 @@
-    <!-- content-wrapper opened in sidebar.php, closed in footer.php -->
-    <div class="content-header">
+    <div class="app-content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
@@ -8,7 +7,7 @@
             </div>
         </div>
     </div>
-    <section class="content">
+    <div class="app-content">
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
@@ -19,4 +18,4 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
