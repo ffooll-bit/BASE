@@ -4,7 +4,14 @@ Priority levels: **P-1** (urgent), **P-2** (important), **P-3** (nice to have).
 
 ---
 
-## [P-1] AdminLTE 4 Migration — Fix Layout Views
+## ISS-001: Fix Layout Views to AdminLTE 4 Classes — P-1
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** M
+**Depends on:** DESIGN.md (done)
+
+### Description
 
 Views still use AdminLTE 3 class names. Must be updated to match `DESIGN.md`.
 
@@ -18,6 +25,13 @@ Views still use AdminLTE 3 class names. Must be updated to match `DESIGN.md`.
 | `app/Views/dashboard/index.php` | `content-header`, `section.content` | `app-content-header`, `div.app-content` |
 | `app/Views/login/login.php` | `content-header`, `section.content` (if any) | `app-content-header`, `div.app-content` |
 
+### Acceptance Criteria
+
+- [ ] All 5 files use AdminLTE 4 class names
+- [ ] Page renders with correct grid layout (no visual breakage)
+- [ ] Sidebar toggle still works
+- [ ] `npm run build` passes
+
 ### Subtasks
 
 - [ ] Fix `header.php` layout classes
@@ -28,13 +42,23 @@ Views still use AdminLTE 3 class names. Must be updated to match `DESIGN.md`.
 - [ ] Verify: `npm run build` still passes
 - [ ] Verify: all pages render with correct AdminLTE 4 layout
 
-**Depends on:** DESIGN.md (done)
-
 ---
 
-## [P-1] Bootstrap 5 Utility Audit
+## ISS-002: Bootstrap 5 Utility Audit — P-1
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** S
+**Depends on:** ISS-001 (views may have cascading changes)
+
+### Description
 
 After AdminLTE 3→4 migration, Bootstrap 4 utilities may still remain.
+
+### Acceptance Criteria
+
+- [ ] Zero matches for old Bootstrap 4 utilities in `app/Views/`
+- [ ] All `data-*` attributes use `data-bs-*`
 
 ### What to check
 
@@ -57,43 +81,74 @@ After AdminLTE 3→4 migration, Bootstrap 4 utilities may still remain.
 - [ ] `grep -rn 'float-left\|float-right\|text-left\|text-right' app/Views/` — fix all matches
 - [ ] `grep -rn 'font-weight-\|font-italic' app/Views/` — fix all matches
 
-**Depends on:** P-1 layout fix (views may have cascading changes)
-
 ---
 
-## [P-2] CODING_STANDARDS.md + Tooling Config
+## ISS-003: CODING_STANDARDS.md + Tooling Config — P-2
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** M
+**Depends on:** DESIGN.md (done)
+
+### Description
 
 Create coding standards document and tooling configuration files.
 
-**Output:**
+### Acceptance Criteria
+
+- [ ] `CODING_STANDARDS.md` exists and covers PHP, JS, Views, CSS conventions
+- [ ] `.php-cs-fixer.dist.php` exists with PSR-12 ruleset
+- [ ] `.editorconfig` exists with consistent indent, charset, line endings
+
+### Output
+
 - `CODING_STANDARDS.md` — PHP (PSR-12, type hints, CI4 conventions), JS (vanilla, no jQuery), views (`esc()`, alternate syntax), CSS (Bootstrap utility-first, BEM for custom)
 - `.php-cs-fixer.dist.php` — PHP CS Fixer config
 - `.editorconfig` — indent, charset, line endings
 
-**Depends on:** DESIGN.md finalized
-
 ---
 
-## [P-2] CHANGELOG.md
+## ISS-004: CHANGELOG.md — P-2
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** S
+**Depends on:** —
+
+### Description
 
 Create release history following Keep a Changelog format.
 
-**Output:** `CHANGELOG.md`
+### Acceptance Criteria
 
-**Contents:**
-- `[Unreleased]` section
-- Entry pertama: Login Feature + AdminLTE Migration
-- Agent update `[Unreleased]` every commit
+- [ ] `CHANGELOG.md` exists with `[Unreleased]` section
+- [ ] Entry mencakup: Login Feature + AdminLTE Migration
+- [ ] Agent knows to update `[Unreleased]` every commit
+
+### Output
+
+`CHANGELOG.md` — release history with Keep a Changelog format.
 
 ---
 
-## [P-2] .github/PULL_REQUEST_TEMPLATE.md
+## ISS-005: .github/PULL_REQUEST_TEMPLATE.md — P-2
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** S
+**Depends on:** —
+
+### Description
 
 Create PR template with self-review checklist.
 
-**Output:** `.github/PULL_REQUEST_TEMPLATE.md`
+### Acceptance Criteria
 
-**Checklist items:**
+- [ ] Template exists at `.github/PULL_REQUEST_TEMPLATE.md`
+- [ ] Checklist includes: no debug code, input validation, `esc()`, no duplication, `php -l`, `npm run build`
+
+### Checklist items
+
 - No debug code (`dd()`, `var_dump()`, `console.log()`)
 - Input validation + CSRF on all POST forms
 - `esc()` on all output
@@ -103,38 +158,53 @@ Create PR template with self-review checklist.
 
 ---
 
-## [P-2] .github/workflows/ci.yml
+## ISS-006: .github/workflows/ci.yml — P-2
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** M
+**Depends on:** ISS-004, ISS-005 (directory structure)
+
+### Description
 
 Create CI workflow for automated safety checks.
 
-**Jobs:**
-- Setup PHP 8.2 + Node 20
-- Steps: `composer install`, `npm ci`, `npm run build`, `php -l` on changed files, `vendor/bin/phpunit`
+### Acceptance Criteria
 
-**Trigger:** push & pull_request to main
+- [ ] CI runs on push & pull_request to main
+- [ ] Jobs: Setup PHP 8.2 + Node 20
+- [ ] Steps: `composer install`, `npm ci`, `npm run build`, `php -l`, `vendor/bin/phpunit`
 
 ---
 
-## [P-3] Unit Tests — Auth & NeoFeeder
+## ISS-007: Unit Tests — Auth & NeoFeeder — P-3
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** L
+**Depends on:** —
+
+### Description
 
 Create initial test suite for agent confidence checking.
 
-**Minimum tests:**
-- `AuthTest` — login success, login failed (mocked NeoFeeder), isLoggedIn, logout
-- `NeoFeederTest` — getToken parsing, error handling, connection failure
-- `AuthFilterTest` — redirect when not logged in, passthrough when logged in
+### Acceptance Criteria
 
-**Framework:** CIUnitTestCase + mocking
+- [ ] `AuthTest` — login success, login failed (mocked NeoFeeder), isLoggedIn, logout
+- [ ] `NeoFeederTest` — getToken parsing, error handling, connection failure
+- [ ] `AuthFilterTest` — redirect when not logged in, passthrough when logged in
+- [ ] `vendor/bin/phpunit` passes with all tests green
+
+### Framework
+
+CIUnitTestCase + mocking
 
 ---
 
 ## Known Issues
 
-| Issue | Notes |
-|-------|-------|
-| AdminLTE 4 class names in views are still v3 | Tracked in P-1 |
-| Login page may need responsive review | Verify after P-1 fix |
-| No custom CSS file yet | Bootstrap utilities only — revisit if layout needs diverge |
-| No JavaScript file yet | Vanilla JS only — revisit when interactive features land |
-| No unit tests exist | Tracked in P-3 test suite task |
-| Asset build script location | Verify `npm run build` copies all assets correctly |
+| Issue | Notes | Tracked In |
+|-------|-------|------------|
+| Login page may need responsive review | Verify after ISS-001 fix | ISS-001 |
+| Asset build script uses `npm run build` | Verify it copies all assets correctly | — |
+| No custom CSS file yet | Bootstrap utilities only — revisit when layout needs diverge | — |

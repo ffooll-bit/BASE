@@ -172,6 +172,22 @@ prior_auth: base64(encrypt(username | hmac(token)))
 
 ---
 
+## Environment Variables
+
+Key `.env` variables used by the application:
+
+| Variable | Type | Used By | Purpose |
+|----------|------|---------|---------|
+| `app.baseURL` | string | CI4 Router | Base URL for `base_url()` helper |
+| `encryption.key` | hex string | CI4 Encryption Service | Cookie encryption (32-byte hex) |
+| `neofeeder.api_url` | string | `Config/NeoFeeder.php` | Neo Feeder API base URL |
+| `neofeeder.timeout` | int | `Config/NeoFeeder.php` | HTTP request timeout (seconds) |
+| `neofeeder.ttl` | int | `Config/NeoFeeder.php` | Token cache TTL (seconds) |
+
+Set these in `.env` (copy from `env` template). Never commit `.env`.
+
+---
+
 ## Asset Pipeline
 
 ```
