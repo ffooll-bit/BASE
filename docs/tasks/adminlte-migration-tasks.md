@@ -1,7 +1,7 @@
 ---
 title: adminlte-migration -- Task Backlog
 status: approved
-date: 2026-07-21
+date: 2026-07-27
 version: 0.3
 spec-reference: docs/specifications/adminlte-migration-spec.md
 plan-reference: docs/plans/adminlte-migration-plan.md
@@ -24,7 +24,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Priority**: High
 **Traces to AC**: AC-08
 **Verification**: `npm run build; if ($?) { $files='public/adminlte/css/adminlte.min.css','public/adminlte/js/adminlte.min.js','public/bootstrap/css/bootstrap.min.css','public/bootstrap/js/bootstrap.bundle.min.js','public/fontawesome/css/all.min.css'; $ok=$true; $files.ForEach({ if (-not (Test-Path $_)) { Write-Host "MISSING: $_"; $ok=$false } }); if ((Get-ChildItem public/fontawesome/webfonts/*).Count -eq 0) { Write-Host 'MISSING: webfonts/ empty'; $ok=$false }; if ($ok) { Write-Host 'All assets present' } }`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-21)
 
 ## Group 2: Login Page Migration
 **Goal**: Migrate the standalone login view from AdminLTE 3 to AdminLTE 4 markup with Bootstrap 5 forms, FA 6 icons, no jQuery or icheck
@@ -94,3 +94,4 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 | 0.3 | 2026-07-21 10:29:25 | organizer (deepseek-v4-flash-free) | Review again: fix all remaining verification commands (TASK-001, TASK-003, TASK-004, TASK-005, TASK-006, TASK-007, TASK-008) from Unix/bash to pure PowerShell for Windows consistency; remove erroneous 'cd base &&' prefixes |
 | 0.3 | 2026-07-21 10:33:48 | Operator | **APPROVED** - backlog approved for Implement phase |
 | 0.3 | 2026-07-21 10:52:32 | performer (deepseek-v4-flash-free) | TASK-001 completed: removed adminlte from composer, created package.json, npm install |
+| 0.3 | 2026-07-27 09:04:37 | performer (deepseek-v4-flash-free) | TASK-002 completed: created build script, populated public/ with AdminLTE 4 assets |
