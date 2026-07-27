@@ -22,6 +22,8 @@ view('layout/header')
 + view('layout/footer')
 ```
 
+(See `ARCHITECTURE.md` for the controller-side implementation.)
+
 ### 1.1 Body element
 
 ```html
@@ -583,7 +585,7 @@ Available backgrounds: `bg-info`, `bg-success`, `bg-warning`, `bg-danger`, `bg-p
             <tr>
                 <th>#</th>
                 <th><?= esc($columnLabel) ?></th>
-                <th style="width: 120px">Actions</th>
+                <th class="text-nowrap">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -601,8 +603,9 @@ Available backgrounds: `bg-info`, `bg-success`, `bg-warning`, `bg-danger`, `bg-p
                            class="btn btn-sm btn-info" title="Edit">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <button type="button" class="btn btn-sm btn-danger"
-                                onclick="confirmDelete(<?= $item->id ?>, '<?= esc($item->name, 'js') ?>')"
+                        <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                data-id="<?= $item->id ?>"
+                                data-name="<?= esc($item->name, 'attr') ?>"
                                 title="Delete">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -846,7 +849,7 @@ Always include `title` attribute on icon-only buttons for accessibility.
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button type="button" class="btn btn-danger" onclick="document.getElementById('deleteForm').submit()">
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
@@ -859,16 +862,27 @@ Always include `title` attribute on icon-only buttons for accessibility.
 
 ```html
 <script>
-function confirmDelete(id, name) {
-    document.getElementById('deleteItemName').textContent = name;
-    document.getElementById('deleteForm').action = '<?= base_url('resource/delete') ?>/' + id;
-    var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
-}
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-delete').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var id = this.getAttribute('data-id');
+            var name = this.getAttribute('data-name');
+            document.getElementById('deleteItemName').textContent = name;
+            document.getElementById('deleteForm').action = '<?= base_url('resource/delete') ?>/' + id;
+            var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        });
+    });
+
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', function () {
+        document.getElementById('deleteForm').submit();
+    });
+});
 </script>
 ```
 
 > No jQuery. Use `bootstrap.Modal` constructor from Bootstrap 5's bundled JS.
+> Delete buttons use `data-id`/`data-name` attributes and `addEventListener` — no `onclick` attributes.
 
 ---
 

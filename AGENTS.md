@@ -132,5 +132,8 @@ This project maintains reference documents that every agent must read when relev
 | Document | Purpose | When to Read |
 |----------|---------|-------------|
 | `ARCHITECTURE.md` | System blueprint — tech stack, request lifecycle, auth flow, data model | Before any feature work |
-| `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
+| `CHANGELOG.md` | Release history — what has changed and why | Before starting work on a new feature |
 | `CODING_STANDARDS.md` (if exists) | Code style — PHP, JS, CSS conventions, tooling config | Before writing code |
+| `CONTRIBUTING.md` | Development workflow — branching, commit, PR cycle, verification | At the start of every session |
+| `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
+| `OPEN_ISSUES.md` | Backlog & task tracking — what to work on next | At the start of every session |

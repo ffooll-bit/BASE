@@ -4,6 +4,8 @@
 
 BASE is a CodeIgniter 4 web application that serves as a Web Service Client for Neo Feeder (PDDIKTI). Authentication is session-based using Neo Feeder as the external identity provider — no local user database is used. The UI uses AdminLTE 4 (Bootstrap 5) with vanilla JavaScript.
 
+> **Related documents:** See `DESIGN.md` for UI/UX patterns, `CODING_STANDARDS.md` for code conventions, and `AGENTS.md` for the decision framework.
+
 ---
 
 ## Tech Stack
@@ -13,7 +15,7 @@ BASE is a CodeIgniter 4 web application that serves as a Web Service Client for 
 | Framework | CodeIgniter 4 | ^4.7 | MVC, routing, filters, HTTP client |
 | Identity Provider | Neo Feeder WS API | — | Authentication & token validation |
 | UI Template | AdminLTE 4 | ^4.0 | Dashboard layout, sidebar, navbar |
-| CSS Framework | Bootstrap 5 | 5.3.x | Components, grid, utilities |
+| CSS Framework | Bootstrap 5 | 5.3.x | Components, grid, utilities (transitive via AdminLTE 4) |
 | Icons | Font Awesome 6 | ^6.0 | UI icons |
 | JS Runtime | Vanilla JavaScript | — | AdminLTE 4 native, no jQuery |
 | Session | CI4 FileHandler | — | Auth state storage |
@@ -30,6 +32,7 @@ sequenceDiagram
     participant CI4 as CodeIgniter 4 Engine
     participant ReqFilters as Required Filters
     participant GlobFilters as Global Filters
+    participant CSRF
     participant Router
     participant Controller
     participant Service
@@ -39,8 +42,8 @@ sequenceDiagram
     Browser->>CI4: HTTP Request
     CI4->>ReqFilters: forcehttps, pagecache
     ReqFilters->>GlobFilters: auth filter (except login*)
-    GlobFilters->>GlobFilters: csrf filter
-    GlobFilters->>Router: match route
+    GlobFilters->>CSRF: csrf filter
+    CSRF->>Router: match route
     Router->>Controller: call method
     Controller->>Service: business logic (Auth, NeoFeeder)
     Service->>NeoFeeder: optional API call
@@ -74,6 +77,8 @@ Filter ordering: **Required before** → **Global before** → Route → Control
 
 | Class | File | Responsibility | Dependencies |
 |-------|------|---------------|--------------|
+| `BaseController` | `Controllers/BaseController.php` | Shared controller setup (session, helpers) | — |
+| `Home` | `Controllers/Home.php` | Welcome / landing page (pre-auth) | — |
 | `Login` | `Controllers/Login.php` | Login form, login attempt, logout | `Auth` service |
 | `Dashboard` | `Controllers/Dashboard.php` | Protected landing page | `Auth` service, 4 views |
 | `AuthFilter` | `Filters/AuthFilter.php` | Route protection middleware | `Auth` service, CI4 Session |
@@ -225,4 +230,7 @@ app/
 ├── Libraries/       # Auth, NeoFeeder (service layer)
 └── Views/           # login/ (standalone), layout/ (header,sidebar,footer), dashboard/
 public/              # index.php + built assets
+├── adminlte/        # adminlte.min.css, adminlte.min.js
+├── bootstrap/       # bootstrap.min.css, bootstrap.bundle.min.js
+└── fontawesome/     # all.min.css, webfonts/
 ```

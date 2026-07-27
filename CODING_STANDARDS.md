@@ -3,6 +3,8 @@
 This document defines the coding conventions for all PHP, JavaScript, CSS, and view files.
 Follow these strictly. Deviations must be justified by the Decision Framework in `AGENTS.md`.
 
+> **Related documents:** See `ARCHITECTURE.md` for system architecture and `DESIGN.md` for UI/UX markup patterns.
+
 ---
 
 ## 1. PHP
@@ -218,7 +220,21 @@ if (! $this->validate([
 }
 ```
 
-### 2.7 Redirects
+### 2.7 Request Input
+
+Use CI4's `$this->request` methods instead of superglobals:
+
+```php
+$email = $this->request->getPost('email');
+$page  = $this->request->getVar('page');
+$agent = $this->request->getUserAgent();
+
+// Wrong:
+$email = $_POST['email'];
+$page  = $_GET['page'];
+```
+
+### 2.8 Redirects
 
 ```php
 // Success → redirect with optional flashdata
@@ -250,6 +266,7 @@ The second parameter specifies the context (default `'html'`):
 ```php
 esc($value, 'js')      // For JavaScript string literals
 esc($value, 'url')     // For URL parameters
+esc($value, 'attr')    // For HTML attribute values
 ```
 
 ### 3.2 Short Tags
@@ -428,7 +445,7 @@ Wrap all external API calls in `try-catch`:
 try {
     $response = $this->client->request('POST', $url, $options);
 } catch (HTTPException $e) {
-    return $this->errorResponse(-1, $e->getMessage());
+    return ['error_code' => -1, 'error_msg' => $e->getMessage(), 'data' => null];
 }
 ```
 

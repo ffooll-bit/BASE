@@ -142,4 +142,11 @@ class AuthTest extends CIUnitTestCase
         $this->assertFalse($this->auth->isLoggedIn());
         $this->assertSame('session expired', $this->auth->getLastError());
     }
+
+    public function testLogoutClearsAuthSession(): void
+    {
+        $this->mockSession->expects($this->once())->method('remove')->with('auth');
+
+        $this->auth->logout();
+    }
 }

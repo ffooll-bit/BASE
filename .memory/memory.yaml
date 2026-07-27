@@ -1,0 +1,5 @@
+items:
+  - text: "ADR: No hard wrapping in .md files → Context: hard-wrapped sentences create diff noise and complicate AI agent editing → Consequence: AGENTS.md rule #6 prohibits it; soft wrapping enforced across all .md files; CLIs and code blocks are exempt."
+    tags: [decision, documentation, workflow]
+    count: 1
+    created: "2026-07-27T15:02:24Z"

@@ -17,7 +17,12 @@ Agent instructions:
 _None yet._
 
 ### Changed
-_None yet._
+
+- **AGENTS.md:** added CONTRIBUTING.md, CHANGELOG.md, OPEN_ISSUES.md to Supplementary Documents table; sorted alphabetically
+- **CONTRIBUTING.md:** added explicit Definition of Done, memory system steps (check & save), magic numbers and duplication to PR checklist, php-cs-fixer to Phase D; removed redundant "if exists" conditionals
+- **ARCHITECTURE.md:** added cross-references to related docs, expanded directory tree with public/ subdirectories, separated CSRF participant in mermaid diagram, added BaseController and Home to Key Classes table
+- **DESIGN.md:** replaced onclick attributes with addEventListener + data attributes in code examples, removed inline style from table header, added cross-reference to ARCHITECTURE.md
+- **CODING_STANDARDS.md:** added esc('attr') context, Request Input section ($this->request vs $_POST), cross-references to ARCHITECTURE.md and DESIGN.md; fixed ambiguous errorResponse example
 
 ### Fixed
 _None yet._
@@ -38,6 +43,8 @@ _None yet._
 - **Login feature views:** login form with CSRF protection, flash message alerts, autocomplete attributes; dashboard index view
 - **AdminLTE 4 foundation:** npm asset build pipeline (package.json, build script), replaced Composer-based AdminLTE 3
 - **Developer documentation:** AGENTS.md (identity & rules), CONTRIBUTING.md (workflow), ARCHITECTURE.md (system blueprint), DESIGN.md (UI/UX consistency), CODING_STANDARDS.md (code style), OPEN_ISSUES.md (backlog), PLAN.md (preparation blueprint)
+- **PR template:** `.github/PULL_REQUEST_TEMPLATE.md` with self-review checklist for debug code, validation, escaping
+- **CI workflow:** `.github/workflows/ci.yml` with PHP 8.2, Node 20, composer install, npm ci, npm run build, php -l, phpunit
 - **Project tooling:** .editorconfig (UTF-8, CRLF, 4-space indent), .php-cs-fixer.dist.php (@PSR12 + @PHP82Migration ruleset), friendsofphp/php-cs-fixer as dev dependency
 
 ### Changed
