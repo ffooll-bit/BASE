@@ -84,7 +84,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Priority**: High
 **Traces to AC**: AC-09, AC-10, AC-11
 **Verification**: `$views='app/Views/login/login.php','app/Views/layout/header.php','app/Views/layout/sidebar.php','app/Views/layout/footer.php','app/Views/dashboard/index.php'; $ok=$true; $views.ForEach({ if (Select-String -Path $_ -Pattern 'jQuery|\$\(|jquery\.' -Quiet) { Write-Host "FAIL: jQuery ref in $_"; $ok=$false } }); if ($ok) { Write-Host 'PASS: No jQuery in any view' }`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-27)
 
 ## Changelog
 | Version | Timestamp | Editor | Changes |
@@ -98,3 +98,4 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 | 0.3 | 2026-07-27 09:12:59 | performer (deepseek-v4-flash-free) | TASK-003 completed: migrated login view to AdminLTE 4 |
 | 0.3 | 2026-07-27 09:22:02 | performer (deepseek-v4-flash-free) | TASK-004, TASK-005, TASK-006 completed: migrated header, sidebar, footer views to AdminLTE 4 |
 | 0.3 | 2026-07-27 09:28:21 | performer (deepseek-v4-flash-free) | TASK-007 completed: migrated dashboard index view to AdminLTE 4 |
+| 0.3 | 2026-07-27 09:32:36 | performer (deepseek-v4-flash-free) | TASK-008 completed: final verification passed — no jQuery in any view, all assets correct |
