@@ -2,6 +2,7 @@
     "name": "codeigniter4-appstarter",
     "private": true,
     "scripts": {
+        "build": "node scripts/build-assets.js",
         "test": "echo \"No test specified\""
     },
     "dependencies": {
