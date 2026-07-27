@@ -60,7 +60,7 @@ php -l app/Controllers/Login.php
 php -l app/Libraries/Auth.php
 # Repeat for every PHP file you created or modified
 
-npm run build           # Only if views or asset config changed
+npm run build           # Only if you touched any view or asset file
 php spark routes        # Only if routes changed
 vendor/bin/phpunit      # Only if tests exist
 ```
@@ -79,7 +79,7 @@ vendor/bin/phpunit      # Only if tests exist
 ### Phase F: Pull Request
 
 1. Push your branch.
-2. Open a PR using the template at `.github/PULL_REQUEST_TEMPLATE.md`.
+2. Open a PR. If `.github/PULL_REQUEST_TEMPLATE.md` exists, use it as a checklist.
 3. Wait for CI to pass. If it fails, fix and amend the commit — do not add fixup commits.
 
 ---
@@ -146,6 +146,6 @@ Review comments should be specific, actionable, and respectful.
 ## Releases
 
 - This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
-- `CHANGELOG.md` is updated throughout development: add new entries to the `[Unreleased]` section as changes are made. Before release, move them under a new version header.
+- If `CHANGELOG.md` exists, update it throughout development: add new entries to the `[Unreleased]` section as changes are made. Before release, move them under a new version header.
 - A release is tagged from `main` after the PR is merged.
 - Release command: `git tag v<version> && git push origin v<version>`

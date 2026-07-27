@@ -7,6 +7,7 @@ This document is the single source of truth for UI markup — every view must ma
 > (`wrapper`, `main-header`, `main-sidebar`, `content-wrapper`, `content-header`,
 > `nav-sidebar`, `sidebar`, `main-footer`) in existing views, they are **incorrect**
 > and must be replaced with the AdminLTE 4 equivalents documented below.
+> **Remove this note after ISS-001 (layout fix) is completed.**
 
 ---
 
@@ -1005,6 +1006,23 @@ These are common mistakes. **Do not commit these.**
 | 13 | Wrong menu icon class | `<i class="fas fa-home"></i>` in sidebar | `<i class="nav-icon fas fa-home"></i>` |
 | 14 | Table without `thead` | Only `<tbody>` | Always include `<thead>` |
 | 15 | Missing `title` on icon buttons | `<a class="btn btn-sm"><i class="fas fa-edit"></i></a>` | Add `title="Edit"` |
+
+---
+
+## 13. Accessibility Checklist
+
+Follow these minimum a11y rules for every new view or component:
+
+| Rule | Implementation |
+|------|---------------|
+| Form labels | Every `<input>`, `<select>`, `<textarea>` must have a `<label>` with `for` attribute |
+| Icon-only buttons | Always add `title` attribute describing the action |
+| Alert dismiss button | Use `aria-label="Close"` on `btn-close` |
+| Modal | Add `aria-labelledby` pointing to modal title, `aria-hidden="true"` |
+| Breadcrumb | Wrap in `<nav>` with `aria-label="breadcrumb"` |
+| Color contrast | Do not convey information through color alone — use icons + text (e.g., `text-danger` + icon) |
+| Keyboard navigation | All interactive elements must be reachable via Tab. No `tabindex="-1"` on standard controls. |
+| Focus management | After modal close, return focus to the trigger element |
 
 ---
 
