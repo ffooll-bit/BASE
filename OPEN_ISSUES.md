@@ -123,7 +123,7 @@ Create release history following Keep a Changelog format.
 
 ## ISS-005: .github/PULL_REQUEST_TEMPLATE.md — P-2
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
 **Estimate:** S
 **Depends on:** —
@@ -134,8 +134,8 @@ Create PR template with self-review checklist.
 
 ### Acceptance Criteria
 
-- [ ] Template exists at `.github/PULL_REQUEST_TEMPLATE.md`
-- [ ] Checklist includes: no debug code, input validation, `esc()`, no duplication, `php -l`, `npm run build`
+- [x] Template exists at `.github/PULL_REQUEST_TEMPLATE.md`
+- [x] Checklist includes: no debug code, input validation, `esc()`, no duplication, `php -l`, `npm run build`
 
 ### Checklist items
 
