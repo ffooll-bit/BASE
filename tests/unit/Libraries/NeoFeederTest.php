@@ -1,0 +1,94 @@
+<?php
+
+namespace Tests\Unit\Libraries;
+
+use App\Libraries\NeoFeeder;
+use CodeIgniter\HTTP\CURLRequest;
+use CodeIgniter\HTTP\Exceptions\HTTPException;
+use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Test\CIUnitTestCase;
+use Config\NeoFeeder as NeoFeederConfig;
+
+class NeoFeederTest extends CIUnitTestCase
+{
+    private NeoFeederConfig $config;
+    private CURLRequest $client;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->config = new NeoFeederConfig();
+        $this->config->apiBaseUrl = 'https://example.com/api';
+        $this->config->connectionTimeout = 1;
+        $this->config->requestTimeout = 1;
+    }
+
+    public function testGetTokenReturnsTokenOnSuccess(): void
+    {
+        $responseBody = json_encode([
+            'error_code' => 0,
+            'data'       => ['token' => 'abc123'],
+        ]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getToken('user', 'pass');
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('abc123', $result['data']['token']);
+    }
+
+    public function testGetTokenReturnsConnectionErrorOnFailure(): void
+    {
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willThrowException(
+            new HTTPException('Connection timed out')
+        );
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getToken('user', 'pass');
+
+        $this->assertSame(-1, $result['error_code']);
+        $this->assertStringContainsString('Connection timed out', $result['error_msg']);
+    }
+
+    public function testGetTokenReturnsParseErrorOnMalformedResponse(): void
+    {
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn('not-json');
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getToken('user', 'pass');
+
+        $this->assertSame(-2, $result['error_code']);
+    }
+
+    public function testGetProfilPTReturnsProfileOnSuccess(): void
+    {
+        $responseBody = json_encode([
+            'error_code' => 0,
+            'data'       => ['nama_pt' => 'STIEM Bongaya'],
+        ]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getProfilPT('token-abc');
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('STIEM Bongaya', $result['data']['nama_pt']);
+    }
+}
