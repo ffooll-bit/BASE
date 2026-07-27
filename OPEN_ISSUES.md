@@ -209,6 +209,45 @@ Login Feature planning. Revisit when authorization requirements are defined.
 
 ---
 
+## ISS-009: Dashboard Tidak Mengirim `$username` ke Header View — P-1
+
+**Status:** Open
+**Created:** 2026-07-27
+**Estimate:** S
+**Depends on:** —
+
+### Description
+
+`Dashboard::index()` concatenates 4 partial views but only passes `$username`
+to `dashboard/index`. The `header.php` partial also uses `$username` (line 35),
+causing "Undefined variable $username" on every dashboard page load after
+login.
+
+### Root Cause
+
+`app/Controllers/Dashboard.php:11`:
+```php
+return view('layout/header')  // ← $username not passed
+    . view('layout/sidebar')
+    . view('dashboard/index', ['username' => $username])
+    . view('layout/footer');
+```
+
+### Files to fix
+
+| File | Line | What |
+|------|------|------|
+| `app/Controllers/Dashboard.php` | 11 | Add `['username' => $username]` to header view call |
+
+### Acceptance Criteria
+
+- [ ] `header.php` receives `$username` and renders the username in the navbar
+- [ ] Login flow completes without "Undefined variable" error
+- [ ] `vendor/bin/phpunit` still passes (14 tests, 31 assertions)
+- [ ] `php -l` passes on `Dashboard.php`
+
+---
+
 ## Known Issues
 
 | Issue | Notes | Tracked In |
