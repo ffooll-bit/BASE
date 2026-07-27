@@ -21,7 +21,7 @@
 
             <!-- Sidebar Menu -->
             <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-bs-toggle="collapse" role="menu">
+                <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
                     <li class="nav-item">
                         <a href="<?= base_url('dashboard') ?>" class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
