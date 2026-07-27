@@ -18,14 +18,13 @@ _None yet._
 
 ### Changed
 
-- **AGENTS.md:** added CONTRIBUTING.md, CHANGELOG.md, OPEN_ISSUES.md to Supplementary Documents table; sorted alphabetically
-- **CONTRIBUTING.md:** added explicit Definition of Done, memory system steps (check & save), magic numbers and duplication to PR checklist, php-cs-fixer to Phase D; removed redundant "if exists" conditionals
-- **ARCHITECTURE.md:** added cross-references to related docs, expanded directory tree with public/ subdirectories, separated CSRF participant in mermaid diagram, added BaseController and Home to Key Classes table
-- **DESIGN.md:** replaced onclick attributes with addEventListener + data attributes in code examples, removed inline style from table header, added cross-reference to ARCHITECTURE.md
-- **CODING_STANDARDS.md:** added esc('attr') context, Request Input section ($this->request vs $_POST), cross-references to ARCHITECTURE.md and DESIGN.md; fixed ambiguous errorResponse example
+- **Layout views:** migrated header, sidebar, footer, and dashboard views from AdminLTE 3 to AdminLTE 4 classes (`app-wrapper`, `app-sidebar`, `app-main`, etc.)
+- **Code style:** applied `php-cs-fixer` rules across `app/` and `tests/` — fixed import ordering, octal notation, anonymous class syntax
 
 ### Fixed
-_None yet._
+
+- **Dashboard header:** pass `$username` variable to header view to eliminate "Undefined variable" error
+- **AuthTest:** align `testLogoutClearsAuthSession` expectation with actual `destroy()` call
 
 ### Removed
 _None yet._

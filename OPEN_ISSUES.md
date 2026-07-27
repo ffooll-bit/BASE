@@ -6,8 +6,9 @@ Priority levels: **P-1** (urgent), **P-2** (important), **P-3** (nice to have).
 
 ## ISS-001: Fix Layout Views to AdminLTE 4 Classes — P-1
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
+**Resolved:** 2026-07-27
 **Estimate:** M
 **Depends on:** DESIGN.md (done)
 
@@ -27,27 +28,28 @@ Views still use AdminLTE 3 class names. Must be updated to match `DESIGN.md`.
 
 ### Acceptance Criteria
 
-- [ ] All 5 files use AdminLTE 4 class names
-- [ ] Page renders with correct grid layout (no visual breakage)
-- [ ] Sidebar toggle still works
-- [ ] `npm run build` passes
+- [x] All 5 files use AdminLTE 4 class names
+- [x] Page renders with correct grid layout (no visual breakage)
+- [x] Sidebar toggle still works
+- [x] `npm run build` passes
 
 ### Subtasks
 
-- [ ] Fix `header.php` layout classes
-- [ ] Fix `sidebar.php` layout classes + sidebar menu classes
-- [ ] Fix `footer.php` layout classes
-- [ ] Fix `dashboard/index.php` content classes
-- [ ] Fix `login/login.php` content classes
-- [ ] Verify: `npm run build` still passes
-- [ ] Verify: all pages render with correct AdminLTE 4 layout
+- [x] Fix `header.php` layout classes
+- [x] Fix `sidebar.php` layout classes + sidebar menu classes
+- [x] Fix `footer.php` layout classes
+- [x] Fix `dashboard/index.php` content classes
+- [x] Fix `login/login.php` content classes
+- [x] Verify: `npm run build` still passes
+- [x] Verify: all pages render with correct AdminLTE 4 layout
 
 ---
 
 ## ISS-002: Bootstrap 5 Utility Audit — P-1
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
+**Resolved:** 2026-07-27
 **Estimate:** S
 **Depends on:** ISS-001 (views may have cascading changes)
 
@@ -57,8 +59,8 @@ After AdminLTE 3→4 migration, Bootstrap 4 utilities may still remain.
 
 ### Acceptance Criteria
 
-- [ ] Zero matches for old Bootstrap 4 utilities in `app/Views/`
-- [ ] All `data-*` attributes use `data-bs-*`
+- [x] Zero matches for old Bootstrap 4 utilities in `app/Views/`
+- [x] All `data-*` attributes use `data-bs-*`
 
 ### What to check
 
@@ -85,8 +87,9 @@ After AdminLTE 3→4 migration, Bootstrap 4 utilities may still remain.
 
 ## ISS-009: Dashboard Tidak Mengirim `$username` ke Header View — P-1
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
+**Resolved:** 2026-07-27
 **Estimate:** S
 **Depends on:** —
 
@@ -112,10 +115,10 @@ return view('layout/header')  // ← $username not passed
 
 ### Acceptance Criteria
 
-- [ ] `header.php` receives `$username` and renders the username in the navbar
-- [ ] Login flow completes without "Undefined variable" error
-- [ ] `vendor/bin/phpunit` passes with all tests green
-- [ ] `php -l` passes on `Dashboard.php`
+- [x] `header.php` receives `$username` and renders the username in the navbar
+- [x] Login flow completes without "Undefined variable" error
+- [x] `vendor/bin/phpunit` passes with all tests green
+- [x] `php -l` passes on `Dashboard.php`
 
 ---
 
