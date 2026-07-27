@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const src = path.resolve.bind(path, __dirname, '..', 'node_modules');
-const dst = path.resolve.bind(path, __dirname, '..', 'public');
+const src = (...p) => path.resolve(__dirname, '..', 'node_modules', ...p);
+const dst = (...p) => path.resolve(__dirname, '..', 'public', ...p);
+
+let ok = true;
 
 const files = [
   ['admin-lte/dist/css/adminlte.min.css',          'adminlte/css/adminlte.min.css'],
@@ -14,15 +16,24 @@ const files = [
 
 // Copy individual files
 for (const [from, to] of files) {
+  const srcPath = src(from);
+  if (!fs.existsSync(srcPath)) { console.error(`MISSING: ${from}`); ok = false; continue; }
   const target = dst(to);
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.copyFileSync(src(from), target);
+  fs.copyFileSync(srcPath, target);
   console.log(`Copied: ${from} -> ${to}`);
 }
 
 // Copy webfonts directory
 const webfontsSrc = src('@fortawesome/fontawesome-free/webfonts');
-const webfontsDst = dst('fontawesome/webfonts');
-fs.mkdirSync(webfontsDst, { recursive: true });
-fs.cpSync(webfontsSrc, webfontsDst, { recursive: true });
-console.log('Copied: @fortawesome/fontawesome-free/webfonts/ -> fontawesome/webfonts/');
+if (fs.existsSync(webfontsSrc)) {
+  const webfontsDst = dst('fontawesome/webfonts');
+  fs.mkdirSync(webfontsDst, { recursive: true });
+  fs.cpSync(webfontsSrc, webfontsDst, { recursive: true });
+  console.log('Copied: @fortawesome/fontawesome-free/webfonts/ -> fontawesome/webfonts/');
+} else {
+  console.error('MISSING: @fortawesome/fontawesome-free/webfonts/');
+  ok = false;
+}
+
+if (!ok) process.exit(1);
