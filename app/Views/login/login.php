@@ -14,7 +14,7 @@
     <!-- AdminLTE 4 Theme style -->
     <link rel="stylesheet" href="<?= base_url('adminlte/css/adminlte.min.css') ?>">
 </head>
-<body class="login-page">
+<body class="login-page bg-body-secondary">
 
 <div class="login-box">
     <div class="login-logo">
@@ -44,25 +44,21 @@
 
                 <div class="input-group mb-3">
                     <input type="email" name="username" class="form-control" placeholder="Email" required autofocus autocomplete="email">
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-envelope"></span>
-                        </div>
+                    <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
                     </div>
                 </div>
 
                 <div class="input-group mb-3">
                     <input type="password" name="password" class="form-control" placeholder="Password" required autocomplete="current-password">
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
-                        </div>
+                    <div class="input-group-text">
+                        <span class="fas fa-lock"></span>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
                     </div>
                 </div>
             </form>
