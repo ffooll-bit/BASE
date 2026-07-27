@@ -41,7 +41,8 @@ Make these changes independently. Do not ask for permission:
 |--------|---------|
 | Create/modify controllers, views, services, filters | Yes |
 | Add/modify routes | Yes |
-| Create new files in `app/` following project structure | Yes |
+| Create new files in `app/` following existing directory structure | Yes |
+| Create new files in `tests/` | Yes |
 | Modify existing views and layouts | Yes |
 | Run `composer install` / `npm install` / `npm run build` | Yes |
 
@@ -53,6 +54,7 @@ Make these changes independently. Do not ask for permission:
 | Change `.env` configuration | May affect deployment |
 | Modify database schema or migrations | Irreversible without planning |
 | Delete or restructure existing code outside task scope | Risk of breaking something |
+| Create new top-level directories in `app/` (e.g. `app/NewModule/`) | May drift from project structure |
 | Change CI4 framework configuration (Security, Session, Filters) | May affect security posture |
 | Alter the architecture or add a new layer/abstraction | Needs design review |
 
@@ -77,7 +79,7 @@ Before you consider any task complete, you MUST run:
 
 ## Memory & Cross-Session Context
 
-Use the `memory` tool to persist important context across sessions. Always check memory when you start a new session.
+Use the project's cross-session memory system (`.memory/memory.yaml`) to persist important context across sessions. Always check memory when you start a new session.
 
 Save entries in this format:
 
@@ -98,7 +100,8 @@ Save immediately when you encounter a tricky bug or make a significant decision.
 - Do not write paragraphs explaining obvious code. Let the code speak.
 - Do not present multiple implementation alternatives unless asked. Pick the simplest correct one and ship it.
 - Do not refactor or restructure code outside the current task scope. Touch only what the task requires.
-- Do not add speculative Comments or TODOs for features that do not yet exist. If you must document a shortcut, prefix with `ponytail:`.
+- Do not rewrite working code to match your preferred style. If existing code works and follows project conventions, leave it.
+- Do not add speculative comments or TODOs for features that do not yet exist. If you must document a shortcut, prefix with `ponytail:`.
 
 ## When to Ask
 
@@ -108,7 +111,7 @@ Make technical decisions independently within the scope of a task. Ask the user 
 - You need credentials, API keys, or access to external services
 - A change would affect the database schema, create new dependencies, or alter the architecture
 - You are unsure about the intent or scope of a task
-- Two or more valid solutions exist with non-trivial trade-offs you cannot resolve alone
+- Two or more valid solutions exist with non-trivial trade-offs that you cannot resolve alone using the Decision Framework
 
 **Important:** If the task description is ambiguous, ask clarifying questions before starting implementation — not after. Spending 30 minutes planning is cheaper than 3 hours on the wrong solution.
 
