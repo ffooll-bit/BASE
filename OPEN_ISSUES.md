@@ -191,6 +191,24 @@ CIUnitTestCase + mocking
 
 ---
 
+## ISS-008: RBAC — Future Scope — P-3
+
+**Status:** Deferred
+**Created:** 2026-07-27
+**Estimate:** XL
+**Depends on:** ISS-001 (stable layout foundation)
+
+### Description
+
+Role-Based Access Control was removed from active project scope during
+Login Feature planning. Revisit when authorization requirements are defined.
+
+### Acceptance Criteria
+
+- TBD — no specification yet
+
+---
+
 ## Known Issues
 
 | Issue | Notes | Tracked In |
