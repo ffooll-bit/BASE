@@ -35,7 +35,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Priority**: High
 **Traces to AC**: AC-01, AC-02
 **Verification**: `(Select-String -Path app/Views/login/login.php -Pattern 'adminlte\.min\.css' -Quiet) -and (Select-String -Path app/Views/login/login.php -Pattern 'data-bs-dismiss' -Quiet) -and (Select-String -Path app/Views/login/login.php -Pattern 'csrf' -Quiet) -and -not (Select-String -Path app/Views/login/login.php -Pattern 'jquery|icheck' -Quiet)`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-21)
 
 ## Group 3: Layout Views Migration
 **Goal**: Migrate the three layout partials (header, sidebar, footer) to AdminLTE 4 markup with Bootstrap 5 data attributes, local asset paths, no jQuery
@@ -95,3 +95,4 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 | 0.3 | 2026-07-21 10:33:48 | Operator | **APPROVED** - backlog approved for Implement phase |
 | 0.3 | 2026-07-21 10:52:32 | performer (deepseek-v4-flash-free) | TASK-001 completed: removed adminlte from composer, created package.json, npm install |
 | 0.3 | 2026-07-27 09:04:37 | performer (deepseek-v4-flash-free) | TASK-002 completed: created build script, populated public/ with AdminLTE 4 assets |
+| 0.3 | 2026-07-27 09:12:59 | performer (deepseek-v4-flash-free) | TASK-003 completed: migrated login view to AdminLTE 4 |
