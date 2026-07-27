@@ -85,7 +85,7 @@ After AdminLTE 3→4 migration, Bootstrap 4 utilities may still remain.
 
 ## ISS-003: CODING_STANDARDS.md + Tooling Config — P-2
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
 **Estimate:** M
 **Depends on:** DESIGN.md (done)
@@ -96,15 +96,15 @@ Create coding standards document and tooling configuration files.
 
 ### Acceptance Criteria
 
-- [ ] `CODING_STANDARDS.md` exists and covers PHP, JS, Views, CSS conventions
-- [ ] `.php-cs-fixer.dist.php` exists with PSR-12 ruleset
-- [ ] `.editorconfig` exists with consistent indent, charset, line endings
+- [x] `CODING_STANDARDS.md` exists and covers PHP, JS, Views, CSS conventions
+- [x] `.php-cs-fixer.dist.php` exists with PSR-12 ruleset
+- [x] `.editorconfig` exists with consistent indent, charset, line endings
 
 ---
 
 ## ISS-004: CHANGELOG.md — P-2
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
 **Estimate:** S
 **Depends on:** —
@@ -115,9 +115,9 @@ Create release history following Keep a Changelog format.
 
 ### Acceptance Criteria
 
-- [ ] `CHANGELOG.md` exists with `[Unreleased]` section
-- [ ] Entry mencakup: Login Feature + AdminLTE Migration
-- [ ] Agent knows to update `[Unreleased]` every commit
+- [x] `CHANGELOG.md` exists with `[Unreleased]` section
+- [x] Entry mencakup: Login Feature + AdminLTE Migration
+- [x] Agent knows to update `[Unreleased]` every commit
 
 ---
 
