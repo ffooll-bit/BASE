@@ -150,7 +150,7 @@ Create PR template with self-review checklist.
 
 ## ISS-006: .github/workflows/ci.yml — P-2
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
 **Estimate:** M
 **Depends on:** ISS-004, ISS-005 (directory structure)
@@ -161,15 +161,15 @@ Create CI workflow for automated safety checks.
 
 ### Acceptance Criteria
 
-- [ ] CI runs on push & pull_request to main
-- [ ] Jobs: Setup PHP 8.2 + Node 20
-- [ ] Steps: `composer install`, `npm ci`, `npm run build`, `php -l`, `vendor/bin/phpunit`
+- [x] CI runs on push & pull_request to main
+- [x] Jobs: Setup PHP 8.2 + Node 20
+- [x] Steps: `composer install`, `npm ci`, `npm run build`, `php -l`, `vendor/bin/phpunit`
 
 ---
 
 ## ISS-007: Unit Tests — Auth & NeoFeeder — P-3
 
-**Status:** Open
+**Status:** Done
 **Created:** 2026-07-27
 **Estimate:** L
 **Depends on:** —
@@ -180,10 +180,10 @@ Create initial test suite for agent confidence checking.
 
 ### Acceptance Criteria
 
-- [ ] `AuthTest` — login success, login failed (mocked NeoFeeder), isLoggedIn, logout
-- [ ] `NeoFeederTest` — getToken parsing, error handling, connection failure
-- [ ] `AuthFilterTest` — redirect when not logged in, passthrough when logged in
-- [ ] `vendor/bin/phpunit` passes with all tests green
+- [x] `AuthTest` — login success, login failed (mocked NeoFeeder), isLoggedIn, logout
+- [x] `NeoFeederTest` — getToken parsing, error handling, connection failure
+- [x] `AuthFilterTest` — redirect when not logged in, passthrough when logged in
+- [x] `vendor/bin/phpunit` passes with all tests green
 
 ### Framework
 
