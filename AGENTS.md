@@ -132,4 +132,4 @@ This project maintains reference documents that every agent must read when relev
 |----------|---------|-------------|
 | `ARCHITECTURE.md` | System blueprint — tech stack, request lifecycle, auth flow, data model | Before any feature work |
 | `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
-| `CODING_STANDARDS.md` | Code style — PHP, JS, CSS conventions, tooling config | Before writing code |
+| `CODING_STANDARDS.md` (if exists) | Code style — PHP, JS, CSS conventions, tooling config | Before writing code |
