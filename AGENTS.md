@@ -109,9 +109,9 @@ Make technical decisions independently within the scope of a task. Ask the user 
 
 - The task contradicts something in this document
 - You need credentials, API keys, or access to external services
-- A change would affect the database schema, create new dependencies, or alter the architecture
 - You are unsure about the intent or scope of a task
 - Two or more valid solutions exist with non-trivial trade-offs that you cannot resolve alone using the Decision Framework
+- Any action listed under **Ask the user before** in Scope of Authority above
 
 **Important:** If the task description is ambiguous, ask clarifying questions before starting implementation — not after. Spending 30 minutes planning is cheaper than 3 hours on the wrong solution.
 

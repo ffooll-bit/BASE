@@ -155,10 +155,12 @@ view('layout/header')
                 <h3 class="mb-0"><?= esc($title) ?></h3>
             </div>
             <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="<?= base_url('dashboard') ?>">Home</a></li>
-                    <li class="breadcrumb-item active"><?= esc($title) ?></li>
-                </ol>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="<?= base_url('dashboard') ?>">Home</a></li>
+                        <li class="breadcrumb-item active"><?= esc($title) ?></li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
@@ -1033,5 +1035,5 @@ Follow these minimum a11y rules for every new view or component:
 **Reference:**
 - AdminLTE 4 docs: https://adminlte-v4.netlify.app/docs/
 - Bootstrap 5.3 docs: https://getbootstrap.com/docs/5.3/
-- Font Awesome 6 cheatsheet: https://fontawesome.com/search
+- Font Awesome 6 cheatsheet: https://fontawesome.com/search?m=free
 - Bootstrap Icons (alternative): https://icons.getbootstrap.com/

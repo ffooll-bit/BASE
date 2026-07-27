@@ -52,6 +52,10 @@ sequenceDiagram
 
 Filter ordering: **Required before** → **Global before** → Route → Controller → View → **Global after** → **Required after**
 
+- **Required filters** (`$routes->setFilter()`) run on every request regardless of route, wrapped outside global filters.
+- **Global filters** (defined in `Config\Filters::$globals`) run on all routes except those explicitly excluded.
+- **Route filters** (defined per-route in `$routes->get()` options) run only on specific routes.
+
 ---
 
 ## Routes
