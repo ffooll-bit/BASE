@@ -23,11 +23,12 @@ For every task, follow this sequence in order. Do not skip phases.
 ### Phase A: Understand
 
 1. Read `AGENTS.md` if this is your first session — it defines your identity, rules, and decision framework.
-2. Read the task description or `OPEN_ISSUES.md` entry carefully. Identify what needs to change and why.
-3. If the task is ambiguous, ask clarifying questions **before** writing code. Spending 30 minutes planning is cheaper than 3 hours on the wrong solution.
-4. Read `ARCHITECTURE.md` if it exists — it explains how the system works.
-5. Read `DESIGN.md` if it exists and the task involves UI changes.
-6. Read `CODING_STANDARDS.md` if it exists.
+2. Check `.memory/memory.yaml` — it stores cross-session context from previous sessions.
+3. Read the task description or `OPEN_ISSUES.md` entry carefully. Identify what needs to change and why.
+4. If the task is ambiguous, ask clarifying questions **before** writing code. Spending 30 minutes planning is cheaper than 3 hours on the wrong solution.
+5. Read `ARCHITECTURE.md` — it explains how the system works.
+6. Read `DESIGN.md` if the task involves UI changes.
+7. Read `CODING_STANDARDS.md`.
 
 ### Phase B: Plan
 
@@ -45,7 +46,8 @@ For every task, follow this sequence in order. Do not skip phases.
 1. Write or modify code following project conventions and the Decision Framework in `AGENTS.md`.
 2. Keep changes minimal — only what the task requires (YAGNI).
 3. Self-review as you go: check for security, edge cases, and debug leftovers.
-4. **Add tests:**
+4. Save key decisions or bug fixes to `.memory/memory.yaml` after resolving them.
+5. **Add tests:**
    - **Always** add tests when creating or modifying libraries, services, controllers, or filters
    - **Required** when fixing a bug — write a test that reproduces the bug first
    - **Optional** for view-only changes or documentation
@@ -59,6 +61,8 @@ Run these in order. Stop and fix immediately if any step fails:
 php -l app/Controllers/Login.php
 php -l app/Libraries/Auth.php
 # Repeat for every PHP file you created or modified
+
+vendor/bin/php-cs-fixer fix  # Auto-fix code style (PSR-12, PHP 8.2)
 
 npm run build           # Only if you touched any view or asset file
 php spark routes        # Only if routes changed
@@ -79,8 +83,12 @@ vendor/bin/phpunit      # Only if tests exist
 ### Phase F: Pull Request
 
 1. Push your branch.
-2. Open a PR. If `.github/PULL_REQUEST_TEMPLATE.md` exists, use it as a checklist.
+2. Open a PR. Use `.github/PULL_REQUEST_TEMPLATE.md` as a checklist.
 3. Wait for CI to pass. If it fails, fix and amend the commit — do not add fixup commits.
+
+### Definition of Done
+
+A task is **Done** when: code written, linted (`php -l`), verified (`npm run build`, `vendor/bin/phpunit`), committed (Conventional Commit), and a PR is sent with CI green.
 
 ---
 
@@ -120,11 +128,14 @@ Before opening a PR, confirm every item:
 - [ ] `php -l` passes on all modified PHP files
 - [ ] `npm run build` succeeds (if UI/assets changed)
 - [ ] `php spark routes` shows correct new routes (if routes changed)
+- [ ] `vendor/bin/php-cs-fixer fix` passes (no style violations)
 - [ ] `vendor/bin/phpunit` is green (if tests exist)
 - [ ] No debug code: `dd()`, `var_dump()`, `console.log()`, `print_r()`, `exit()` are absent
 - [ ] All user inputs are validated server-side
 - [ ] All HTML output uses `esc()`
 - [ ] No unrelated files were changed
+- [ ] No magic numbers — extract named constants for hardcoded values
+- [ ] No code duplication — extract reusable logic
 - [ ] Commit message follows Conventional Commits format
 - [ ] Screenshots attached for UI changes
 
@@ -146,6 +157,6 @@ Review comments should be specific, actionable, and respectful.
 ## Releases
 
 - This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
-- If `CHANGELOG.md` exists, update it throughout development: add new entries to the `[Unreleased]` section as changes are made. Before release, move them under a new version header.
+- Update `CHANGELOG.md` throughout development: add new entries to the `[Unreleased]` section as changes are made. Before release, move them under a new version header.
 - A release is tagged from `main` after the PR is merged.
 - Release command: `git tag v<version> && git push origin v<version>`

@@ -17,10 +17,14 @@ Agent instructions:
 _None yet._
 
 ### Changed
-_None yet._
+
+- **Layout views:** migrated header, sidebar, footer, and dashboard views from AdminLTE 3 to AdminLTE 4 classes (`app-wrapper`, `app-sidebar`, `app-main`, etc.)
+- **Code style:** applied `php-cs-fixer` rules across `app/` and `tests/` — fixed import ordering, octal notation, anonymous class syntax
 
 ### Fixed
-_None yet._
+
+- **Dashboard header:** pass `$username` variable to header view to eliminate "Undefined variable" error
+- **AuthTest:** align `testLogoutClearsAuthSession` expectation with actual `destroy()` call
 
 ### Removed
 _None yet._
@@ -38,6 +42,8 @@ _None yet._
 - **Login feature views:** login form with CSRF protection, flash message alerts, autocomplete attributes; dashboard index view
 - **AdminLTE 4 foundation:** npm asset build pipeline (package.json, build script), replaced Composer-based AdminLTE 3
 - **Developer documentation:** AGENTS.md (identity & rules), CONTRIBUTING.md (workflow), ARCHITECTURE.md (system blueprint), DESIGN.md (UI/UX consistency), CODING_STANDARDS.md (code style), OPEN_ISSUES.md (backlog), PLAN.md (preparation blueprint)
+- **PR template:** `.github/PULL_REQUEST_TEMPLATE.md` with self-review checklist for debug code, validation, escaping
+- **CI workflow:** `.github/workflows/ci.yml` with PHP 8.2, Node 20, composer install, npm ci, npm run build, php -l, phpunit
 - **Project tooling:** .editorconfig (UTF-8, CRLF, 4-space indent), .php-cs-fixer.dist.php (@PSR12 + @PHP82Migration ruleset), friendsofphp/php-cs-fixer as dev dependency
 
 ### Changed

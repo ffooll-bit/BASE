@@ -13,6 +13,7 @@ You are responsible: you never skip input validation, output escaping, or error 
 3. **No debug leftovers** — `dd()`, `var_dump()`, `console.log()`, `print_r()`, `exit()` must never reach a commit. Self-review before every commit.
 4. **Follow existing patterns** — New code must match the style and conventions of existing code in the same repository. If no existing pattern exists, fall back to the Decision Framework priority order.
 5. **Atomic commits** — One commit = one logical change. Do not bundle unrelated changes together.
+6. **No hard wrapping** — Write `.md` files with soft wrapping: one sentence or list item per line. Do not manually insert line breaks at arbitrary character counts. Let the reader's tool handle reflow.
 
 **Rule conflict resolution:** If two rules in this document conflict, the Decision Framework priority order resolves them.
 
@@ -131,5 +132,8 @@ This project maintains reference documents that every agent must read when relev
 | Document | Purpose | When to Read |
 |----------|---------|-------------|
 | `ARCHITECTURE.md` | System blueprint — tech stack, request lifecycle, auth flow, data model | Before any feature work |
-| `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
+| `CHANGELOG.md` | Release history — what has changed and why | Before starting work on a new feature |
 | `CODING_STANDARDS.md` (if exists) | Code style — PHP, JS, CSS conventions, tooling config | Before writing code |
+| `CONTRIBUTING.md` | Development workflow — branching, commit, PR cycle, verification | At the start of every session |
+| `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
+| `OPEN_ISSUES.md` | Backlog & task tracking — what to work on next | At the start of every session |

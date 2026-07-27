@@ -22,6 +22,9 @@
 - [ ] All POST forms include `csrf_field()`
 - [ ] All HTML output uses `esc()`
 - [ ] No unrelated files were changed
+- [ ] No magic numbers — extract named constants
+- [ ] No code duplication — extract reusable logic
+- [ ] `vendor/bin/php-cs-fixer fix` passes (no style violations)
 - [ ] Commit message follows Conventional Commits format
 - [ ] Screenshots attached for UI changes
 
