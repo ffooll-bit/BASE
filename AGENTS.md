@@ -123,3 +123,13 @@ Make technical decisions independently within the scope of a task. Ask the user 
 - **jQuery is banned** — Do not load, reference, or write jQuery. Use vanilla JS or AdminLTE 4 native JS.
 - **Font Awesome 6** — All icons via `fas`/`far`/`fab` classes. No Unicode or image-based icons.
 - **npm** — Frontend assets managed via npm. After adding/changing an npm dependency, run `npm install && npm run build`.
+
+## Supplementary Documents
+
+This project maintains reference documents that every agent must read when relevant:
+
+| Document | Purpose | When to Read |
+|----------|---------|-------------|
+| `ARCHITECTURE.md` | System blueprint — tech stack, request lifecycle, auth flow, data model | Before any feature work |
+| `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
+| `CODING_STANDARDS.md` | Code style — PHP, JS, CSS conventions, tooling config | Before writing code |
