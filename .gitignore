@@ -64,6 +64,7 @@ writable/debugbar/*
 !writable/debugbar/.gitkeep
 
 php_errors.log
+.php-cs-fixer.cache
 
 #-------------------------
 # User Guide Temp Files
