@@ -46,7 +46,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Priority**: High
 **Traces to AC**: AC-03
 **Verification**: `(Select-String -Path app/Views/layout/header.php -Pattern 'adminlte\.min\.css' -Quiet) -and (Select-String -Path app/Views/layout/header.php -Pattern 'data-bs-toggle' -Quiet) -and (Select-String -Path app/Views/layout/header.php -Pattern 'layout-fixed' -Quiet) -and -not (Select-String -Path app/Views/layout/header.php -Pattern 'jquery' -Quiet)`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-21)
 
 ### TASK-005 | Migrate Sidebar View to AdminLTE 4
 **Description**: Rewrite `app/Views/layout/sidebar.php` to AdminLTE 4 sidebar markup. Render the user panel showing `$username`. Render navigation menu items from `$menuItems` array with active state highlighting based on `$currentRoute`. Use Bootstrap 5 collapse data attributes (`data-bs-toggle="collapse"`) for submenu treeview items instead of jQuery-based treeview. Ensure sidebar uses AdminLTE 4 CSS classes (`main-sidebar`, `sidebar`, `nav nav-pills nav-sidebar flex-column`). Open the `content-wrapper` div.
@@ -54,7 +54,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Priority**: High
 **Traces to AC**: AC-04
 **Verification**: `(Select-String -Path app/Views/layout/sidebar.php -Pattern 'nav-sidebar' -Quiet) -and (Select-String -Path app/Views/layout/sidebar.php -Pattern 'data-bs-toggle.*collapse' -Quiet) -and (Select-String -Path app/Views/layout/sidebar.php -Pattern 'user-panel' -Quiet) -and -not (Select-String -Path app/Views/layout/sidebar.php -Pattern 'jquery' -Quiet)`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-21)
 
 ### TASK-006 | Migrate Footer View to AdminLTE 4
 **Description**: Rewrite `app/Views/layout/footer.php` to AdminLTE 4 footer markup. Close the `content-wrapper` div. Render the AdminLTE 4 footer bar with AdminLTE 4 classes. Close the `wrapper` div. Load JavaScript assets from local `public/` paths: Bootstrap 5 JS bundle (`public/bootstrap/js/bootstrap.bundle.min.js`) and AdminLTE 4 JS (`public/adminlte/js/adminlte.min.js`). Remove all CDN JS references, jQuery scripts, and any icheck JS initialization. Close `</body></html>`.
@@ -62,7 +62,7 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 **Priority**: High
 **Traces to AC**: AC-05
 **Verification**: `(Select-String -Path app/Views/layout/footer.php -Pattern 'adminlte\.min\.js' -Quiet) -and (Select-String -Path app/Views/layout/footer.php -Pattern 'bootstrap\.bundle\.min\.js' -Quiet) -and -not (Select-String -Path app/Views/layout/footer.php -Pattern 'jquery|icheck' -Quiet)`
-**Status**: [ ] Not started
+**Status**: [X] Complete (2026-07-21)
 
 ## Group 4: Dashboard Migration
 **Goal**: Migrate the dashboard content view to use AdminLTE 4 content-wrapper and Bootstrap 5 card components
@@ -96,3 +96,4 @@ plan-reference: docs/plans/adminlte-migration-plan.md
 | 0.3 | 2026-07-21 10:52:32 | performer (deepseek-v4-flash-free) | TASK-001 completed: removed adminlte from composer, created package.json, npm install |
 | 0.3 | 2026-07-27 09:04:37 | performer (deepseek-v4-flash-free) | TASK-002 completed: created build script, populated public/ with AdminLTE 4 assets |
 | 0.3 | 2026-07-27 09:12:59 | performer (deepseek-v4-flash-free) | TASK-003 completed: migrated login view to AdminLTE 4 |
+| 0.3 | 2026-07-27 09:22:02 | performer (deepseek-v4-flash-free) | TASK-004, TASK-005, TASK-006 completed: migrated header, sidebar, footer views to AdminLTE 4 |
