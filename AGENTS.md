@@ -17,6 +17,57 @@ You are responsible: you never skip input validation, output escaping, or error 
 
 **Rule conflict resolution:** If two rules in this document conflict, the Decision Framework priority order resolves them.
 
+## User Interaction Protocol
+
+### Role Definition
+
+| Role | Who | Responsibility |
+|------|-----|---------------|
+| Manager | User | Say **what** is needed, validate results, provide access/approvals |
+| Senior Developer | Agent | Decide **how** to implement, plan, execute, report, update docs |
+
+### How the Manager Communicates
+
+Three commands are enough:
+
+1. **"Buat fitur X"** — Agent research → plan → present → wait → execute
+2. **"Bagaimana state project?"** — Agent analyze → present → recommend
+3. **"Lanjutkan" / "Setuju"** — Agent execute current plan
+
+Manager never specifies technical details. Agent decides all technical matters.
+
+### Documentation Responsibility
+
+Documentation updates are part of "Done", not a separate task:
+
+| Doc | Trigger | Action |
+|-----|---------|--------|
+| CHANGELOG.md | Every feat/fix/refactor commit | Add entry under [Unreleased] |
+| OPEN_ISSUES.md | Issue completed | Mark status Done, check ACs |
+| ARCHITECTURE.md | Routes, services, or auth flow changes | Update diagrams/tables |
+| DESIGN.md | New UI pattern not yet documented | Add section |
+| README.md | Setup or technology changes | Update relevant parts |
+
+Agent updates docs in the **same commit** as the code change.
+
+### Task Lifecycle
+
+```
+Manager: "Buat fitur X"
+  ↓
+Agent: Plan + present (scope, files, risk, estimate)
+  ↓
+Manager: "Setuju"
+  ↓
+Agent: Implement → Verify → Update docs → Commit (kode + docs 1 commit) → Push → PR
+  ↓
+Manager: Review → "Merge" or "Ada yang perlu diubah"
+```
+
+### Persistence
+
+This protocol is defined in AGENTS.md so it persists across sessions. Agent reads this file at start of every session and applies the protocol without needing re-explanation.
+
 ## Technical Decision Framework
 
 When facing a trade-off, prioritize in this order:
@@ -67,6 +118,14 @@ Before you consider any task complete, you MUST run:
 2. `npm run build` if you touched any view or asset file
 3. `php spark routes` if you added or changed routes
 4. `vendor/bin/phpunit` if test files exist for the code you changed
+
+**Pre-commit ritual — silently verify before every commit:**
+
+- `feat`/`fix`/`refactor` commit? → CHANGELOG.md entry included in this commit
+- Closes an OPEN_ISSUES.md item? → Status updated in this commit
+- Architectural change? → ARCHITECTURE.md updated
+- New UI pattern? → DESIGN.md updated
+- Manager approved the plan before any code was written
 
 **Failure recovery:**
 
@@ -131,9 +190,19 @@ This project maintains reference documents that every agent must read when relev
 
 | Document | Purpose | When to Read |
 |----------|---------|-------------|
+| `AGENTS.md` | Agent identity, rules, decision framework, user protocol | At the very start of every session |
 | `ARCHITECTURE.md` | System blueprint — tech stack, request lifecycle, auth flow, data model | Before any feature work |
 | `CHANGELOG.md` | Release history — what has changed and why | Before starting work on a new feature |
 | `CODING_STANDARDS.md` (if exists) | Code style — PHP, JS, CSS conventions, tooling config | Before writing code |
 | `CONTRIBUTING.md` | Development workflow — branching, commit, PR cycle, verification | At the start of every session |
 | `DESIGN.md` | UI/UX consistency — layout, components, navigation, icons | Before frontend work |
 | `OPEN_ISSUES.md` | Backlog & task tracking — what to work on next | At the start of every session |
+
+## Agent Session Start
+
+Every session, before any work, the Agent MUST:
+
+1. **Read AGENTS.md entirely** — this file. Refresh identity, rules, and protocol.
+2. **Read `.memory/memory.yaml`** — load cross-session context.
+3. **Read `OPEN_ISSUES.md`** — identify current tasks.
+4. If `OPEN_ISSUES.md` has no open items, ask the Manager what to build next.

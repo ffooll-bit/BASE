@@ -4,7 +4,17 @@ Priority levels: **P-1** (urgent), **P-2** (important), **P-3** (nice to have).
 
 ---
 
-## ISS-001: Fix Layout Views to AdminLTE 4 Classes — P-1
+## Open Items (Aktif)
+
+_Kosong — tidak ada task yang sedang dikerjakan._
+
+---
+
+## Sprint 1 (2026-07-27) — Project Preparation & Core Setup
+
+Semua item di bawah sudah selesai dan diarsipkan sebagai referensi historis.
+
+### ISS-001: Fix Layout Views to AdminLTE 4 Classes — P-1
 
 **Status:** Done
 **Created:** 2026-07-27

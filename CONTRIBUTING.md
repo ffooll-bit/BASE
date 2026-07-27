@@ -72,8 +72,9 @@ vendor/bin/phpunit      # Only if tests exist
 ### Phase E: Commit
 
 1. Stage only files related to this task. No unrelated changes.
-2. Write a commit message following the format below.
-3. Commit. One commit per logical change.
+2. Documentation updates (CHANGELOG, OPEN_ISSUES, ARCHITECTURE, DESIGN, README as applicable) must be **in the same commit** as the code change — never a separate commit.
+3. Write a commit message following the format below.
+4. Commit. One commit per logical change.
 
 **What counts as one commit:**
 - A new feature spanning controller + service + view = one commit
