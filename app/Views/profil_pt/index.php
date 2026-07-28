@@ -58,9 +58,9 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-4">
-                        <div class="card h-100">
+                        <div class="card card-info h-100">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-address-card"></i> Kontak</h3>
+                                <h3 class="card-title">Kontak</h3>
                             </div>
                             <div class="card-body d-flex flex-column">
                                 <div class="fs-6 mb-2">
@@ -89,9 +89,9 @@
                         </div>
                     </div>
                     <div class="col-md-6 mb-4">
-                        <div class="card h-100">
+                        <div class="card card-info h-100">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-map-marker-alt"></i> Alamat</h3>
+                                <h3 class="card-title">Alamat</h3>
                             </div>
                             <div class="card-body d-flex flex-column">
                                 <p class="fs-6 mb-1"><?= esc($profilPT['jalan'] ?? '-') ?></p>
