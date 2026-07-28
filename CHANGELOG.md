@@ -32,6 +32,23 @@ _None yet._
 ## [Unreleased]
 
 ### Added
+_None yet._
+
+### Changed
+_None yet._
+
+### Fixed
+_None yet._
+
+### Removed
+_None yet._
+
+### Security
+_None yet._
+
+## [0.2.0] - 2026-07-28
+
+### Added
 
 - **Dashboard content:** replaced empty welcome card with professional stat cards (active user, NeoFeeder status, session status, app version)
 - **Login page:** added "Remember me" checkbox, password visibility toggle, and field-level validation feedback
@@ -133,5 +150,6 @@ _None yet._
 - **Session fixation:** session ID regenerated on every login
 - **HTTP-only flag:** enabled on session cookies
 
-[unreleased]: https://github.com/ffooll-bit/BASE/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/ffooll-bit/BASE/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ffooll-bit/BASE/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ffooll-bit/BASE/compare/v0.0.0...v0.1.0
