@@ -32,13 +32,13 @@
         <?php endif; ?>
 
         <?php if ($profilPT): ?>
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">Identitas & Kontak</h3>
-                    </div>
-                    <div class="card-body">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Informasi Perguruan Tinggi</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
                         <table class="table table-sm mb-0">
                             <tbody>
                                 <tr>
@@ -62,38 +62,18 @@
                                     <td><?= esc($profilPT['telepon'] ?? '-') ?></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="text-muted fw-normal text-nowrap">Fax</th>
-                                    <td><?= esc($profilPT['faximile'] ?? '-') ?></td>
-                                </tr>
-                                <tr>
                                     <th scope="row" class="text-muted fw-normal text-nowrap">Email</th>
                                     <td><?= esc($profilPT['email'] ?? '-') ?></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="text-muted fw-normal text-nowrap">Website</th>
-                                    <td><?= esc($profilPT['website'] ?? '-') ?></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">Alamat & Legalitas</h3>
-                    </div>
-                    <div class="card-body">
+                    <div class="col-md-6">
                         <table class="table table-sm mb-0">
                             <tbody>
                                 <tr>
                                     <th scope="row" class="text-muted fw-normal text-nowrap" style="width:140px">Alamat</th>
                                     <td><?= esc($profilPT['jalan'] ?? '-') ?></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="text-muted fw-normal text-nowrap">Kelurahan</th>
-                                    <td><?= esc($profilPT['kelurahan'] ?? '-') ?></td>
                                 </tr>
                                 <tr>
                                     <th scope="row" class="text-muted fw-normal text-nowrap">Wilayah</th>
@@ -102,6 +82,10 @@
                                 <tr>
                                     <th scope="row" class="text-muted fw-normal text-nowrap">Kode Pos</th>
                                     <td><?= esc($profilPT['kode_pos'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted fw-normal text-nowrap">Website</th>
+                                    <td><?= esc($profilPT['website'] ?? '-') ?></td>
                                 </tr>
                                 <tr>
                                     <th scope="row" class="text-muted fw-normal text-nowrap">SK Pendirian</th>

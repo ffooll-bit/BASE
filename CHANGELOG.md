@@ -48,6 +48,7 @@ _None yet._
 
 - **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
 - **Profil PT card styling:** replaced `table-borderless` with `table` for visible row separators, `card-body p-0` with `card-body` for proper padding, `td` labels upgraded to `th scope="row"` for semantic correctness
+- **Profil PT layout:** merged two uneven cards into one balanced card with 2-column inner layout (6 rows each), removed Kelurahan (always `-`) and Fax (redundant)
 
 ### Removed
 _None yet._
