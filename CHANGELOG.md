@@ -16,7 +16,7 @@ Agent instructions:
 ### Added
 
 - **Dashboard content:** replaced empty welcome card with professional stat cards (active user, NeoFeeder status, session status, app version)
-- **Login page:** added "Remember me" checkbox, "Forgot password?" link, password visibility toggle, and field-level validation feedback (`is-invalid` on error)
+- **Login page:** added "Remember me" checkbox, password visibility toggle, and field-level validation feedback
 - **Error pages:** themed 404 and 500 pages with Bootstrap branding, app icon, and "Back to Dashboard" link
 - **Custom assets:** created `public/css/app.css` and `public/js/app.js` for project-specific styles and scripts
 - **Favicon:** linked `favicon.ico` in `<head>` of both header and login layouts
@@ -24,20 +24,33 @@ Agent instructions:
 ### Changed
 
 - **Home route:** `/` now redirects to `/login` (unauthenticated) or `/dashboard` (authenticated) instead of showing the CodeIgniter default welcome page
-- **Login field:** changed `type="email"` to `type="text"` with placeholder "Email or Username" to match the auth service (accepts both), added `is-invalid` class on error
+- **Login field:** changed `type="email"` to `type="text"` with placeholder "Email or Username" to match the auth service (accepts both)
+- **Login form icon:** changed `fa-envelope` to `fa-at` for dual-purpose email/username field
+- **Login accessibility:** added `visually-hidden` labels for username and password inputs, `aria-label` on password toggle
 - **Dynamic page title:** header now supports `$title` variable for per-page `<title>` (defaults to app name)
 - **Sidebar username:** now accepts `$username` from controller (with session fallback) for consistency with header and dashboard
 - **Footer copyright:** shortened from full product name to "BASE"
 - **Layout views:** migrated header, sidebar, footer, and dashboard views from AdminLTE 3 to AdminLTE 4 classes (`app-wrapper`, `app-sidebar`, `app-main`, etc.)
+- **Font Awesome 6 icons:** updated `fa-sign-out-alt` → `fa-right-from-bracket`, `fa-tachometer-alt` → `fa-gauge-high` to use canonical FA6 names
+- **Sidebar accessibility:** added `aria-label="Toggle sidebar"` on the hamburger menu link
+- **Username overflow:** added `text-truncate` on sidebar and dashboard username, CSS rule for navbar dropdown truncation
 - **Code style:** applied `php-cs-fixer` rules across `app/` and `tests/` — fixed import ordering, octal notation, anonymous class syntax
 
 ### Fixed
 
+- **Password toggle:** broken show/hide button — JS queried `<i>` but HTML used `<span>`, causing TypeError
+- **Login error styling:** removed blanket `is-invalid` on both fields; flash message is now the sole error feedback
+- **Null safety:** added `$username ?? session('auth.username')` fallback in header and dashboard views
+- **Footer escaping:** `date('Y')` now wrapped with `esc()`
+- **Dashboard heading:** changed `<h1>` to `<h3>` to match DESIGN.md spec
+- **Dashboard labels:** replaced hardcoded misleading status text ("Terhubung", "Aktif") with neutral labels
+- **Sidebar username:** replaced dead `<a href="#">` with `<span>` element
 - **Dashboard header:** pass `$username` variable to header view to eliminate "Undefined variable" error
 - **AuthTest:** align `testLogoutClearsAuthSession` expectation with actual `destroy()` call
 
 ### Removed
-_None yet._
+
+- **welcome_message.php:** deleted unused default CI4 welcome page (Home controller always redirects)
 
 ### Security
 _None yet._
