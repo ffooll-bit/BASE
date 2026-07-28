@@ -51,3 +51,7 @@ items:
     tags: [decision, feature, profilpt]
     count: 1
     created: "2026-07-28T14:58:43Z"
+  - text: "ADR: AppVersion config → Context: dashboard version number was hardcoded (v0.1.0) while actual release was v0.2.0. Created `app/Config/AppVersion.php` with `$version` and `$buildDate` properties; dashboard reads from config. AGENTS.md release process updated with step to bump version. → Consequence: version auto-syncs across views, one source of truth."
+    tags: [decision, version, config]
+    count: 1
+    created: "2026-07-28T15:08:31Z"

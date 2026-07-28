@@ -20,7 +20,7 @@ class ProfilPT extends BaseController
             }
         }
 
-        return view('layout/header', ['username' => $username, 'title' => 'Profil PT'])
+        return view('layout/header', ['username' => $username, 'title' => 'Profil Perguruan Tinggi'])
             . view('layout/sidebar', ['username' => $username])
             . view('profil_pt/index', compact('username', 'profilPT', 'error'))
             . view('layout/footer');

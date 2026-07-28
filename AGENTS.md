@@ -75,11 +75,12 @@ Triggered when a feature/fix batch is ready for release (manager says "Rilis" or
 Steps:
 
 1. **Check `main` is up-to-date** — `git switch main && git pull origin main`
-2. **Move [Unreleased] to versioned release in CHANGELOG.md** — replace `## [Unreleased]` with `## [0.X.0] - YYYY-MM-DD`. Follow Keep a Changelog format. Ensure `[unreleased]` link reference is also updated.
-3. **Verify** — `vendor/bin/phpunit` green, `php -l` on all changed files, `npm run build` passes
-4. **Commit** — `chore: release v0.X.0`
-5. **Tag** — `git tag v0.X.0 && git push origin v0.X.0`
-6. **Create GitHub Release** — extract only the version section from CHANGELOG.md, not the whole file, and append the reference link definition so the version heading is clickable:
+2. **Update `app/Config/AppVersion.php`** — set `$version` to the new version number and `$buildDate` to today's date.
+3. **Move [Unreleased] to versioned release in CHANGELOG.md** — replace `## [Unreleased]` with `## [0.X.0] - YYYY-MM-DD`. Follow Keep a Changelog format. Ensure `[unreleased]` link reference is also updated.
+4. **Verify** — `vendor/bin/phpunit` green, `php -l` on all changed files, `npm run build` passes
+5. **Commit** — `chore: release v0.X.0`
+6. **Tag** — `git tag v0.X.0 && git push origin v0.X.0`
+7. **Create GitHub Release** — extract only the version section from CHANGELOG.md, not the whole file, and append the reference link definition so the version heading is clickable:
    ```powershell
    $notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
    $notes += "`r`n[0.X.0]: https://github.com/ffooll-bit/BASE/compare/v0.(X-1).0...v0.X.0"
@@ -88,8 +89,8 @@ Steps:
    Remove-Item release_notes.md
    ```
    > (Replace `X` with the actual major version numbers.)
-7. **Update docs** — mark released issues in OPEN_ISSUES.md as Released, move to archive section
-8. **Cleanup** — delete any stale branches that were already merged
+8. **Update docs** — mark released issues in OPEN_ISSUES.md as Released, move to archive section
+9. **Cleanup** — delete any stale branches that were already merged
 
 > Before every release, verify that `[unreleased]:` link at the bottom of CHANGELOG.md is updated to point to `HEAD`.
 

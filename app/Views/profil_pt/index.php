@@ -8,7 +8,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item"><a href="<?= base_url('dashboard') ?>">Home</a></li>
-                        <li class="breadcrumb-item active">Profil PT</li>
+                        <li class="breadcrumb-item active">Profil Perguruan Tinggi</li>
                     </ol>
                 </nav>
             </div>

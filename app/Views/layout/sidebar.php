@@ -7,18 +7,19 @@
 
         <div class="sidebar-wrapper">
             <!-- Sidebar Menu -->
+            <?php $currentUri = trim(service('uri')->getPath(), '/'); ?>
             <nav class="mt-2">
                 <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
                     <li class="nav-item">
-                        <a href="<?= base_url('dashboard') ?>" class="nav-link">
+                        <a href="<?= base_url('dashboard') ?>" class="nav-link <?= $currentUri === 'dashboard' ? 'active' : '' ?>">
                             <i class="nav-icon fas fa-gauge-high"></i>
                             <p>Dashboard</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= base_url('profil-pt') ?>" class="nav-link">
+                        <a href="<?= base_url('profil-pt') ?>" class="nav-link <?= $currentUri === 'profil-pt' ? 'active' : '' ?>">
                             <i class="nav-icon fas fa-university"></i>
-                            <p>Profil PT</p>
+                            <p>Profil Perguruan Tinggi</p>
                         </a>
                     </li>
                 </ul>

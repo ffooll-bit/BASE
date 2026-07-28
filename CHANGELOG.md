@@ -37,7 +37,12 @@ _None yet._
 - **Route:** `GET /profil-pt` → `ProfilPT::index` with auth+csrf filters
 
 ### Changed
-_None yet._
+
+- **UI consistency:** login page Google Font updated from `Source Sans Pro` (AdminLTE 3) to `Source Sans 3` (AdminLTE 4) to match the rest of the app
+- **Sidebar navigation:** added auto-detection of active page via `active` CSS class on current route
+- **Dashboard version:** replaced hardcoded `v0.1.0` with dynamic value from `config('AppVersion')->version`
+- **Profil PT page:** breadcrumb and page title unified to "Profil Perguruan Tinggi" for consistency
+- **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
 
 ### Fixed
 _None yet._
