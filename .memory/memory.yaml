@@ -11,3 +11,7 @@ items:
     tags: [workflow, decision]
     count: 1
     created: "2026-07-27T16:48:33Z"
+  - text: "ADR: UI/UX Professional Audit — P-1 fixes (Home route, dashboard content, login field consistency) + P-2 quality (favicon, dynamic title, sidebar consistency, login form polish, error page theming, custom CSS/JS). All committed in one atomic commit."
+    tags: [decision, ui, ux, polish]
+    count: 1
+    created: "2026-07-28T01:50:00Z"
