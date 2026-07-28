@@ -33,18 +33,24 @@
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                    <i class="fas fa-user"></i> <?= esc($username ?? session('auth.username')) ?>
+            <li class="nav-item dropdown user-menu">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-label="User menu">
+                    <i class="fas fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <form action="<?= base_url('logout') ?>" method="post">
-                        <?= csrf_field() ?>
-                        <button type="submit" class="dropdown-item">
-                            <i class="fas fa-right-from-bracket"></i> Logout
-                        </button>
-                    </form>
-                </div>
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                    <li class="user-header text-bg-primary">
+                        <i class="fas fa-user"></i>
+                        <p><?= esc($username ?? session('auth.username')) ?></p>
+                    </li>
+                    <li class="user-footer">
+                        <form action="<?= base_url('logout') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-right-from-bracket"></i> Sign out
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </li>
         </ul>
     </nav>

@@ -1,7 +1,7 @@
     </main>
 
     <footer class="app-footer">
-        <strong>&copy; <?= esc(date('Y')) ?> BASE.</strong>
+        <strong>Copyright &copy; <?= esc(date('Y')) ?> BASE.</strong>
         All rights reserved.
     </footer>
 

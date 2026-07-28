@@ -23,3 +23,11 @@ items:
     tags: [decision, ui, dashboard, small-box]
     count: 1
     created: "2026-07-28T11:44:11Z"
+  - text: "ADR: Prompt structure untuk UI audit — user request mencakup login page layout alignment + dashboard/layout alignment dengan AdminLTE 4 preview, tanpa menyentuh Neo Feeder data features"
+    tags: [workflow, prompt]
+    count: 1
+    created: "2026-07-28T12:17:07Z"
+  - text: "ADR: Login & Dashboard Layout alignment with AdminLTE 4 preview — Login page: <main>/<h1> markup, BASE title only, removed dead Remember"
+    tags: [decision, ui, layout, login, dashboard]
+    count: 1
+    created: "2026-07-28T12:31:09Z"

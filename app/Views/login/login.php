@@ -19,10 +19,10 @@
 </head>
 <body class="login-page bg-body-secondary">
 
-<div class="login-box">
-    <div class="login-logo">
-        <a href="<?= base_url() ?>"><b>BASE</b> — Bongaya Advanced Services Engine</a>
-    </div>
+<main class="login-box">
+    <h1 class="login-logo">
+        <a href="<?= base_url() ?>"><b>BASE</b></a>
+    </h1>
 
     <div class="card">
         <div class="card-body login-card-body">
@@ -61,27 +61,13 @@
                     </button>
                 </div>
 
-                <div class="row align-items-center mb-3">
-                    <div class="col-8">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1">
-                            <label class="form-check-label" for="remember">Remember me</label>
-                        </div>
-                    </div>
-                    <div class="col-4 text-end">
-                        <a href="#" class="text-decoration-none text-muted small d-none">Forgot password?</a>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary w-100">Sign in</button>
-                    </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
+</main>
 
 <!-- Bootstrap 5 -->
 <script src="<?= base_url('bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
