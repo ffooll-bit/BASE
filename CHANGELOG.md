@@ -32,7 +32,9 @@ _None yet._
 ## [Unreleased]
 
 ### Added
-_None yet._
+
+- **Profil PT page:** dedicated page (`/profil-pt`) displaying institution profile data from NeoFeeder API — identity, contact, address, and legalitas in two AdminLTE cards; sidebar navigation item added
+- **Route:** `GET /profil-pt` → `ProfilPT::index` with auth+csrf filters
 
 ### Changed
 _None yet._

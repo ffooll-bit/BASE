@@ -15,6 +15,12 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('profil-pt') ?>" class="nav-link">
+                            <i class="nav-icon fas fa-university"></i>
+                            <p>Profil PT</p>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

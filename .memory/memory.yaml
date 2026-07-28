@@ -47,3 +47,7 @@ items:
     tags: [changelog, release, fix]
     count: 1
     created: "2026-07-28T13:44:23Z"
+  - text: "ADR: Profil PT dibuat sebagai halaman terpisah, bukan di dashboard → Context: ProfilPT adalah data reference yang jarang berubah, tidak cocok untuk dashboard (violates Hick's Law, Miller's Law). Dashboard dikosongkan untuk KPI operasional di masa depan. → Consequence: Controller + View + Route + Sidebar baru; Dashboard tidak berubah."
+    tags: [decision, feature, profilpt]
+    count: 1
+    created: "2026-07-28T14:58:43Z"
