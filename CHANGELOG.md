@@ -8,7 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 Agent instructions:
 - After every feat:/fix:/refactor:/perf:/security: commit, add an entry under [Unreleased] in the correct category (Added/Changed/Fixed/Removed/Security).
 - Skip chore:, docs:, test: commits unless they introduce user-facing changes.
-- Before a release, move [Unreleased] into a new version header with today's date.
+- Before a release, move [Unreleased] into a new version header with today's date. After moving, recreate a blank [Unreleased] section with empty category placeholders:
+```markdown
+## [Unreleased]
+
+### Added
+_None yet._
+
+### Changed
+_None yet._
+
+### Fixed
+_None yet._
+
+### Removed
+_None yet._
+
+### Security
+_None yet._
+```
 -->
 
 ## [Unreleased]
