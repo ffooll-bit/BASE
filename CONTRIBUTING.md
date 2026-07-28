@@ -193,8 +193,11 @@ git add CHANGELOG.md && git commit -m "chore: release v0.X.0"
 # 3. Tag and push
 git tag v0.X.0 && git push origin v0.X.0
 
-# 4. Create GitHub Release
-gh release create v0.X.0 --title "v0.X.0" --notes-file CHANGELOG.md
+# 4. Create GitHub Release (extract only the version section from CHANGELOG.md)
+$notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
+$notes | Out-File -Encoding utf8 release_notes.md
+gh release create v0.X.0 --title "v0.X.0" --notes-file release_notes.md
+Remove-Item release_notes.md
 
 # 5. Update OPEN_ISSUES.md — mark released items
 ```

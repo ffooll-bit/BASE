@@ -43,3 +43,7 @@ items:
     tags: [bug, environment]
     count: 1
     created: "2026-07-28T13:37:48Z"
+  - text: "ADR: CHANGELOG [Unreleased] section must always be the first section (above versioned releases). During the v0.2.0 release, [Unreleased] was placed below [0.2.0] — corrected by swapping sections and amending the release commit."
+    tags: [changelog, release, fix]
+    count: 1
+    created: "2026-07-28T13:44:23Z"
