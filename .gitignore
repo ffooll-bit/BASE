@@ -133,5 +133,8 @@ nb-configuration.xml
 # Visual Studio Code
 .vscode/
 
+# Playwright MCP
+.playwright-mcp/
+
 /results/
 /phpunit*.xml
