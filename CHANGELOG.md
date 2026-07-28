@@ -38,6 +38,9 @@ Agent instructions:
 
 ### Fixed
 
+- **Dashboard small-box icon:** fixed icon class from `.icon` to `.small-box-icon` — AdminLTE 4 CSS targets `.small-box-icon` for absolute positioning (top-right, 70px, opacity .15) — icon was previously rendering at default inline position (left-bottom, small size)
+- **Google Fonts:** updated from `Source+Sans+Pro` (AdminLTE 3) to `Source+Sans+3` — matches AdminLTE 4 default `--bs-font-sans-serif`
+
 - **Password toggle:** broken show/hide button — JS queried `<i>` but HTML used `<span>`, causing TypeError
 - **Login error styling:** removed blanket `is-invalid` on both fields; flash message is now the sole error feedback
 - **Null safety:** added `$username ?? session('auth.username')` fallback in header and dashboard views

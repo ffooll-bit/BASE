@@ -409,7 +409,7 @@ Use `p-0` on `card-body` when it wraps only a table so the table touches the car
         <h3><?= esc($count) ?></h3>
         <p>Label</p>
     </div>
-    <div class="icon">
+    <div class="small-box-icon">
         <i class="fas fa-users"></i>
     </div>
     <a href="#" class="small-box-footer">

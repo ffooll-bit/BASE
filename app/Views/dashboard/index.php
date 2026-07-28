@@ -16,7 +16,7 @@
                             <h3 class="text-truncate"><?= esc($username ?? session('auth.username')) ?></h3>
                             <p>Pengguna Aktif</p>
                         </div>
-                        <div class="icon">
+                        <div class="small-box-icon">
                             <i class="fas fa-user"></i>
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                             <h3>NeoFeeder</h3>
                             <p>Service</p>
                         </div>
-                        <div class="icon">
+                        <div class="small-box-icon">
                             <i class="fas fa-database"></i>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                             <h3>Session</h3>
                             <p>Status</p>
                         </div>
-                        <div class="icon">
+                        <div class="small-box-icon">
                             <i class="fas fa-clock"></i>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                             <h3>BASE</h3>
                             <p>v0.1.0</p>
                         </div>
-                        <div class="icon">
+                        <div class="small-box-icon">
                             <i class="fas fa-cube"></i>
                         </div>
                     </div>
