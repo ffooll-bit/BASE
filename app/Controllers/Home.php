@@ -2,10 +2,16 @@
 
 namespace App\Controllers;
 
+use CodeIgniter\HTTP\RedirectResponse;
+
 class Home extends BaseController
 {
-    public function index(): string
+    public function index(): RedirectResponse
     {
-        return view('welcome_message');
+        if (service('auth')->isLoggedIn()) {
+            return redirect()->to('/dashboard');
+        }
+
+        return redirect()->to('/login');
     }
 }

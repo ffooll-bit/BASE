@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BASE - Bongaya Advanced Services Engine</title>
+    <title><?= esc($title ?? 'BASE - Bongaya Advanced Services Engine') ?></title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="<?= base_url('bootstrap/css/bootstrap.min.css') ?>">
     <!-- AdminLTE 4 Theme -->
     <link rel="stylesheet" href="<?= base_url('adminlte/css/adminlte.min.css') ?>">
+    <!-- App custom styles -->
+    <link rel="stylesheet" href="<?= base_url('css/app.css') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">

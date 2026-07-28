@@ -14,7 +14,7 @@
                     </span>
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block"><?= esc(session('auth.username')) ?></a>
+                    <a href="#" class="d-block"><?= esc($username ?? session('auth.username')) ?></a>
                 </div>
             </div>
 
