@@ -41,18 +41,12 @@ _None yet._
 - **UI consistency:** login page Google Font updated from `Source Sans Pro` (AdminLTE 3) to `Source Sans 3` (AdminLTE 4) to match the rest of the app
 - **Sidebar navigation:** added auto-detection of active page via `active` CSS class on current route
 - **Dashboard version:** replaced hardcoded `v0.1.0` with dynamic value from `config('AppVersion')->version`
-- **Profil PT page:** breadcrumb and page title unified to "Profil Perguruan Tinggi" for consistency
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
-- **Profil PT page layout:** redesigned with visual hierarchy — hero card with institution name + badge status, two side-by-side cards (Kontak + Alamat), and Legalitas card; pure AdminLTE 4 + Bootstrap with no custom CSS or horizontal lines
-- **Profil PT page polish:** badge now shows "Akreditasi A" (not bare "A"), prepended https:// to website URL, equal-height cards via `h-100` + `d-flex flex-column` + `mt-auto`, `fa-fw` for aligned icons, `display-6` hero name, limited max width via `col-xxl-10`, visual hierarchy via font-size and `small` class
-- **Profil PT hero:** moved SK Pendirian and Tanggal SK into hero card beneath identity info; removed standalone Legalitas card; Kepemilikan now shown with explicit label
-- **Profil PT hero:** merged Kode PT and Kepemilikan into one line, Tanggal SK now uses Indonesian month names (Januari, Februari, etc.)
+- **Profil PT page:** redesain layout dengan visual hierarchy — hero card `card-outline-primary` (nama `display-6` + badge Akreditasi, info identitas & legalitas dalam `d-flex gap-4`), dua card `card-info h-100` sejajar (Kontak dengan clickable links + Alamat), `fa-fw` untuk icon rata, equal-height via `d-flex flex-column` + `mt-auto`, prepend `https://` ke website, format tanggal Bahasa Indonesia via `strtr()`, lebar maksimal via `col-xxl-10`
 
 ### Fixed
 
 - **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
-- **Profil PT card styling:** replaced `table-borderless` with `table` for visible row separators, `card-body p-0` with `card-body` for proper padding, `td` labels upgraded to `th scope="row"` for semantic correctness
-- **Profil PT layout:** merged two uneven cards into one balanced card with 2-column inner layout (6 rows each), removed Kelurahan (always `-`) and Fax (redundant)
 
 ### Removed
 _None yet._

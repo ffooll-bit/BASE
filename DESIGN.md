@@ -427,6 +427,89 @@ Use `p-0` on `card-body` when it wraps only a table so the table touches the car
 
 Available backgrounds: `bg-info`, `bg-success`, `bg-warning`, `bg-danger`, `bg-primary`.
 
+### 4.5 Hero card (profile/detail header)
+
+For entity detail pages where the institution/entity name is the most prominent element:
+
+```html
+<div class="card card-outline card-primary mb-4">
+    <div class="card-body">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h2 class="display-6 mb-1"><?= esc($entity['name']) ?></h2>
+                <div class="d-flex gap-4 small text-muted">
+                    <div><span>Field A:</span> <?= esc($entity['field_a'] ?? '-') ?></div>
+                    <div><span>Field B:</span> <?= esc($entity['field_b'] ?? '-') ?></div>
+                </div>
+            </div>
+            <span class="badge bg-success fs-6">Status: <?= esc($entity['status'] ?? '-') ?></span>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex gap-4 small">
+            <div><span class="text-muted">Sub Info 1:</span> <?= esc($entity['info_1'] ?? '-') ?></div>
+            <div><span class="text-muted">Sub Info 2:</span> <?= esc($entity['info_2'] ?? '-') ?></div>
+        </div>
+    </div>
+</div>
+```
+
+| Element | Class | Purpose |
+|---------|-------|---------|
+| Card | `card card-outline card-primary` | Colored border, transparent background — hero distinction |
+| Name | `display-6` | Large, lightweight heading (300 weight) — never combine with `card-title` |
+| Info rows | `d-flex gap-4 small text-muted` | Compact secondary info side by side |
+| Badge | `badge bg-success fs-6` | Visual status indicator with readable font-size |
+| Divider | `hr my-3` | Separates identity from secondary grouping |
+| Sub info | `d-flex gap-4 small` | Legalitas, dates, or less prominent data |
+
+### 4.6 Detail info card (equal-height pair)
+
+For side-by-side detail cards that must be the same height:
+
+```html
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card card-info h-100">
+            <div class="card-header">
+                <h3 class="card-title">Group A</h3>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="fs-6 mb-2">
+                    <i class="fas fa-phone text-muted me-2 fa-fw"></i> <?= esc($item['phone'] ?? '-') ?>
+                </div>
+                <div class="fs-6 mb-2">
+                    <i class="fas fa-envelope text-muted me-2 fa-fw"></i>
+                    <a href="mailto:<?= esc($item['email'], 'url') ?>"><?= esc($item['email']) ?></a>
+                </div>
+                <div class="fs-6 mt-auto">
+                    <i class="fas fa-globe text-muted me-2 fa-fw"></i>
+                    <a href="<?= esc($website, 'url') ?>" target="_blank"><?= esc($item['website']) ?></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card card-info h-100">
+            <div class="card-header">
+                <h3 class="card-title">Group B</h3>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <p class="fs-6 mb-1"><?= esc($item['address'] ?? '-') ?></p>
+                <p class="fs-6 mb-0 mt-auto">Kode Pos: <?= esc($item['postal_code'] ?? '-') ?></p>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+| Technique | Classes | Effect |
+|-----------|---------|--------|
+| Equal height | `h-100` on card | Both cards fill the column height |
+| Content alignment | `d-flex flex-column` on card-body | Flex column for vertical positioning |
+| Push to bottom | `mt-auto` on last item | Last element stays at card bottom |
+| Icon width | `fa-fw` on icon | Fixed 1.25em width, all icons align |
+| Card variant | `card-info` | Colored header bar for visual grouping |
+
 ---
 
 ## 5. Forms
