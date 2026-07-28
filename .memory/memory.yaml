@@ -15,3 +15,7 @@ items:
     tags: [decision, ui, ux, polish]
     count: 1
     created: "2026-07-28T01:50:00Z"
+  - text: "ADR: UI/UX Audit Batch — 6 atomic commits covering password toggle bug fix (span→i), login accessibility (visually-hidden labels, aria-labels), null safety consistency ($username ?? session fallback), dead link cleanup (sidebar #, forgot password), FA6 icon migration, text-truncate CSS, dashboard label honesty, footer esc(). PR #3 on fix/uiux-audit-improvements branch."
+    tags: [decision, ui, ux, audit]
+    count: 1
+    created: "2026-07-28T10:36:32Z"
