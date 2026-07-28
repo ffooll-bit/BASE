@@ -46,6 +46,7 @@ _None yet._
 - **Profil PT page layout:** redesigned with visual hierarchy — hero card with institution name + badge status, two side-by-side cards (Kontak + Alamat), and Legalitas card; pure AdminLTE 4 + Bootstrap with no custom CSS or horizontal lines
 - **Profil PT page polish:** badge now shows "Akreditasi A" (not bare "A"), prepended https:// to website URL, equal-height cards via `h-100` + `d-flex flex-column` + `mt-auto`, `fa-fw` for aligned icons, `display-6` hero name, limited max width via `col-xxl-10`, visual hierarchy via font-size and `small` class
 - **Profil PT hero:** moved SK Pendirian and Tanggal SK into hero card beneath identity info; removed standalone Legalitas card; Kepemilikan now shown with explicit label
+- **Profil PT hero:** merged Kode PT and Kepemilikan into one line, Tanggal SK now uses Indonesian month names (Januari, Februari, etc.)
 
 ### Fixed
 

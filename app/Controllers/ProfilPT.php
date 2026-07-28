@@ -12,13 +12,20 @@ class ProfilPT extends BaseController
         $tanggalSK = '-';
         $website = '-';
 
+        $bulan = [
+            'January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret',
+            'April' => 'April', 'May' => 'Mei', 'June' => 'Juni',
+            'July' => 'Juli', 'August' => 'Agustus', 'September' => 'September',
+            'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember',
+        ];
+
         $token = session('auth.token');
         if ($token !== null) {
             $response = service('neoFeeder')->getProfilPT($token);
             if (($response['error_code'] ?? -1) === 0 && isset($response['data'][0])) {
                 $profilPT = $response['data'][0];
                 $tanggalSK = isset($profilPT['tanggal_sk_pendirian'])
-                    ? date('d F Y', strtotime($profilPT['tanggal_sk_pendirian']))
+                    ? strtr(date('d F Y', strtotime($profilPT['tanggal_sk_pendirian'])), $bulan)
                     : '-';
                 $rawUrl = $profilPT['website'] ?? '';
                 if ($rawUrl === '') {

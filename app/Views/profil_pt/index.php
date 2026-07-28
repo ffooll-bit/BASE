@@ -41,8 +41,10 @@
                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <div>
                                 <h2 class="display-6 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
-                                <div class="text-muted small mb-1">Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?></div>
-                                <div class="text-muted small">Kepemilikan: <?= esc($profilPT['nama_status_milik'] ?? '-') ?></div>
+                                <div class="d-flex gap-4 small text-muted">
+                                    <div><span>Kode PT:</span> <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?></div>
+                                    <div><span>Kepemilikan:</span> <?= esc($profilPT['nama_status_milik'] ?? '-') ?></div>
+                                </div>
                             </div>
                             <span class="badge bg-success fs-6">Akreditasi <?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></span>
                         </div>
