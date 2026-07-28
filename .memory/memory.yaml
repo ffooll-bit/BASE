@@ -47,3 +47,27 @@ items:
     tags: [changelog, release, fix]
     count: 1
     created: "2026-07-28T13:44:23Z"
+  - text: "ADR: Profil PT dibuat sebagai halaman terpisah, bukan di dashboard → Context: ProfilPT adalah data reference yang jarang berubah, tidak cocok untuk dashboard (violates Hick's Law, Miller's Law). Dashboard dikosongkan untuk KPI operasional di masa depan. → Consequence: Controller + View + Route + Sidebar baru; Dashboard tidak berubah."
+    tags: [decision, feature, profilpt]
+    count: 1
+    created: "2026-07-28T14:58:43Z"
+  - text: "ADR: AppVersion config → Context: dashboard version number was hardcoded (v0.1.0) while actual release was v0.2.0. Created `app/Config/AppVersion.php` with `$version` and `$buildDate` properties; dashboard reads from config. AGENTS.md release process updated with step to bump version. → Consequence: version auto-syncs across views, one source of truth."
+    tags: [decision, version, config]
+    count: 1
+    created: "2026-07-28T15:08:31Z"
+  - text: "ADR: Profil PT layout redesign — three-tier visual hierarchy. Hero card (card-outline-primary) with display-6 name + badge status, d-flex gap-4 info rows. Two card-info h-100 sub-cards (Kontak clickable links + Alamat paragraphs) side-by-side. Legalitas consolidated in hero. fa-fw for icon alignment. Equal-height via h-100 + d-flex flex-column + mt-auto. col-xxl-10 max-width wrapper. Documented in DESIGN.md 4.5 and 4.6."
+    tags: [decision, ui, layout, profilpt]
+    count: 1
+    created: "2026-07-28T16:27:56Z"
+  - text: "ADR: Website URL normalization — prepend https:// in controller if no protocol exists. Prevents browser from treating bare domain (www.example.com) as relative path."
+    tags: [decision, security, url]
+    count: 1
+    created: "2026-07-28T16:27:57Z"
+  - text: "ADR: Indonesian date format via strtr() month mapping — no system locale dependency. Mapping array covers all 12 months."
+    tags: [decision, date, i18n]
+    count: 1
+    created: "2026-07-28T16:27:57Z"
+  - text: "Bug: card-title overrides display-6 font-size/font-weight in Bootstrap 5.3 (card-title compiled after display-* in CSS, same specificity). Fix: never combine card-title with display-* on same element; use display-6 alone for hero headings."
+    tags: [bug, css, bootstrap]
+    count: 1
+    created: "2026-07-28T16:27:59Z"

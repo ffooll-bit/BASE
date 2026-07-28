@@ -16,3 +16,4 @@ $routes->get('login', 'Login::index');
 $routes->post('login', 'Login::attemptLogin');
 $routes->post('logout', 'Login::logout');
 $routes->get('dashboard', 'Dashboard::index');
+$routes->get('profil-pt', 'ProfilPT::index');

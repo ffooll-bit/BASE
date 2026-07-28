@@ -32,13 +32,21 @@ _None yet._
 ## [Unreleased]
 
 ### Added
-_None yet._
+
+- **Profil PT page:** dedicated page (`/profil-pt`) displaying institution profile data from NeoFeeder API — identity, contact, address, and legalitas in two AdminLTE cards; sidebar navigation item added
+- **Route:** `GET /profil-pt` → `ProfilPT::index` with auth+csrf filters
 
 ### Changed
-_None yet._
+
+- **UI consistency:** login page Google Font updated from `Source Sans Pro` (AdminLTE 3) to `Source Sans 3` (AdminLTE 4) to match the rest of the app
+- **Sidebar navigation:** added auto-detection of active page via `active` CSS class on current route
+- **Dashboard version:** replaced hardcoded `v0.1.0` with dynamic value from `config('AppVersion')->version`
+- **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
+- **Profil PT page:** redesain layout dengan visual hierarchy — hero card `card-outline-primary` (nama `display-6` + badge Akreditasi, info identitas & legalitas dalam `d-flex gap-4`), dua card `card-info h-100` sejajar (Kontak dengan clickable links + Alamat), `fa-fw` untuk icon rata, equal-height via `d-flex flex-column` + `mt-auto`, prepend `https://` ke website, format tanggal Bahasa Indonesia via `strtr()`, lebar maksimal via `col-xxl-10`
 
 ### Fixed
-_None yet._
+
+- **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
 
 ### Removed
 _None yet._

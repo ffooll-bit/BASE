@@ -47,7 +47,7 @@
                     <div class="small-box bg-secondary">
                         <div class="inner">
                             <h3>BASE</h3>
-                            <p>v0.1.0</p>
+                            <p>v<?= config('AppVersion')->version ?></p>
                         </div>
                         <div class="small-box-icon">
                             <i class="fas fa-cube"></i>

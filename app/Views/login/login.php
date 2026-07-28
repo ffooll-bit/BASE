@@ -6,8 +6,8 @@
     <title>BASE | Log in</title>
     <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Google Font: Source Sans 3 (AdminLTE 4) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+3:300,400,400i,600,700&display=fallback">
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="<?= base_url('fontawesome/css/all.min.css') ?>">
     <!-- Bootstrap 5 -->
