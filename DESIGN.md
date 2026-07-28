@@ -85,25 +85,19 @@ view('layout/header')
                 </a>
             </li>
         </ul>
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown user-menu">
-                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-label="User menu">
-                    <i class="fas fa-user"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                    <li class="user-header text-bg-primary">
-                        <i class="fas fa-user"></i>
-                        <p><?= esc($username) ?></p>
-                    </li>
-                    <li class="user-footer">
-                        <form action="<?= base_url('logout') ?>" method="post">
-                            <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-outline-primary">
-                                <i class="fas fa-right-from-bracket"></i> Sign out
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+        <ul class="navbar-nav ms-auto d-flex align-items-center">
+            <li class="nav-item">
+                <span class="nav-link text-nowrap d-none d-md-inline">
+                    Signed in as: <?= esc($username) ?>
+                </span>
+            </li>
+            <li class="nav-item">
+                <form action="<?= base_url('logout') ?>" method="post" class="d-inline">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="nav-link btn btn-link border-0 py-2">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </li>
         </ul>
     </nav>
@@ -261,33 +255,30 @@ Use `nav-header` for visual grouping labels between menu sections.
 
 Add `menu-open` to the parent `li` when a child page is active and the treeview should be expanded.
 
-### 2.6 User menu (header dropdown)
+### 2.6 User info (navbar right)
 
-Username is displayed in the header user dropdown, not in the sidebar.
+Username is displayed inline in the header navbar, not in the sidebar.
+
+Desktop (≥768px): shows "Signed in as: $username" text + Logout button.
+Mobile (<768px): hides the username text, shows only the Logout button.
 
 ```html
-<li class="nav-item dropdown user-menu">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-label="User menu">
-        <i class="fas fa-user"></i>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-        <li class="user-header text-bg-primary">
-            <i class="fas fa-user"></i>
-            <p><?= esc($username) ?></p>
-        </li>
-        <li class="user-footer">
-            <form action="<?= base_url('logout') ?>" method="post">
-                <?= csrf_field() ?>
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="fas fa-right-from-bracket"></i> Sign out
-                </button>
-            </form>
-        </li>
-    </ul>
-</li>
+<ul class="navbar-nav ms-auto d-flex align-items-center">
+    <li class="nav-item">
+        <span class="nav-link text-nowrap d-none d-md-inline">
+            Signed in as: <?= esc($username) ?>
+        </span>
+    </li>
+    <li class="nav-item">
+        <form action="<?= base_url('logout') ?>" method="post" class="d-inline">
+            <?= csrf_field() ?>
+            <button type="submit" class="nav-link btn btn-link border-0 py-2">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+    </li>
+</ul>
 ```
-
-The `.user-menu` class on the `<li>` triggers AdminLTE 4's user menu styling. The trigger shows only a user icon — the username appears inside the dropdown menu's `.user-header`.
 
 ---
 

@@ -23,7 +23,7 @@ Agent instructions:
 
 ### Changed
 
-- **Home route:** `/` now redirects to `/login` (unauthenticated) or `/dashboard` (authenticated) instead of showing the CodeIgniter default welcome page
+- **Header navbar:** replaced user profile dropdown with inline "Signed in as: $username" text and a direct Logout button (hidden on mobile <768px, finger-friendly padding)
 - **Login field:** changed `type="email"` to `type="text"` with placeholder "Email or Username" to match the auth service (accepts both)
 - **Login form icon:** changed `fa-envelope` to `fa-at` for dual-purpose email/username field
 - **Login accessibility:** added `visually-hidden` labels for username and password inputs, `aria-label` on password toggle
