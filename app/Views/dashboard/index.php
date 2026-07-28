@@ -9,50 +9,12 @@
     </div>
     <div class="app-content">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-3 col-6 mb-4">
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3><?= esc($username) ?></h3>
-                            <p>Pengguna Aktif</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                    </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Welcome</h3>
                 </div>
-                <div class="col-lg-3 col-6 mb-4">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>NeoFeeder</h3>
-                            <p>Terhubung</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-database"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6 mb-4">
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3>Session</h3>
-                            <p>Aktif</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6 mb-4">
-                    <div class="small-box bg-secondary">
-                        <div class="inner">
-                            <h3>BASE</h3>
-                            <p>v0.1.0</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-cube"></i>
-                        </div>
-                    </div>
+                <div class="card-body">
+                    <h2>Welcome, <?= esc($username) ?></h2>
                 </div>
             </div>
         </div>

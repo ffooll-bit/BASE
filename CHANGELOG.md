@@ -14,20 +14,10 @@ Agent instructions:
 ## [Unreleased]
 
 ### Added
-
-- **Dashboard content:** replaced empty welcome card with professional stat cards (active user, NeoFeeder status, session status, app version)
-- **Login page:** added "Remember me" checkbox, "Forgot password?" link, password visibility toggle, and field-level validation feedback (`is-invalid` on error)
-- **Error pages:** themed 404 and 500 pages with Bootstrap branding, app icon, and "Back to Dashboard" link
-- **Custom assets:** created `public/css/app.css` and `public/js/app.js` for project-specific styles and scripts
-- **Favicon:** linked `favicon.ico` in `<head>` of both header and login layouts
+_None yet._
 
 ### Changed
 
-- **Home route:** `/` now redirects to `/login` (unauthenticated) or `/dashboard` (authenticated) instead of showing the CodeIgniter default welcome page
-- **Login field:** changed `type="email"` to `type="text"` with placeholder "Email or Username" to match the auth service (accepts both), added `is-invalid` class on error
-- **Dynamic page title:** header now supports `$title` variable for per-page `<title>` (defaults to app name)
-- **Sidebar username:** now accepts `$username` from controller (with session fallback) for consistency with header and dashboard
-- **Footer copyright:** shortened from full product name to "BASE"
 - **Layout views:** migrated header, sidebar, footer, and dashboard views from AdminLTE 3 to AdminLTE 4 classes (`app-wrapper`, `app-sidebar`, `app-main`, etc.)
 - **Code style:** applied `php-cs-fixer` rules across `app/` and `tests/` — fixed import ordering, octal notation, anonymous class syntax
 
