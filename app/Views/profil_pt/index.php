@@ -40,7 +40,7 @@
                     <div class="card-body">
                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <div>
-                                <h2 class="card-title display-6 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
+                                <h2 class="display-6 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
                                 <div class="text-muted small">
                                     Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?>
                                     &middot; <?= esc($profilPT['nama_status_milik'] ?? '-') ?>
