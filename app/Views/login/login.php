@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BASE | Log in</title>
+    <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,6 +14,8 @@
     <link rel="stylesheet" href="<?= base_url('bootstrap/css/bootstrap.min.css') ?>">
     <!-- AdminLTE 4 Theme style -->
     <link rel="stylesheet" href="<?= base_url('adminlte/css/adminlte.min.css') ?>">
+    <!-- App custom styles -->
+    <link rel="stylesheet" href="<?= base_url('css/app.css') ?>">
 </head>
 <body class="login-page bg-body-secondary">
 
@@ -43,22 +46,40 @@
                 <?= csrf_field() ?>
 
                 <div class="input-group mb-3">
-                    <input type="email" name="username" class="form-control" placeholder="Email" required autofocus autocomplete="email">
+                    <input type="text" name="username" class="form-control <?= session()->getFlashdata('error') ? 'is-invalid' : '' ?>" placeholder="Email or Username" required autofocus autocomplete="username">
                     <div class="input-group-text">
                         <span class="fas fa-envelope"></span>
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter your email or username.
                     </div>
                 </div>
 
                 <div class="input-group mb-3">
-                    <input type="password" name="password" class="form-control" placeholder="Password" required autocomplete="current-password">
-                    <div class="input-group-text">
-                        <span class="fas fa-lock"></span>
+                    <input type="password" name="password" class="form-control <?= session()->getFlashdata('error') ? 'is-invalid' : '' ?>" placeholder="Password" required autocomplete="current-password" id="login-password">
+                    <button type="button" class="input-group-text" id="toggle-password" tabindex="-1">
+                        <span class="fas fa-eye"></span>
+                    </button>
+                    <div class="invalid-feedback">
+                        Please enter your password.
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-8">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+                    </div>
+                    <div class="col-4 text-end">
+                        <a href="#" class="text-decoration-none text-muted small">Forgot password?</a>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <button type="submit" class="btn btn-primary w-100">Sign in</button>
                     </div>
                 </div>
             </form>
@@ -70,5 +91,20 @@
 <script src="<?= base_url('bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
 <!-- AdminLTE 4 App -->
 <script src="<?= base_url('adminlte/js/adminlte.min.js') ?>"></script>
+<!-- App custom scripts -->
+<script src="<?= base_url('js/app.js') ?>"></script>
+<script>
+document.getElementById('toggle-password')?.addEventListener('click', function () {
+    const input = document.getElementById('login-password');
+    const icon = this.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+});
+</script>
 </body>
 </html>
