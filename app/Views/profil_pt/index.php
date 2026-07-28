@@ -37,54 +37,58 @@
                 <h3 class="card-title">Informasi Perguruan Tinggi</h3>
             </div>
             <div class="card-body">
-                <table class="table table-sm table-borderless mb-0">
+                <table class="table table-sm table-borderless mb-0" style="table-layout:fixed">
+                    <colgroup>
+                        <col style="width:50%">
+                        <col style="width:50%">
+                    </colgroup>
                     <tbody>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap" style="width:140px">Nama PT</th>
+                            <th scope="row" class="text-muted fw-normal">Nama PT</th>
                             <td><?= esc($profilPT['nama_perguruan_tinggi'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Kode PT</th>
+                            <th scope="row" class="text-muted fw-normal">Kode PT</th>
                             <td><?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Status Akreditasi</th>
+                            <th scope="row" class="text-muted fw-normal">Status Akreditasi</th>
                             <td><?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Kepemilikan</th>
+                            <th scope="row" class="text-muted fw-normal">Kepemilikan</th>
                             <td><?= esc($profilPT['nama_status_milik'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Telepon</th>
+                            <th scope="row" class="text-muted fw-normal">Telepon</th>
                             <td><?= esc($profilPT['telepon'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Email</th>
+                            <th scope="row" class="text-muted fw-normal">Email</th>
                             <td><?= esc($profilPT['email'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Alamat</th>
+                            <th scope="row" class="text-muted fw-normal">Alamat</th>
                             <td><?= esc($profilPT['jalan'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Wilayah</th>
+                            <th scope="row" class="text-muted fw-normal">Wilayah</th>
                             <td><?= esc($profilPT['nama_wilayah'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Kode Pos</th>
+                            <th scope="row" class="text-muted fw-normal">Kode Pos</th>
                             <td><?= esc($profilPT['kode_pos'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Website</th>
+                            <th scope="row" class="text-muted fw-normal">Website</th>
                             <td><?= esc($profilPT['website'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">SK Pendirian</th>
+                            <th scope="row" class="text-muted fw-normal">SK Pendirian</th>
                             <td><?= esc($profilPT['sk_pendirian'] ?? '-') ?></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted fw-normal text-nowrap">Tanggal SK</th>
+                            <th scope="row" class="text-muted fw-normal">Tanggal SK</th>
                             <td><?= esc(isset($profilPT['tanggal_sk_pendirian']) ? date('d-m-Y', strtotime($profilPT['tanggal_sk_pendirian'])) : '-') ?></td>
                         </tr>
                     </tbody>
