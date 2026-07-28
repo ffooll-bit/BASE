@@ -174,8 +174,9 @@ This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PAT
 ### Changelog Discipline
 
 - Add new entries to `[Unreleased]` section in `CHANGELOG.md` throughout development (every feat/fix/refactor commit).
-- Before release, replace `## [Unreleased]` with `## [0.X.0] - YYYY-MM-DD`.
+- Before release, replace `## [Unreleased]` with `## [0.X.0] - YYYY-MM-DD`. After moving, recreate a fresh `[Unreleased]` section with empty category placeholders (see the agent instructions embedded in CHANGELOG.md for template).
 - Update the `[unreleased]:` link reference at the bottom of the file to point to `HEAD`.
+- Add a new version link reference `[0.X.0]:` pointing to the previous version tag range.
 
 ### Release Steps
 

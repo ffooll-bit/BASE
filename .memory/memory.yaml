@@ -35,3 +35,7 @@ items:
     tags: [decision, ui, navbar, responsive]
     count: 1
     created: "2026-07-28T12:54:01Z"
+  - text: "Bug prompt: Saya menulis prompt dengan hard wrapping (line breaks at arbitrary character count), melanggar AGENTS.md rule #6. Fix: semua .md termasuk prompt harus soft wrapping — satu kalimat per baris."
+    tags: [bug, documentation, workflow]
+    count: 1
+    created: "2026-07-28T13:34:34Z"
