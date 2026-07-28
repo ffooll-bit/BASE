@@ -196,10 +196,15 @@ git tag v0.X.0 && git push origin v0.X.0
 # 4. Create GitHub Release (extract only the version section from CHANGELOG.md)
 $notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
 $notes | Out-File -Encoding utf8 release_notes.md
+
+# 5. Append the reference link definition so the version heading `## [0.X.0]` is clickable
+$notes += "`r`n[0.X.0]: https://github.com/ffooll-bit/BASE/compare/v0.(X-1).0...v0.X.0"
+$notes | Out-File -Encoding utf8 release_notes.md
+
 gh release create v0.X.0 --title "v0.X.0" --notes-file release_notes.md
 Remove-Item release_notes.md
 
-# 5. Update OPEN_ISSUES.md — mark released items
+# 6. Update OPEN_ISSUES.md — mark released items
 ```
 
 Before every release, run: `vendor/bin/phpunit`, `php -l` on changed files, `npm run build`.

@@ -79,13 +79,15 @@ Steps:
 3. **Verify** — `vendor/bin/phpunit` green, `php -l` on all changed files, `npm run build` passes
 4. **Commit** — `chore: release v0.X.0`
 5. **Tag** — `git tag v0.X.0 && git push origin v0.X.0`
-6. **Create GitHub Release** — extract only the version section from CHANGELOG.md, not the whole file:
+6. **Create GitHub Release** — extract only the version section from CHANGELOG.md, not the whole file, and append the reference link definition so the version heading is clickable:
    ```powershell
    $notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
+   $notes += "`r`n[0.X.0]: https://github.com/ffooll-bit/BASE/compare/v0.(X-1).0...v0.X.0"
    $notes | Out-File -Encoding utf8 release_notes.md
    gh release create v0.X.0 --title "v0.X.0" --notes-file release_notes.md
    Remove-Item release_notes.md
    ```
+   > (Replace `X` with the actual major version numbers.)
 7. **Update docs** — mark released issues in OPEN_ISSUES.md as Released, move to archive section
 8. **Cleanup** — delete any stale branches that were already merged
 
