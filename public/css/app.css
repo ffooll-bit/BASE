@@ -1,1 +1,9 @@
-/* BASE custom styles — add project-specific overrides here */
+/* BASE custom styles */
+
+/* Username truncation in navbar dropdown */
+.app-header .dropdown-menu .d-block {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
