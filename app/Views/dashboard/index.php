@@ -13,8 +13,8 @@
                 <div class="col-lg-3 col-6 mb-4">
                     <div class="small-box bg-info">
                         <div class="inner">
-                            <h3 class="text-truncate"><?= esc($username ?? session('auth.username')) ?></h3>
-                            <p>Pengguna Aktif</p>
+                            <h3>Session</h3>
+                            <p>Aktif</p>
                         </div>
                         <div class="small-box-icon">
                             <i class="fas fa-user"></i>
