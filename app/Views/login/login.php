@@ -46,23 +46,19 @@
                 <?= csrf_field() ?>
 
                 <div class="input-group mb-3">
-                    <input type="text" name="username" class="form-control <?= session()->getFlashdata('error') ? 'is-invalid' : '' ?>" placeholder="Email or Username" required autofocus autocomplete="username">
+                    <label for="login-username" class="visually-hidden">Email or Username</label>
+                    <input type="text" name="username" id="login-username" class="form-control" placeholder="Email or Username" required autofocus autocomplete="username">
                     <div class="input-group-text">
-                        <span class="fas fa-envelope"></span>
-                    </div>
-                    <div class="invalid-feedback">
-                        Please enter your email or username.
+                        <span class="fas fa-at"></span>
                     </div>
                 </div>
 
                 <div class="input-group mb-3">
-                    <input type="password" name="password" class="form-control <?= session()->getFlashdata('error') ? 'is-invalid' : '' ?>" placeholder="Password" required autocomplete="current-password" id="login-password">
-                    <button type="button" class="input-group-text" id="toggle-password" tabindex="-1">
-                        <span class="fas fa-eye"></span>
+                    <label for="login-password" class="visually-hidden">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required autocomplete="current-password" id="login-password">
+                    <button type="button" class="input-group-text" id="toggle-password" tabindex="-1" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye"></i>
                     </button>
-                    <div class="invalid-feedback">
-                        Please enter your password.
-                    </div>
                 </div>
 
                 <div class="row align-items-center mb-3">
@@ -73,7 +69,7 @@
                         </div>
                     </div>
                     <div class="col-4 text-end">
-                        <a href="#" class="text-decoration-none text-muted small">Forgot password?</a>
+                        <a href="#" class="text-decoration-none text-muted small d-none">Forgot password?</a>
                     </div>
                 </div>
 
