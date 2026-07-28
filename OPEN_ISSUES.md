@@ -84,7 +84,7 @@ Views still use AdminLTE 3 class names. Must be updated to match `DESIGN.md`.
 
 ---
 
-## ISS-002: Bootstrap 5 Utility Audit — P-1
+### ISS-002: Bootstrap 5 Utility Audit — P-1
 
 **Status:** Done
 **Created:** 2026-07-27
@@ -124,7 +124,7 @@ After AdminLTE 3→4 migration, Bootstrap 4 utilities may still remain.
 
 ---
 
-## ISS-009: Dashboard Tidak Mengirim `$username` ke Header View — P-1
+### ISS-009: Dashboard Tidak Mengirim `$username` ke Header View — P-1
 
 **Status:** Done
 **Created:** 2026-07-27
@@ -161,7 +161,7 @@ return view('layout/header')  // ← $username not passed
 
 ---
 
-## ISS-003: CODING_STANDARDS.md + Tooling Config — P-2
+### ISS-003: CODING_STANDARDS.md + Tooling Config — P-2
 
 **Status:** Done
 **Created:** 2026-07-27
@@ -180,7 +180,7 @@ Create coding standards document and tooling configuration files.
 
 ---
 
-## ISS-004: CHANGELOG.md — P-2
+### ISS-004: CHANGELOG.md — P-2
 
 **Status:** Done
 **Created:** 2026-07-27
@@ -199,7 +199,7 @@ Create release history following Keep a Changelog format.
 
 ---
 
-## ISS-005: .github/PULL_REQUEST_TEMPLATE.md — P-2
+### ISS-005: .github/PULL_REQUEST_TEMPLATE.md — P-2
 
 **Status:** Done
 **Created:** 2026-07-27
@@ -226,7 +226,7 @@ Create PR template with self-review checklist.
 
 ---
 
-## ISS-006: .github/workflows/ci.yml — P-2
+### ISS-006: .github/workflows/ci.yml — P-2
 
 **Status:** Done
 **Created:** 2026-07-27
@@ -245,7 +245,7 @@ Create CI workflow for automated safety checks.
 
 ---
 
-## ISS-007: Unit Tests — Auth & NeoFeeder — P-3
+### ISS-007: Unit Tests — Auth & NeoFeeder — P-3
 
 **Status:** Done
 **Created:** 2026-07-27
