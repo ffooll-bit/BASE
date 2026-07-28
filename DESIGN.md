@@ -86,18 +86,24 @@ view('layout/header')
             </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                    <i class="fas fa-user"></i> <?= esc($username) ?>
+            <li class="nav-item dropdown user-menu">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-label="User menu">
+                    <i class="fas fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <form action="<?= base_url('logout') ?>" method="post">
-                        <?= csrf_field() ?>
-                        <button type="submit" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
-                </div>
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                    <li class="user-header text-bg-primary">
+                        <i class="fas fa-user"></i>
+                        <p><?= esc($username) ?></p>
+                    </li>
+                    <li class="user-footer">
+                        <form action="<?= base_url('logout') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-right-from-bracket"></i> Sign out
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </li>
         </ul>
     </nav>
@@ -130,7 +136,7 @@ view('layout/header')
     </main>
 
     <footer class="app-footer">
-        <strong>&copy; <?= date('Y') ?> BASE - Bongaya Advanced Services Engine.</strong>
+        <strong>Copyright &copy; <?= date('Y') ?> BASE.</strong>
         All rights reserved.
     </footer>
 
@@ -255,23 +261,33 @@ Use `nav-header` for visual grouping labels between menu sections.
 
 Add `menu-open` to the parent `li` when a child page is active and the treeview should be expanded.
 
-### 2.6 User panel
+### 2.6 User menu (header dropdown)
+
+Username is displayed in the header user dropdown, not in the sidebar.
 
 ```html
-<div class="user-panel mt-3 pb-3 mb-3 d-flex">
-    <div class="image">
-        <span class="img-circle elevation-2 bg-info d-flex align-items-center justify-content-center"
-              style="width:34px;height:34px;">
+<li class="nav-item dropdown user-menu">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-label="User menu">
+        <i class="fas fa-user"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+        <li class="user-header text-bg-primary">
             <i class="fas fa-user"></i>
-        </span>
-    </div>
-    <div class="info">
-        <a href="#" class="d-block"><?= esc(session('auth.username')) ?></a>
-    </div>
-</div>
+            <p><?= esc($username) ?></p>
+        </li>
+        <li class="user-footer">
+            <form action="<?= base_url('logout') ?>" method="post">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-right-from-bracket"></i> Sign out
+                </button>
+            </form>
+        </li>
+    </ul>
+</li>
 ```
 
-Place the user panel inside `sidebar-wrapper`, before the `<nav>`.
+The `.user-menu` class on the `<li>` triggers AdminLTE 4's user menu styling. The trigger shows only a user icon — the username appears inside the dropdown menu's `.user-header`.
 
 ---
 

@@ -35,6 +35,12 @@ Agent instructions:
 - **Sidebar accessibility:** added `aria-label="Toggle sidebar"` on the hamburger menu link
 - **Username overflow:** added `text-truncate` on sidebar and dashboard username, CSS rule for navbar dropdown truncation
 - **Code style:** applied `php-cs-fixer` rules across `app/` and `tests/` — fixed import ordering, octal notation, anonymous class syntax
+- **Login page:** aligned markup with AdminLTE 4 — `<main class="login-box">`, `<h1 class="login-logo">`, removed subtitle
+- **Header user dropdown:** migrated to AdminLTE 4 `user-menu` pattern — icon-only trigger, username only inside dropdown `user-header`, `user-footer` with sign out
+- **Sidebar:** removed redundant user-panel (username moved to header dropdown)
+- **Footer:** updated copyright text to match AdminLTE 4 preview
+- **Dashboard small-box:** replaced `$username` heading with "Session" label for shorter card text
+- **Login button:** replaced checkbox+button row with `d-grid gap-2` full-width button (matching AdminLTE 4 login page)
 
 ### Fixed
 
@@ -54,6 +60,8 @@ Agent instructions:
 ### Removed
 
 - **welcome_message.php:** deleted unused default CI4 welcome page (Home controller always redirects)
+- **Login page:** removed dead "Remember me" checkbox (backend never processes it) and hidden "Forgot password?" link
+- **app.css:** removed unused navbar dropdown truncation rule (no longer needed after header dropdown restyle)
 
 ### Security
 _None yet._
