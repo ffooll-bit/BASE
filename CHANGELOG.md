@@ -44,6 +44,7 @@ _None yet._
 - **Profil PT page:** breadcrumb and page title unified to "Profil Perguruan Tinggi" for consistency
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
 - **Profil PT page layout:** redesigned with visual hierarchy — hero card with institution name + badge status, two side-by-side cards (Kontak + Alamat), and Legalitas card; pure AdminLTE 4 + Bootstrap with no custom CSS or horizontal lines
+- **Profil PT page polish:** badge now shows "Akreditasi A" (not bare "A"), prepended https:// to website URL, equal-height cards via `h-100` + `d-flex flex-column` + `mt-auto`, `fa-fw` for aligned icons, `display-6` hero name, limited max width via `col-xxl-10`, visual hierarchy via font-size and `small` class
 
 ### Fixed
 

@@ -10,6 +10,7 @@ class ProfilPT extends BaseController
         $profilPT = null;
         $error = null;
         $tanggalSK = '-';
+        $website = '-';
 
         $token = session('auth.token');
         if ($token !== null) {
@@ -19,6 +20,14 @@ class ProfilPT extends BaseController
                 $tanggalSK = isset($profilPT['tanggal_sk_pendirian'])
                     ? date('d F Y', strtotime($profilPT['tanggal_sk_pendirian']))
                     : '-';
+                $rawUrl = $profilPT['website'] ?? '';
+                if ($rawUrl === '') {
+                    $website = '-';
+                } else {
+                    $website = preg_match('#^https?://#i', $rawUrl)
+                        ? $rawUrl
+                        : 'https://' . $rawUrl;
+                }
             } else {
                 $error = $response['error_msg'] ?? 'Gagal memuat data profil perguruan tinggi.';
             }
@@ -26,7 +35,7 @@ class ProfilPT extends BaseController
 
         return view('layout/header', ['username' => $username, 'title' => 'Profil Perguruan Tinggi'])
             . view('layout/sidebar', ['username' => $username])
-            . view('profil_pt/index', compact('username', 'profilPT', 'error', 'tanggalSK'))
+            . view('profil_pt/index', compact('username', 'profilPT', 'error', 'tanggalSK', 'website'))
             . view('layout/footer');
     }
 }

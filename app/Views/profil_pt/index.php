@@ -33,73 +33,85 @@
 
         <?php if ($profilPT): ?>
 
-        <div class="card card-outline card-primary">
-            <div class="card-body">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <div>
-                        <h2 class="card-title h2 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
-                        <div class="text-muted">
-                            Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?>
-                            &middot; <?= esc($profilPT['nama_status_milik'] ?? '-') ?>
+        <div class="row justify-content-center">
+            <div class="col-xxl-10">
+
+                <div class="card card-outline card-primary mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <div>
+                                <h2 class="card-title display-6 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
+                                <div class="text-muted small">
+                                    Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?>
+                                    &middot; <?= esc($profilPT['nama_status_milik'] ?? '-') ?>
+                                </div>
+                            </div>
+                            <span class="badge bg-success fs-6">Akreditasi <?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></span>
                         </div>
                     </div>
-                    <span class="badge bg-success fs-6"><?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></span>
                 </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-address-card"></i> Kontak</h3>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="fs-6 mb-2">
+                                    <i class="fas fa-phone text-muted me-2 fa-fw"></i> <?= esc($profilPT['telepon'] ?? '-') ?>
+                                </div>
+                                <div class="fs-6 mb-2">
+                                    <i class="fas fa-fax text-muted me-2 fa-fw"></i> <?= esc($profilPT['faximile'] ?? '-') ?>
+                                </div>
+                                <div class="fs-6 mb-2">
+                                    <i class="fas fa-envelope text-muted me-2 fa-fw"></i>
+                                    <?php if (!empty($profilPT['email'])): ?>
+                                        <a href="mailto:<?= esc($profilPT['email'], 'url') ?>"><?= esc($profilPT['email']) ?></a>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
+                                </div>
+                                <div class="fs-6 mt-auto">
+                                    <i class="fas fa-globe text-muted me-2 fa-fw"></i>
+                                    <?php if ($website !== '-'): ?>
+                                        <a href="<?= esc($website, 'url') ?>" target="_blank"><?= esc($profilPT['website'] ?? $website) ?></a>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-map-marker-alt"></i> Alamat</h3>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <p class="fs-6 mb-1"><?= esc($profilPT['jalan'] ?? '-') ?></p>
+                                <p class="fs-6 mb-1"><?= esc($profilPT['kelurahan'] ?? '-') ?></p>
+                                <p class="fs-6 mb-1"><?= esc($profilPT['nama_wilayah'] ?? '-') ?></p>
+                                <p class="fs-6 mb-0 mt-auto">Kode Pos: <?= esc($profilPT['kode_pos'] ?? '-') ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-address-card"></i> Kontak</h3>
+                        <h3 class="card-title"><i class="fas fa-gavel"></i> Legalitas Pendirian</h3>
                     </div>
                     <div class="card-body">
-                        <div class="mb-2"><i class="fas fa-phone text-muted me-2" style="width:1.25rem"></i> <?= esc($profilPT['telepon'] ?? '-') ?></div>
-                        <div class="mb-2"><i class="fas fa-fax text-muted me-2" style="width:1.25rem"></i> <?= esc($profilPT['faximile'] ?? '-') ?></div>
-                        <div class="mb-2"><i class="fas fa-envelope text-muted me-2" style="width:1.25rem"></i>
-                            <?php if (!empty($profilPT['email'])): ?>
-                                <a href="mailto:<?= esc($profilPT['email'], 'url') ?>"><?= esc($profilPT['email']) ?></a>
-                            <?php else: ?>
-                                -
-                            <?php endif; ?>
-                        </div>
-                        <div class="mb-0"><i class="fas fa-globe text-muted me-2" style="width:1.25rem"></i>
-                            <?php if (!empty($profilPT['website'])): ?>
-                                <a href="<?= esc($profilPT['website'], 'url') ?>" target="_blank"><?= esc($profilPT['website']) ?></a>
-                            <?php else: ?>
-                                -
-                            <?php endif; ?>
-                        </div>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-2 text-muted small fw-normal">SK Pendirian</dt>
+                            <dd class="col-sm-10 fs-6"><?= esc($profilPT['sk_pendirian'] ?? '-') ?></dd>
+                            <dt class="col-sm-2 text-muted small fw-normal">Tanggal SK</dt>
+                            <dd class="col-sm-10 fs-6"><?= esc($tanggalSK) ?></dd>
+                        </dl>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-map-marker-alt"></i> Alamat</h3>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-1"><?= esc($profilPT['jalan'] ?? '-') ?></p>
-                        <p class="mb-1"><?= esc($profilPT['kelurahan'] ?? '-') ?></p>
-                        <p class="mb-1"><?= esc($profilPT['nama_wilayah'] ?? '-') ?></p>
-                        <p class="mb-0">Kode Pos: <?= esc($profilPT['kode_pos'] ?? '-') ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-gavel"></i> Legalitas Pendirian</h3>
-            </div>
-            <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-2 text-muted fw-normal">SK Pendirian</dt>
-                    <dd class="col-sm-10"><?= esc($profilPT['sk_pendirian'] ?? '-') ?></dd>
-                    <dt class="col-sm-2 text-muted fw-normal">Tanggal SK</dt>
-                    <dd class="col-sm-10"><?= esc($tanggalSK) ?></dd>
-                </dl>
             </div>
         </div>
 
