@@ -14,7 +14,7 @@
                     </span>
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block"><?= esc($username ?? session('auth.username')) ?></a>
+                    <span class="d-block text-truncate"><?= esc($username ?? session('auth.username')) ?></span>
                 </div>
             </div>
 
@@ -23,7 +23,7 @@
                 <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
                     <li class="nav-item">
                         <a href="<?= base_url('dashboard') ?>" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <i class="nav-icon fas fa-gauge-high"></i>
                             <p>Dashboard</p>
                         </a>
                     </li>
