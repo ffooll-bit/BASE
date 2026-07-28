@@ -139,6 +139,7 @@ Before you consider any task complete, you MUST run:
 2. `npm run build` if you touched any view or asset file
 3. `php spark routes` if you added or changed routes
 4. `vendor/bin/phpunit` if test files exist for the code you changed
+5. `.memory/memory.yaml` — save new decisions or bug fixes discovered during this task
 
 **Pre-commit ritual — silently verify before every commit:**
 
@@ -147,6 +148,7 @@ Before you consider any task complete, you MUST run:
 - Architectural change? → ARCHITECTURE.md updated
 - New UI pattern? → DESIGN.md updated
 - Manager approved the plan before any code was written
+- New decision or bug fix discovered? → `.memory/memory.yaml` updated in this commit
 
 **Failure recovery:**
 

@@ -69,12 +69,13 @@ php spark routes        # Only if routes changed
 vendor/bin/phpunit      # Only if tests exist
 ```
 
-### Phase E: Commit
+### Phase E: Memory & Commit
 
-1. Stage only files related to this task. No unrelated changes.
-2. Documentation updates (CHANGELOG, OPEN_ISSUES, ARCHITECTURE, DESIGN, README as applicable) must be **in the same commit** as the code change — never a separate commit.
-3. Write a commit message following the format below.
-4. Commit. One commit per logical change.
+1. **Save to `.memory/memory.yaml`** — if you discovered a bug fix, made a significant decision, or hit a dead end during implementation, save it to memory first.
+2. Stage only files related to this task. No unrelated changes.
+3. Documentation updates (CHANGELOG, OPEN_ISSUES, ARCHITECTURE, DESIGN, README, `.memory/memory.yaml` as applicable) must be **in the same commit** as the code change — never a separate commit.
+4. Write a commit message following the format below.
+5. Commit. One commit per logical change.
 
 **What counts as one commit:**
 - A new feature spanning controller + service + view = one commit
