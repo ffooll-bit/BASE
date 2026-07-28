@@ -3,11 +3,6 @@
 This project uses **AdminLTE 4** (built on **Bootstrap 5.3**) with **Font Awesome 6** icons.
 This document is the single source of truth for UI markup — every view must match these patterns.
 
-> **Migration note:** This project migrated from AdminLTE 3. If you see old classes
-> (`wrapper`, `main-header`, `main-sidebar`, `content-wrapper`, `content-header`,
-> `nav-sidebar`, `sidebar`, `main-footer`) in existing views, they are **incorrect**
-> and must be replaced with the AdminLTE 4 equivalents documented below.
-> **Remove this note after ISS-001 (layout fix) is completed.**
 
 ---
 
