@@ -62,7 +62,28 @@ Manager: "Setuju"
 Agent: Implement → Verify → Update docs → Commit (kode + docs 1 commit) → Push → PR
   ↓
 Manager: Review → "Merge" or "Ada yang perlu diubah"
+  ↓ (if "Merge")
+Agent: Merge PR → Delete remote branch → git switch main → git pull
+  ↓ (if release needed)
+Agent: Run Release Process (see below)
 ```
+
+### Release Process
+
+Triggered when a feature/fix batch is ready for release (manager says "Rilis" or version tag is due).
+
+Steps:
+
+1. **Check `main` is up-to-date** — `git switch main && git pull origin main`
+2. **Move [Unreleased] to versioned release in CHANGELOG.md** — replace `## [Unreleased]` with `## [0.X.0] - YYYY-MM-DD`. Follow Keep a Changelog format. Ensure `[unreleased]` link reference is also updated.
+3. **Verify** — `vendor/bin/phpunit` green, `php -l` on all changed files, `npm run build` passes
+4. **Commit** — `chore: release v0.X.0`
+5. **Tag** — `git tag v0.X.0 && git push origin v0.X.0`
+6. **Create GitHub Release** — `gh release create v0.X.0 --title "v0.X.0" --notes-file CHANGELOG.md` (or extract notes manually from changelog)
+7. **Update docs** — mark released issues in OPEN_ISSUES.md as Released, move to archive section
+8. **Cleanup** — delete any stale branches that were already merged
+
+> Before every release, verify that `[unreleased]:` link at the bottom of CHANGELOG.md is updated to point to `HEAD`.
 
 ### Persistence
 

@@ -86,10 +86,21 @@ vendor/bin/phpunit      # Only if tests exist
 1. Push your branch.
 2. Open a PR. Use `.github/PULL_REQUEST_TEMPLATE.md` as a checklist.
 3. Wait for CI to pass. If it fails, fix and amend the commit — do not add fixup commits.
+4. Request manager review. Wait for "Merge" or "Ada yang perlu diubah".
+
+### Phase G: Post-Merge & Cleanup
+
+Execute after manager says "Merge":
+
+1. **Merge the PR** via GitHub UI (rebase merge preferred) or CLI.
+2. **Delete the remote branch** — `git push origin --delete <branch-name>`
+3. **Update local main** — `git switch main && git pull origin main`
+4. **Delete local branch** — `git branch -d <branch-name>`
+5. **If release is needed** — run the Release Process (see the Releases section below).
 
 ### Definition of Done
 
-A task is **Done** when: code written, linted (`php -l`), verified (`npm run build`, `vendor/bin/phpunit`), committed (Conventional Commit), and a PR is sent with CI green.
+A task is **Done** when: code written, linted (`php -l`), verified (`npm run build`, `vendor/bin/phpunit`), committed (Conventional Commit), PR sent with CI green, PR merged, branches cleaned up, and release created if applicable.
 
 ---
 
@@ -157,7 +168,33 @@ Review comments should be specific, actionable, and respectful.
 
 ## Releases
 
-- This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
-- Update `CHANGELOG.md` throughout development: add new entries to the `[Unreleased]` section as changes are made. Before release, move them under a new version header.
-- A release is tagged from `main` after the PR is merged.
-- Release command: `git tag v<version> && git push origin v<version>`
+This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
+
+### Changelog Discipline
+
+- Add new entries to `[Unreleased]` section in `CHANGELOG.md` throughout development (every feat/fix/refactor commit).
+- Before release, replace `## [Unreleased]` with `## [0.X.0] - YYYY-MM-DD`.
+- Update the `[unreleased]:` link reference at the bottom of the file to point to `HEAD`.
+
+### Release Steps
+
+Run these after PR is merged and main is up-to-date:
+
+```bash
+# 1. Ensure main is current
+git switch main && git pull origin main
+
+# 2. Update CHANGELOG.md — move [Unreleased] to versioned release
+#    (edit manually, then:)
+git add CHANGELOG.md && git commit -m "chore: release v0.X.0"
+
+# 3. Tag and push
+git tag v0.X.0 && git push origin v0.X.0
+
+# 4. Create GitHub Release
+gh release create v0.X.0 --title "v0.X.0" --notes-file CHANGELOG.md
+
+# 5. Update OPEN_ISSUES.md — mark released items
+```
+
+Before every release, run: `vendor/bin/phpunit`, `php -l` on changed files, `npm run build`.
