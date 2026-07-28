@@ -32,77 +32,77 @@
         <?php endif; ?>
 
         <?php if ($profilPT): ?>
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">Informasi Perguruan Tinggi</h3>
-            </div>
+
+        <div class="card card-outline card-primary">
             <div class="card-body">
-                <table class="table table-sm table-borderless mb-0" style="table-layout:fixed">
-                    <colgroup>
-                        <col style="width:50%">
-                        <col style="width:50%">
-                    </colgroup>
-                    <tbody>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Nama PT</th>
-                            <td><?= esc($profilPT['nama_perguruan_tinggi'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Kode PT</th>
-                            <td><?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Status Akreditasi</th>
-                            <td><?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Kepemilikan</th>
-                            <td><?= esc($profilPT['nama_status_milik'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Telepon</th>
-                            <td><?= esc($profilPT['telepon'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Fax</th>
-                            <td><?= esc($profilPT['faximile'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Email</th>
-                            <td><?= esc($profilPT['email'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Website</th>
-                            <td><?= esc($profilPT['website'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Alamat</th>
-                            <td><?= esc($profilPT['jalan'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Kelurahan</th>
-                            <td><?= esc($profilPT['kelurahan'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Wilayah</th>
-                            <td><?= esc($profilPT['nama_wilayah'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Kode Pos</th>
-                            <td><?= esc($profilPT['kode_pos'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">SK Pendirian</th>
-                            <td><?= esc($profilPT['sk_pendirian'] ?? '-') ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-muted fw-normal text-end">Tanggal SK</th>
-                            <td><?= esc(isset($profilPT['tanggal_sk_pendirian']) ? date('d-m-Y', strtotime($profilPT['tanggal_sk_pendirian'])) : '-') ?></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <h2 class="card-title h2 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
+                        <div class="text-muted">
+                            Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?>
+                            &middot; <?= esc($profilPT['nama_status_milik'] ?? '-') ?>
+                        </div>
+                    </div>
+                    <span class="badge bg-success fs-6"><?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></span>
+                </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-address-card"></i> Kontak</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2"><i class="fas fa-phone text-muted me-2" style="width:1.25rem"></i> <?= esc($profilPT['telepon'] ?? '-') ?></div>
+                        <div class="mb-2"><i class="fas fa-fax text-muted me-2" style="width:1.25rem"></i> <?= esc($profilPT['faximile'] ?? '-') ?></div>
+                        <div class="mb-2"><i class="fas fa-envelope text-muted me-2" style="width:1.25rem"></i>
+                            <?php if (!empty($profilPT['email'])): ?>
+                                <a href="mailto:<?= esc($profilPT['email'], 'url') ?>"><?= esc($profilPT['email']) ?></a>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </div>
+                        <div class="mb-0"><i class="fas fa-globe text-muted me-2" style="width:1.25rem"></i>
+                            <?php if (!empty($profilPT['website'])): ?>
+                                <a href="<?= esc($profilPT['website'], 'url') ?>" target="_blank"><?= esc($profilPT['website']) ?></a>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-map-marker-alt"></i> Alamat</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1"><?= esc($profilPT['jalan'] ?? '-') ?></p>
+                        <p class="mb-1"><?= esc($profilPT['kelurahan'] ?? '-') ?></p>
+                        <p class="mb-1"><?= esc($profilPT['nama_wilayah'] ?? '-') ?></p>
+                        <p class="mb-0">Kode Pos: <?= esc($profilPT['kode_pos'] ?? '-') ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-gavel"></i> Legalitas Pendirian</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-2 text-muted fw-normal">SK Pendirian</dt>
+                    <dd class="col-sm-10"><?= esc($profilPT['sk_pendirian'] ?? '-') ?></dd>
+                    <dt class="col-sm-2 text-muted fw-normal">Tanggal SK</dt>
+                    <dd class="col-sm-10"><?= esc($tanggalSK) ?></dd>
+                </dl>
+            </div>
+        </div>
+
         <?php endif; ?>
 
     </div>

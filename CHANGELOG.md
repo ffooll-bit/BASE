@@ -43,6 +43,7 @@ _None yet._
 - **Dashboard version:** replaced hardcoded `v0.1.0` with dynamic value from `config('AppVersion')->version`
 - **Profil PT page:** breadcrumb and page title unified to "Profil Perguruan Tinggi" for consistency
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
+- **Profil PT page layout:** redesigned with visual hierarchy — hero card with institution name + badge status, two side-by-side cards (Kontak + Alamat), and Legalitas card; pure AdminLTE 4 + Bootstrap with no custom CSS or horizontal lines
 
 ### Fixed
 
