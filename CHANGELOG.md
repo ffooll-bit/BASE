@@ -45,7 +45,9 @@ _None yet._
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
 
 ### Fixed
-_None yet._
+
+- **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
+- **Profil PT card styling:** replaced `table-borderless` with `table` for visible row separators, `card-body p-0` with `card-body` for proper padding, `td` labels upgraded to `th scope="row"` for semantic correctness
 
 ### Removed
 _None yet._
