@@ -41,12 +41,15 @@
                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <div>
                                 <h2 class="display-6 mb-1"><?= esc($profilPT['nama_perguruan_tinggi']) ?></h2>
-                                <div class="text-muted small">
-                                    Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?>
-                                    &middot; <?= esc($profilPT['nama_status_milik'] ?? '-') ?>
-                                </div>
+                                <div class="text-muted small mb-1">Kode PT: <?= esc($profilPT['kode_perguruan_tinggi'] ?? '-') ?></div>
+                                <div class="text-muted small">Kepemilikan: <?= esc($profilPT['nama_status_milik'] ?? '-') ?></div>
                             </div>
                             <span class="badge bg-success fs-6">Akreditasi <?= esc($profilPT['status_perguruan_tinggi'] ?? '-') ?></span>
+                        </div>
+                        <hr class="my-3">
+                        <div class="d-flex gap-4 small">
+                            <div><span class="text-muted">SK Pendirian:</span> <?= esc($profilPT['sk_pendirian'] ?? '-') ?></div>
+                            <div><span class="text-muted">Tanggal SK:</span> <?= esc($tanggalSK) ?></div>
                         </div>
                     </div>
                 </div>
@@ -95,20 +98,6 @@
                                 <p class="fs-6 mb-0 mt-auto">Kode Pos: <?= esc($profilPT['kode_pos'] ?? '-') ?></p>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-gavel"></i> Legalitas Pendirian</h3>
-                    </div>
-                    <div class="card-body">
-                        <dl class="row mb-0">
-                            <dt class="col-sm-2 text-muted small fw-normal">SK Pendirian</dt>
-                            <dd class="col-sm-10 fs-6"><?= esc($profilPT['sk_pendirian'] ?? '-') ?></dd>
-                            <dt class="col-sm-2 text-muted small fw-normal">Tanggal SK</dt>
-                            <dd class="col-sm-10 fs-6"><?= esc($tanggalSK) ?></dd>
-                        </dl>
                     </div>
                 </div>
 
