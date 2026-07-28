@@ -83,7 +83,7 @@ Steps:
    ```powershell
    $notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
    $notes += "`r`n[0.X.0]: https://github.com/ffooll-bit/BASE/compare/v0.(X-1).0...v0.X.0"
-   $notes | Out-File -Encoding utf8 release_notes.md
+   [System.IO.File]::WriteAllText("$pwd\release_notes.md", $notes)
    gh release create v0.X.0 --title "v0.X.0" --notes-file release_notes.md
    Remove-Item release_notes.md
    ```
