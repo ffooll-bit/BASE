@@ -24,7 +24,7 @@
         <!-- Left navbar links -->
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="fas fa-bars"></i></a>
+                <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="<?= base_url('dashboard') ?>" class="nav-link">Home</a>
@@ -35,13 +35,13 @@
         <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                    <i class="fas fa-user"></i> <?= esc($username) ?>
+                    <i class="fas fa-user"></i> <?= esc($username ?? session('auth.username')) ?>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <form action="<?= base_url('logout') ?>" method="post">
                         <?= csrf_field() ?>
                         <button type="submit" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt"></i> Logout
+                            <i class="fas fa-right-from-bracket"></i> Logout
                         </button>
                     </form>
                 </div>
