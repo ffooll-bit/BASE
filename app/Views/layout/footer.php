@@ -1,7 +1,7 @@
     </main>
 
     <footer class="app-footer">
-        <strong>&copy; <?= date('Y') ?> BASE.</strong>
+        <strong>&copy; <?= date('Y') ?> BASE - Bongaya Advanced Services Engine.</strong>
         All rights reserved.
     </footer>
 
@@ -12,8 +12,6 @@
 <script src="<?= base_url('bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
 <!-- AdminLTE 4 App -->
 <script src="<?= base_url('adminlte/js/adminlte.min.js') ?>"></script>
-<!-- App custom scripts -->
-<script src="<?= base_url('js/app.js') ?>"></script>
 
 </body>
 </html>
