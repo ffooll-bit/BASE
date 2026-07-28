@@ -19,3 +19,7 @@ items:
     tags: [decision, ui, ux, audit]
     count: 1
     created: "2026-07-28T10:36:32Z"
+  - text: "ADR: Dashboard small-box icon fix — Changed .icon to .small-box-icon in dashboard view (AdminLTE 4 CSS class), updated Google Fonts from Source Sans Pro to Source Sans 3 (AdminLTE 4 default), updated DESIGN.md documentation. No custom CSS needed — AdminLTE 4 already provides .small-box-icon styles."
+    tags: [decision, ui, dashboard, small-box]
+    count: 1
+    created: "2026-07-28T11:44:11Z"
