@@ -16,7 +16,7 @@ Copy `env` to `.env`, configure `baseURL`, `encryption.key`, `neofeeder.*`.
 
 ## Development Workflow
 
-Read `AGENTS.md` (Part A: Golden Path) for the full gate-based lifecycle.
+Read `AGENTS.md` (▸ Golden Path section) for the full gate-based lifecycle.
 This project follows: Plan → Execute → Docs & Commit → PR → Review → Merge & Cleanup.
 
 Every phase has a required gate output. Skip a gate → rollback to previous phase.
