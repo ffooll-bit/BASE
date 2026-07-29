@@ -180,6 +180,7 @@ Docs are updated in the **same commit** as the code.
 | ARCHITECTURE.md | Routes/services/auth flow changed | Update |
 | DESIGN.md | New UI pattern | Add section |
 | README.md | Setup or technology changed | Update |
+| tests/README.md | Testing pattern/mocking changed | Update |
 | .memory/memory.yaml | Important discovery | Save entry |
 
 ---
