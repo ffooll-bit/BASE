@@ -71,3 +71,7 @@ items:
     tags: [bug, css, bootstrap]
     count: 1
     created: "2026-07-28T16:27:59Z"
+  - text: "ADR: AGENTS.md restructured into Golden Path (must-survive compression) + Reference sections; CONTRIBUTING.md deduplicated to human-focused content → Context: DeepSeek V4 Flash Free has limited context — sections 5-12 of old AGENTS.md (302 lines) at risk of compression. Golden Path + 5 critical rules in ~15 lines survive compression. Lifecycle removed from CONTRIBUTING (single source of truth in AGENTS.md). → Consequence: ~100 fewer AGENTS lines, ~90 fewer CONTRIBUTING lines, no duplication."
+    tags: [decision, documentation, workflow]
+    count: 1
+    created: "2026-07-29T10:00:00Z"
