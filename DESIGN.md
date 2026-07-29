@@ -67,7 +67,7 @@ Pass data individually to each partial — `$title` and `$username` to header, p
                 <form action="<?= base_url('logout') ?>" method="post" class="d-inline">
                     <?= csrf_field() ?>
                     <button type="submit" class="nav-link btn btn-link border-0 py-2">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-right-from-bracket"></i> Logout
                     </button>
                 </form>
             </li>
@@ -150,7 +150,7 @@ Pass data individually to each partial — `$title` and `$username` to header, p
 ```html
 <li class="nav-item">
     <a href="<?= base_url('dashboard') ?>" class="nav-link">
-        <i class="nav-icon fas fa-tachometer-alt"></i>
+        <i class="nav-icon fas fa-gauge-high"></i>
         <p>Dashboard</p>
     </a>
 </li>
@@ -393,7 +393,7 @@ Place alerts at the **top of `app-content`**, before the first card:
 
 | Purpose | Icon class |
 |---------|-----------|
-| Dashboard | `fas fa-tachometer-alt` |
+| Dashboard | `fas fa-gauge-high` |
 | Add / Create | `fas fa-plus` |
 | Edit | `fas fa-edit` |
 | Delete | `fas fa-trash` |
@@ -408,7 +408,7 @@ Place alerts at the **top of `app-content`**, before the first card:
 | User | `fas fa-user` |
 | Users | `fas fa-users` |
 | Settings | `fas fa-cog` |
-| Logout | `fas fa-sign-out-alt` |
+| Logout | `fas fa-right-from-bracket` |
 | Menu | `fas fa-bars` |
 | Close / Cancel | `fas fa-times` |
 | Warning | `fas fa-exclamation-triangle` |
