@@ -19,89 +19,72 @@ Copy `env` to `.env` and configure `baseURL`, `encryption.key`, and `neofeeder.*
 ## Development Workflow
 
 For every task, follow this sequence in order. Do not skip phases.
+Every phase has a GATE: output that must be produced before proceeding.
+If a gate is skipped, stop and rollback to the previous phase.
 
-### Phase A: Understand
+### Phase A: Plan (Gate: present to user, wait for "Setuju")
 
-1. Read `AGENTS.md` if this is your first session — it defines your identity, rules, and decision framework.
-2. Check `.memory/memory.yaml` — it stores cross-session context from previous sessions.
-3. Read the task description or `OPEN_ISSUES.md` entry carefully. Identify what needs to change and why.
-4. If the task is ambiguous, ask clarifying questions **before** writing code. Spending 30 minutes planning is cheaper than 3 hours on the wrong solution.
-5. Read `ARCHITECTURE.md` — it explains how the system works.
-6. Read `DESIGN.md` if the task involves UI changes.
-7. Read `CODING_STANDARDS.md`.
+1. Read `OPEN_ISSUES.md` — find task with highest priority and Open status
+2. Read `.memory/memory.yaml` — cross-session context
+3. Read `ARCHITECTURE.md`, `DESIGN.md`, `CHANGELOG.md` — understand system & history
+4. Explore code that needs to change — understand current behavior
+5. Determine minimal file set — touch only what the task requires
+6. **Gate: Present plan to user (scope, files, approach, risk) — wait for "Setuju" or "Lanjutkan"**
 
-### Phase B: Plan
+### Phase B: Execute (Gate: verification passes)
 
-1. Make sure your local `main` is up to date. Stash or commit any pending changes first, then:
-   ```bash
-   git switch main && git pull origin main
-   ```
-2. Create a branch from `main` following the naming convention below.
-3. Examine the existing code that needs to change. Understand the current behavior.
-4. Decide the minimal set of files to modify. Touch nothing outside the task scope.
-5. For complex tasks (3+ files or cross-cutting changes), write a short plan and get confirmation before coding.
+1. `git switch main && git pull origin main`
+2. Create branch from main: `feature/xxx` / `fix/xxx` / `chore/xxx` / `docs/xxx`
+3. Implement — follow rules in `AGENTS.md` and Decision Framework
+4. **Add tests** — required for libraries/services/controllers/filters, optional for view/docs
+5. **Gate: `php -l` on every PHP file changed** — fix if it fails
+6. **Gate: `vendor/bin/php-cs-fixer fix`** — auto-fix code style
+7. **Gate: `npm run build` (if view/asset changed)** — fix if it fails
+8. **Gate: `php spark routes` (if routes changed)** — fix if incorrect
+9. **Gate: `vendor/bin/phpunit` (if tests exist)** — fix until passing
+10. **Gate: Save to `.memory/memory.yaml`** — if any discovery was made
 
-### Phase C: Implement
+### Phase C: Docs & Commit (Gate: commit follows convention)
 
-1. Write or modify code following project conventions and the Decision Framework in `AGENTS.md`.
-2. Keep changes minimal — only what the task requires (YAGNI).
-3. Self-review as you go: check for security, edge cases, and debug leftovers.
-4. Save key decisions or bug fixes to `.memory/memory.yaml` after resolving them.
-5. **Add tests:**
-   - **Always** add tests when creating or modifying libraries, services, controllers, or filters
-   - **Required** when fixing a bug — write a test that reproduces the bug first
-   - **Optional** for view-only changes or documentation
+1. Update CHANGELOG.md — add entry under [Unreleased] for feat/fix/refactor/perf/security
+2. Update OPEN_ISSUES.md — mark Done if task closes an issue
+3. Update ARCHITECTURE.md — if routes/services/auth flow changed
+4. Update DESIGN.md — if new UI pattern was added
+5. **Gate: Pre-commit ritual. Six checks:**
+   - [ ] PHP lint passes
+   - [ ] npm build passes
+   - [ ] phpunit passes
+   - [ ] CHANGELOG updated (if needed)
+   - [ ] OPEN_ISSUES updated (if needed)
+   - [ ] memory.yaml updated (if new discoveries)
+6. **Gate: Commit message — format `type: description`** — one commit per logical change
 
-### Phase D: Verify
+### Phase D: Pull Request (Gate: PR is open on GitHub)
 
-Run these in order. Stop and fix immediately if any step fails:
+1. Push branch to remote: `git push origin <branch-name>`
+2. Open PR on GitHub — use `.github/PULL_REQUEST_TEMPLATE.md` as checklist
+3. Wait for CI to pass — if it fails, amend commit (`git commit --amend`), force-push
+4. Request manager review — wait for "Merge" or "Ada yang perlu diubah"
 
-```bash
-# Check PHP syntax on every file you touched (example):
-php -l app/Controllers/Login.php
-php -l app/Libraries/Auth.php
-# Repeat for every PHP file you created or modified
+### Phase E: After Review (Gate: proceed based on response)
 
-vendor/bin/php-cs-fixer fix  # Auto-fix code style (PSR-12, PHP 8.2)
+If manager says "Merge" or "Setuju":
+  → Proceed to Phase F (Merge & Cleanup)
 
-npm run build           # Only if you touched any view or asset file
-php spark routes        # Only if routes changed
-vendor/bin/phpunit      # Only if tests exist
-```
+If manager says "Ada yang perlu diubah" or other feedback:
+  → **DO NOT execute immediately. Open Change Request Protocol in AGENTS.md first.**
 
-### Phase E: Memory & Commit
+### Phase F: Merge & Cleanup (Gate: main updated, branches clean)
 
-1. **Save to `.memory/memory.yaml`** — if you discovered a bug fix, made a significant decision, or hit a dead end during implementation, save it to memory first.
-2. Stage only files related to this task. No unrelated changes.
-3. Documentation updates (CHANGELOG, OPEN_ISSUES, ARCHITECTURE, DESIGN, README, `.memory/memory.yaml` as applicable) must be **in the same commit** as the code change — never a separate commit.
-4. Write a commit message following the format below.
-5. Commit. One commit per logical change.
-
-**What counts as one commit:**
-- A new feature spanning controller + service + view = one commit
-- A bug fix and its corresponding test = one commit
-- Refactoring unrelated code while fixing a bug = two separate commits
-
-### Phase F: Pull Request
-
-1. Push your branch.
-2. Open a PR. Use `.github/PULL_REQUEST_TEMPLATE.md` as a checklist.
-3. Wait for CI to pass. If it fails, fix and amend the commit — do not add fixup commits.
-4. Request manager review. Wait for "Merge" or "Ada yang perlu diubah".
-
-### Phase G: Post-Merge & Cleanup
-
-Execute after manager says "Merge":
-
-1. **Merge the PR** via GitHub UI (rebase merge preferred) or CLI.
-2. **Delete the remote branch** — `git push origin --delete <branch-name>`
-3. **Update local main** — `git switch main && git pull origin main`
-4. **Delete local branch** — `git branch -d <branch-name>`
-5. **If release is needed** — run the Release Process (see the Releases section below).
+1. Merge PR via GitHub UI (rebase merge preferred)
+2. Delete remote branch: `git push origin --delete <branch-name>`
+3. `git switch main && git pull origin main`
+4. Delete local branch: `git branch -d <branch-name>`
+5. If release is needed → run Release Process
 
 ### Definition of Done
 
-A task is **Done** when: code written, linted (`php -l`), verified (`npm run build`, `vendor/bin/phpunit`), committed (Conventional Commit), PR sent with CI green, PR merged, branches cleaned up, and release created if applicable.
+Task is **Done** when: code written, linted (`php -l`), verified (`npm run build` + `phpunit`), committed (Conventional Commit), PR sent with CI green, PR merged, branches cleaned, release created (if applicable).
 
 ---
 
@@ -182,7 +165,7 @@ This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PAT
 
 Run these after PR is merged and main is up-to-date:
 
-```bash
+```powershell
 # 1. Ensure main is current
 git switch main && git pull origin main
 
@@ -197,11 +180,10 @@ git tag v0.X.0 && git push origin v0.X.0
 $notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
 $notes += "`r`n[0.X.0]: https://github.com/ffooll-bit/BASE/compare/v0.(X-1).0...v0.X.0"
 [System.IO.File]::WriteAllText("$pwd\release_notes.md", $notes)
-
 gh release create v0.X.0 --title "v0.X.0" --notes-file release_notes.md
 Remove-Item release_notes.md
 
-# 6. Update OPEN_ISSUES.md — mark released items
+# 5. Update OPEN_ISSUES.md — mark released items
 ```
 
 Before every release, run: `vendor/bin/phpunit`, `php -l` on changed files, `npm run build`.
