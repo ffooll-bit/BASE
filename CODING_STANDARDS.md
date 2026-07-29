@@ -89,8 +89,8 @@ Every POST form includes `<?= csrf_field() ?>` immediately after `<form>`.
 
 ```php
 if (! $this->validate([
-    'username' => 'required|valid_email',
-    'password' => 'required|min_length[6]',
+    'email' => 'required|valid_email',
+    'name'  => 'required',
 ])) {
     return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
 }
