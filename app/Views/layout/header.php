@@ -42,7 +42,7 @@
                 <form action="<?= base_url('logout') ?>" method="post" class="d-inline">
                     <?= csrf_field() ?>
                     <button type="submit" class="nav-link btn btn-link border-0 py-2">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-right-from-bracket"></i> Logout
                     </button>
                 </form>
             </li>

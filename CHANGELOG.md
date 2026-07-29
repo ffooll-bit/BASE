@@ -47,6 +47,7 @@ _None yet._
 
 ### Fixed
 
+- **FA6 icon consistency:** `header.php` logout button and `DESIGN.md` reference still used FA5 deprecated names (`fa-sign-out-alt` → `fa-right-from-bracket`, `fa-tachometer-alt` → `fa-gauge-high`) — aligned to canonical FA6 names to match `sidebar.php`
 - **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
 
 ### Removed
