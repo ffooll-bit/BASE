@@ -75,3 +75,7 @@ items:
     tags: [decision, documentation, workflow]
     count: 1
     created: "2026-07-29T10:00:00Z"
+  - text: "ADR: Documentation trimmed for DeepSeek V4 Flash Free context → Context: DESIGN.md 1138 lines (mostly Bootstrap boilerplate), CODING_STANDARDS.md 537 lines (mostly general PHP knowledge), OPEN_ISSUES.md 295 lines (mostly historical). All three trimmed/pared to project-specific content only. DESIGN.md now ~350 lines, CODING_STANDARDS ~280 lines, OPEN_ISSUES ~50 lines. Sprint 1 done items archived to archive/SPRINT1_ISSUES.md. → Consequence: +3 files (archive dir + archive file), -1200 lines total across 3 files."
+    tags: [decision, documentation]
+    count: 1
+    created: "2026-07-29T15:15:00Z"

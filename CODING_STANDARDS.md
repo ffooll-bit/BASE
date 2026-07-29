@@ -1,176 +1,74 @@
 # Coding Standards — BASE Project
 
-This document defines the coding conventions for all PHP, JavaScript, CSS, and view files.
 Follow these strictly. Deviations must be justified by the Decision Framework in `AGENTS.md`.
-
-> **Related documents:** See `ARCHITECTURE.md` for system architecture and `DESIGN.md` for UI/UX markup patterns.
 
 ---
 
 ## 1. PHP
 
-### 1.1 PSR-12
+### 1.1 Standard
 
-All PHP code MUST comply with **PSR-12** (`@PSR12` in PHP CS Fixer).
+PSR-12 (`@PSR12` in PHP CS Fixer). PHP 8.2+ required.
 
-### 1.2 PHP 8.2 Features
+### 1.2 PHP 8.2 features — use these
 
-Required PHP version is `^8.2`. Use these features:
+Typed properties, union/nullable types (`?string`), match expressions, named arguments, `readonly` properties.
 
-| Feature | Required | Example |
-|---------|----------|---------|
-| Typed properties | Yes | `private NeoFeeder $neoFeeder;` |
-| Union types / nullable | Yes | `private ?string $lastError = null;` |
-| Match expressions | Where cleaner than switch | Prefer over `switch` |
-| Named arguments | Where improves readability | `redirect()->with('error', $msg)` |
-| `readonly` properties | For DTOs / config | `public readonly string $name` |
+### 1.3 Features NOT required
 
-NOT required (use at discretion):
+`declare(strict_types=1)` — not used; may break existing code relying on type coercion. Attributes, enums, promoted constructor — ok for new code if adds value.
 
-| Feature | Note |
-|---------|------|
-| `declare(strict_types=1)` | Not currently used; may break existing code that relies on type coercion |
-| Attributes | Not used anywhere; ok for new code if adds value |
-| Enums | Not used anywhere; ok for new code |
-| Promoted constructor | Not used anywhere; ok for new code |
+### 1.4 Never use
 
-Do NOT use:
+`dd()`, `var_dump()`, `print_r()`, `exit()`, `mixed` (unless unavoidable), `eval()`, `extract()`, `compact()`.
 
-| Feature | Why |
-|---------|-----|
-| `var_dump()`, `dd()`, `print_r()`, `exit()` | Debug leftovers — must never reach a commit |
-| `mixed` type (unless truly necessary) | Prevents static analysis |
-| `eval()`, `extract()`, `compact()` | Security risk / debugging nightmare |
-
-### 1.3 Naming
+### 1.5 Naming
 
 | Construct | Convention | Example |
 |-----------|------------|---------|
-| Classes | PascalCase | `AuthFilter`, `NeoFeeder` |
-| Interfaces | PascalCase | `FilterInterface` (CI4 built-in) |
-| Methods | camelCase | `isLoggedIn()`, `getToken()` |
-| Properties | camelCase | `$lastError`, `$apiBaseUrl` |
-| Variables | camelCase | `$username`, `$responseData` |
-| Constants | UPPER_SNAKE_CASE | `SECOND`, `EXIT_ERROR` |
-| Config properties | camelCase | `$baseURL`, `$connectionTimeout` |
-| Private methods | camelCase (no underscore prefix) | `validateToken()` not `_validateToken()` |
+| Classes | PascalCase | `AuthFilter` |
+| Methods / properties / variables | camelCase | `isLoggedIn()`, `$lastError` |
+| Constants | UPPER_SNAKE_CASE | `EXIT_ERROR` |
+| Private methods | camelCase, no underscore | `validateToken()` not `_validateToken()` |
 
-### 1.4 File Structure
+One class per file. Filename matches class name (PSR-4). Namespace follows directory path.
 
-- One class per file (no exceptions).
-- Filename matches class name (PSR-4 autoloading).
-- Namespace follows directory path:
-  - `app/Controllers/` → `namespace App\Controllers;`
-  - `app/Libraries/` → `namespace App\Libraries;`
-  - `app/Filters/` → `namespace App\Filters;`
-  - `app/Config/` → `namespace Config;`
+### 1.6 Use statements
 
-### 1.5 Use Statements
+Alphabetical order, single block, no blank-line grouping. No unused imports (caught by PHP CS Fixer).
 
-- Alphabetical order.
-- Single block (no blank-line grouping).
-- No unused imports — PHP CS Fixer's `no_unused_imports` rule catches these.
+### 1.7 Type hints
 
-```php
-use CodeIgniter\Encryption\EncrypterInterface;
-use CodeIgniter\Session\Session;
-```
+Required on all properties, parameters, and return types (except controllers returning concatenated views may omit).
 
-### 1.6 Type Hints
+### 1.8 Comments
 
-REQUIRED on:
-
-- All class properties (typed properties)
-- All method parameters
-- All method return types
-
-```php
-public function login(string $username, string $password): bool
-{
-    // ...
-}
-
-private function encodeJsonPayload(array $payload): string
-{
-    // ...
-}
-```
-
-Controllers MAY omit return types for `index()` methods when returning views via concatenation,
-but SHOULD type them when returning a single value:
-
-```php
-// Acceptable (return type optional for concatenated views):
-public function index()
-{
-    return view('layout/header')
-        . view('login/login')
-        . view('layout/footer');
-}
-
-// Required on all other methods:
-public function attemptLogin(): ?RedirectResponse
-{
-    // ...
-}
-
-public function index(): string  // also acceptable
-{
-    return view('login/login');
-}
-```
-
-### 1.7 Comments
-
-- **PHPDoc** on every method that is `public` or `protected`, with `@param` and `@return` where applicable.
-- **Inline comments** (`//`) for non-obvious logic (WHY, not WHAT).
-- **Ponytail comments** (`// ponytail: ...`) to document deliberate shortcuts.
-- Do NOT write comments that restate the code. Let the code speak.
-
-```php
-/**
- * Attempts to authenticate a user with the given username and password.
- *
- * Validates inputs, requests a token from Neo Feeder, and stores
- * session data on success. The password is never stored, logged, or retained.
- *
- * @param string $username The user's username or email.
- * @param string $password The user's password.
- *
- * @return bool True if authentication succeeds, false on failure.
- */
-public function login(string $username, string $password): bool
-{
-    // ...
-    // ponytail: Global lock, per-account locks if throughput matters
-}
-```
+PHPDoc on every public/protected method with `@param` and `@return`.
+Inline comments (`//`) for WHY, not WHAT.
+Ponytail comments (`// ponytail: ...`) for deliberate shortcuts.
 
 ---
 
 ## 2. CodeIgniter 4 Conventions
 
-### 2.1 Service Access
-
-Use the `service()` helper — never `new` for registered services:
+### 2.1 Service access
 
 ```php
 $auth = service('auth');
 $neoFeeder = service('neoFeeder');
-$session = service('session');
 ```
 
-### 2.2 Config Access
+Use `service()` — never `new` for registered services.
 
-Use the `config()` helper:
+### 2.2 Config access
 
 ```php
 $ttl = config('NeoFeeder')->validationTTL;
 ```
 
-### 2.3 View Rendering
+### 2.3 View rendering
 
-Use string concatenation of partial views (not template inheritance):
+Concatenate partials (no template inheritance):
 
 ```php
 return view('layout/header')
@@ -179,37 +77,15 @@ return view('layout/header')
     . view('layout/footer');
 ```
 
-Pass data as the second argument to `view()`:
-
-```php
-view('dashboard/index', ['username' => $username])
-```
-
 ### 2.4 Routing
 
-Define all routes explicitly in `app/Config/Routes.php`:
-
-```php
-$routes->get('path', 'Controller::method');
-$routes->post('path', 'Controller::method');
-```
-
-Do NOT use `$routes->autoRoute()`.
+All routes explicit in `app/Config/Routes.php`. No `$routes->autoRoute()`.
 
 ### 2.5 CSRF
 
-All `POST` forms MUST include `csrf_field()` immediately after the `<form>` tag:
-
-```php
-<form action="<?= base_url('login') ?>" method="post">
-    <?= csrf_field() ?>
-    <!-- fields -->
-</form>
-```
+Every POST form includes `<?= csrf_field() ?>` immediately after `<form>`.
 
 ### 2.6 Validation
-
-Use CI4 Validation library:
 
 ```php
 if (! $this->validate([
@@ -220,62 +96,36 @@ if (! $this->validate([
 }
 ```
 
-### 2.7 Request Input
+### 2.7 Request input
 
-Use CI4's `$this->request` methods instead of superglobals:
-
-```php
-$email = $this->request->getPost('email');
-$page  = $this->request->getVar('page');
-$agent = $this->request->getUserAgent();
-
-// Wrong:
-$email = $_POST['email'];
-$page  = $_GET['page'];
-```
+Use `$this->request->getPost('name')` / `getVar('name')` — never `$_POST` / `$_GET`.
 
 ### 2.8 Redirects
 
 ```php
-// Success → redirect with optional flashdata
 return redirect()->to('/dashboard');
-
-// Failure → redirect back with input + error
 return redirect()->back()->withInput()->with('error', $message);
-
-// With flashdata
-return redirect()->to('/login')->with('error', service('auth')->getLastError());
 ```
 
 ---
 
 ## 3. Views
 
-### 3.1 Output Escaping
+### 3.1 Output escaping
 
-**ALL** dynamic output MUST use `esc()`:
-
-```php
-<?= esc($username) ?>
-<?= esc(session()->getFlashdata('error')) ?>
-<?= esc(session('auth.username')) ?>
-```
-
-The second parameter specifies the context (default `'html'`):
+ALL dynamic output uses `esc()`:
 
 ```php
-esc($value, 'js')      // For JavaScript string literals
-esc($value, 'url')     // For URL parameters
-esc($value, 'attr')    // For HTML attribute values
+<?= esc($username) ?>                    // html context (default)
+<?= esc($value, 'url') ?>                // URL
+<?= esc($value, 'attr') ?>               // HTML attribute
 ```
 
-### 3.2 Short Tags
+### 3.2 Short tags
 
 Use `<?= ?>` for output (never `<?php echo`).
 
-### 3.3 Alternate Control Structures
-
-Use colon syntax for control structures in views:
+### 3.3 Alternate control structures
 
 ```php
 <?php if (condition): ?>
@@ -283,34 +133,21 @@ Use colon syntax for control structures in views:
 <?php endif; ?>
 
 <?php foreach ($items as $item): ?>
-    <tr>
-        <td><?= esc($item) ?></td>
-    </tr>
+    <tr><td><?= esc($item) ?></td></tr>
 <?php endforeach; ?>
 ```
 
 ### 3.4 Asset URLs
 
-Always use `base_url()`:
-
 ```php
 <link rel="stylesheet" href="<?= base_url('bootstrap/css/bootstrap.min.css') ?>">
-<a href="<?= base_url('dashboard') ?>">Dashboard</a>
 ```
 
-### 3.5 Indentation
+### 3.5 Layout assembly
 
-4 spaces per level (no tabs). Enforced by `.editorconfig`.
+4 partials: `view('layout/header') + view('layout/sidebar') + view('{page}') + view('layout/footer')`.
 
-### 3.6 Layout Assembly
-
-The page is assembled from 4 partials:
-
-```
-view('layout/header') + view('layout/sidebar') + view('{page}') + view('layout/footer')
-```
-
-Page-specific views must follow this markup structure:
+Page-specific view structure:
 
 ```html
 <div class="app-content-header">
@@ -337,56 +174,36 @@ Page-specific views must follow this markup structure:
 
 No jQuery. No `$()` calls. Zero exceptions.
 
-### 4.2 Vanilla JS
+### 4.2 Vanilla JS only
 
 ```javascript
-// Correct
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('myButton').addEventListener('click', handleClick);
 });
-
-// Wrong — inline event handler
-<button onclick="handleClick()">Save</button>
 ```
 
-### 4.3 Bootstrap 5 Data Attributes
+### 4.3 Bootstrap 5 components
 
-Use `data-bs-*` attributes for Bootstrap components:
-
-```html
-<div class="dropdown-menu" data-bs-toggle="dropdown">
-<button type="button" class="btn-close" data-bs-dismiss="alert">
-```
-
-### 4.4 Debug Code
-
-`console.log()` must never reach a commit.
-
-### 4.5 Modal Control
-
-Use Bootstrap 5's native JS API:
+Use `data-bs-*` attributes. Use Bootstrap 5 native API for modals:
 
 ```javascript
 var modal = new bootstrap.Modal(document.getElementById('modalId'));
 modal.show();
-modal.hide();
 ```
+
+### 4.4 Debug code
+
+`console.log()` must never reach a commit.
 
 ---
 
 ## 5. CSS
 
-### 5.1 Bootstrap Utility-First
+### 5.1 Bootstrap utility-first
 
-Build layouts with Bootstrap 5 utility classes before writing custom CSS:
+Build layouts with Bootstrap 5 utilities before writing custom CSS.
 
-```html
-<div class="d-flex justify-content-between align-items-center mb-3">
-```
-
-### 5.2 AdminLTE 4 Markup
-
-Use AdminLTE 4 classes for layout shell:
+### 5.2 AdminLTE 4 layout classes
 
 | Purpose | Class |
 |---------|-------|
@@ -399,73 +216,28 @@ Use AdminLTE 4 classes for layout shell:
 
 ### 5.3 Custom CSS
 
-If custom CSS is necessary (avoid when possible):
-
-- Use BEM naming: `.block__element--modifier`
-- Place in a single file: `public/assets/css/app.css`
-- No inline styles except for programmatic dynamic values (e.g., avatar dimensions)
+If necessary: BEM naming, single file (`public/css/app.css`), no inline styles.
 
 ### 5.4 Icons
 
-Use Font Awesome 6 classes:
-
-```html
-<i class="fas fa-edit"></i>    <!-- Solid — default -->
-<i class="far fa-circle"></i>  <!-- Regular — lower emphasis -->
-<i class="fab fa-google"></i>  <!-- Brands — third-party logos -->
-```
-
-Sidebar icons must include `nav-icon` class:
-
-```html
-<i class="nav-icon fas fa-tachometer-alt"></i>
-```
+Font Awesome 6. Solid (`fas`) for navigation/buttons/alerts. Regular (`far`) for nested sidebar children. Sidebar icons include `nav-icon` class.
 
 ---
 
 ## 6. Error Handling
 
-### 6.1 API Error Return Pattern
-
-All service methods that interact with external APIs return structured arrays:
+API error return pattern — structured arrays:
 
 ```php
 // Success
 return ['error_code' => 0, 'error_msg' => '', 'data' => $result];
-
 // Failure
 return ['error_code' => -1, 'error_msg' => 'Connection failed', 'data' => null];
 ```
 
-### 6.2 Try-Catch
-
-Wrap all external API calls in `try-catch`:
-
-```php
-try {
-    $response = $this->client->request('POST', $url, $options);
-} catch (HTTPException $e) {
-    return ['error_code' => -1, 'error_msg' => $e->getMessage(), 'data' => null];
-}
-```
-
-### 6.3 Exceptions
-
-Use `\RuntimeException` for unexpected states that should crash (not recover):
-
-```php
-if ($json === false) {
-    throw new \RuntimeException('JSON encoding failed: ' . json_last_error_msg());
-}
-```
-
-### 6.4 User-Facing Errors
-
-Use flashdata with `redirect()->with()`:
-
-```php
-return redirect()->to('/login')->with('error', $message);
-```
+Wrap all external API calls in `try-catch` catching `HTTPException`.
+Use `\RuntimeException` for unexpected states that should crash.
+User-facing errors: `return redirect()->to('/login')->with('error', $message)`.
 
 ---
 
@@ -473,65 +245,43 @@ return redirect()->to('/login')->with('error', $message);
 
 | # | Don't | Do |
 |---|-------|----|
-| 1 | `var_dump()`, `dd()`, `print_r()`, `exit()` | Remove before commit; `php -l` and self-review catch these |
-| 2 | `new ServiceClass()` for registered services | `service('name')` — singletons are managed by CI4 |
-| 3 | `$this->load->view()` (CI3 pattern) | `view('name', $data)` |
+| 1 | `dd()`, `var_dump()`, `print_r()`, `exit()` | Remove before commit |
+| 2 | `new ServiceClass()` for registered services | `service('name')` |
+| 3 | `$this->load->view()` (CI3) | `view('name', $data)` |
 | 4 | Hardcoded URLs like `/public/index.php/dashboard` | `base_url('dashboard')` |
-| 5 | Raw `echo` in controllers | Return view strings or redirect |
-| 6 | Query string CSRF (CI4 default in some configs) | Cookie-based CSRF with `csrf_field()` |
-| 7 | PHP closing tag `?>` at end of pure PHP files | Omit — prevents accidental whitespace output |
-| 8 | `array()` syntax | `[]` short array syntax |
-| 9 | `SELECT *` in raw queries | Explicit column list |
-| 10 | Bootstrap 4 utilities (`ml-*`, `float-right`, `data-toggle`) | Bootstrap 5 equivalents (`ms-*`, `float-end`, `data-bs-toggle`) |
-| 11 | AdminLTE 3 classes (`wrapper`, `main-sidebar`, `content-wrapper`) | AdminLTE 4 classes (`app-wrapper`, `app-sidebar`, `app-main`) |
-| 12 | `onclick` HTML attributes | `addEventListener('click', handler)` or `data-bs-*` attributes |
-| 13 | `for ($i=0; $i<count($items); $i++)` | `foreach ($items as $item)` |
-| 14 | `config-item` or `class="..." {{ $condition ? 'active' : '' }}"` (Laravel-style) | `<?= $condition ? 'active' : '' ?>` |
+| 5 | Query string CSRF | Cookie-based CSRF with `csrf_field()` |
+| 6 | PHP closing tag `?>` at end of pure PHP files | Omit |
+| 7 | `array()` syntax | `[]` short array |
+| 8 | Bootstrap 4 utilities (`ml-*`, `float-right`, `data-toggle`) | BS5 equivalents (`ms-*`, `float-end`, `data-bs-toggle`) |
+| 9 | AdminLTE 3 classes (`wrapper`, `main-sidebar`, `content-wrapper`) | AL4 classes (`app-wrapper`, `app-sidebar`, `app-main`) |
+| 10 | `onclick` HTML attributes | `addEventListener('click', handler)` or `data-bs-*` |
+| 11 | `for ($i=0; $i<count($x); $i++)` | `foreach ($items as $item)` |
+| 12 | `config-item` / Laravel-style conditional classes | `<?= $condition ? 'active' : '' ?>` |
 
 ---
 
 ## 8. Tooling
 
-### 8.1 PHP Syntax Check
-
-Run `php -l` on every PHP file created or modified:
+### 8.1 PHP syntax check
 
 ```bash
-php -l app/Controllers/Login.php
+php -l app/Controllers/Login.php          # on every changed PHP file
 ```
 
 ### 8.2 PHP CS Fixer
 
-Run before commit to auto-fix style issues:
-
 ```bash
-vendor/bin/php-cs-fixer fix
+vendor/bin/php-cs-fixer fix               # auto-fix style
+vendor/bin/php-cs-fixer fix --dry-run --diff  # preview changes
 ```
 
-To preview changes without applying:
-
-```bash
-vendor/bin/php-cs-fixer fix --dry-run --diff
-```
-
-The config is in `.php-cs-fixer.dist.php` at the project root. It scans `app/` and `tests/`.
+Config in `.php-cs-fixer.dist.php` (scans `app/` and `tests/`).
 
 ### 8.3 EditorConfig
 
-Supported editors (VS Code, PHPStorm, Sublime, etc.) read `.editorconfig` automatically.
-It enforces:
-
-- UTF-8 charset
-- CRLF line endings
-- 4-space indentation
-- Trailing whitespace trimmed
-- Final newline on save
+Enforced automatically by supported editors:
+- UTF-8 charset, CRLF line endings, 4-space indent, trim trailing whitespace, final newline.
 
 ---
 
-**Reference:**
-- PSR-12: https://www.php-fig.org/psr/psr-12/
-- PHP CS Fixer: https://cs.symfony.com/
-- EditorConfig: https://editorconfig.org/
-- CI4 User Guide: https://codeigniter.com/user_guide/
-- AdminLTE 4 Docs: https://adminlte-v4.netlify.app/docs/
+**Reference:** PSR-12 | PHP CS Fixer | CI4 User Guide | AdminLTE 4 Docs
