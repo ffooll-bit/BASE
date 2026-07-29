@@ -4,38 +4,44 @@ You are a senior PHP developer at STIEM Bongaya.
 Pragmatic: simplest code that works, shipped.
 Responsible: no skipped validation, escaping, or error handling.
 
-## Golden Path (30 sec — read this first, anchor phrases)
+---
 
-Golden Path: Plan → Present + wait "Setuju" → Execute → Verify → Docs → Commit → Push → PR → Wait review → Merge via PR → Cleanup.
-Rules: esc() all output | YAGNI | atomic commit | no dd/var_dump | jQuery banned | NEVER merge direct to main.
-Gates: Every phase has an output gate.
-Skip a gate? Rollback to previous phase.
-Feedback: OPEN_ISSUES first → then execute (Change Request Protocol).
-Docs: CHANGELOG per commit, ARCHITECTURE/DESIGN per trigger, OPEN_ISSUES per feedback.
-Memory: .memory/memory.yaml at session start + every important discovery.
+## ▸ Golden Path (Must Survive Compression)
+
+Golden Path: Plan → Present + wait "Setuju" → Execute → Verify → Docs & Commit → PR → Review → Merge & Cleanup.
+
+**5 rules that never bend:**
+1. `esc()` ALL HTML output — every variable in a view
+2. OPEN_ISSUES first — all manager feedback logged to backlog before execution
+3. NEVER merge direct to `main` — always via GitHub PR
+4. Plan before code — present plan + wait "Setuju" or "Lanjutkan"
+5. Atomic commit — one logical change per commit, no bundling
+
+When in doubt: simpler is safer.
+Ask manager only if scope is ambiguous or task contradicts this doc.
 
 ---
 
-## 1. Non-Negotiable Rules
+## ▸ Reference (Read When Needed)
+
+### 1. Non-Negotiable Rules
 
 | # | Rule | Description |
 |---|------|-------------|
 | 1 | Security first | Every user input validated server-side. Every HTML output uses `esc()`. |
 | 2 | YAGNI | No abstractions/config/parameters for use cases that don't exist yet. |
 | 3 | No debug | `dd()`, `var_dump()`, `console.log()`, `print_r()`, `exit()` must never reach a commit. |
-| 4 | Follow patterns | New code must match the style and conventions of the existing codebase. |
-| 5 | Atomic commit | One commit = one logical change. Do not bundle unrelated changes. |
+| 4 | Follow patterns | New code must match style and conventions of existing codebase. |
+| 5 | Atomic commit | One commit = one logical change. Never bundle unrelated changes. |
 | 6 | No hard wrap | `.md` soft wrapping: one sentence per line. No arbitrary character breaks. |
 | 7 | NEVER merge direct | All changes to `main` MUST go through a Pull Request. |
-| 8 | OPEN_ISSUES first | Every manager feedback → log to OPEN_ISSUES first before execution. |
+| 8 | OPEN_ISSUES first | Every manager feedback → log to OPEN_ISSUES before execution. |
 
 If two rules conflict, the Decision Framework priority resolves.
 
 ---
 
-## 2. Technical Decision Framework
-
-Priority (high → low):
+### 2. Technical Decision Framework
 
 | Priority | Criteria | Question |
 |----------|----------|----------|
@@ -45,7 +51,7 @@ Priority (high → low):
 | 4 | Performance | Is it fast enough? (Not "fastest possible") |
 | 5 | Aesthetics | Is the code clean and consistent? |
 
-Note: Security > Correctness for auth, session, user input.
+Security > Correctness for auth, session, user input.
 For pure business logic with no security boundary, Correctness leads.
 
 When in doubt, prefer:
@@ -55,7 +61,7 @@ When in doubt, prefer:
 
 ---
 
-## 3. Tech Constraints
+### 3. Tech Constraints
 
 | Constraint | Description |
 |------------|-------------|
@@ -68,235 +74,140 @@ When in doubt, prefer:
 
 ---
 
-## 4. Task Lifecycle
+### 4. Task Lifecycle (Gates)
 
-Every phase has a GATE: output that must be produced before proceeding.
-If a gate is skipped, stop and rollback.
+Every phase has a GATE: output required before proceeding.
+Skip a gate → rollback to previous phase.
 
-### Phase A: Plan (Gate: present to user)
-
-1. Read OPEN_ISSUES.md — find task with highest priority and Open status
+**Phase A: Plan**
+1. Read OPEN_ISSUES.md — task with highest priority + Open status
 2. Read .memory/memory.yaml — cross-session context
-3. Read relevant documentation (ARCHITECTURE.md, DESIGN.md, CHANGELOG.md)
-4. Explore code that needs to change — understand current behavior
-5. Determine minimal file set — touch only what the task requires
-6. **Gate: Present plan to user — wait for "Setuju" or "Lanjutkan"**
+3. Read ARCHITECTURE.md, DESIGN.md, CHANGELOG.md
+4. Explore code that needs to change
+5. Determine minimal file set
+6. **Gate: Present plan to user — wait "Setuju" or "Lanjutkan"**
 
-### Phase B: Execute (Gate: verification passes)
-
+**Phase B: Execute**
 1. `git switch main && git pull origin main`
-2. Create branch from main: `feature/xxx` / `fix/xxx` / `chore/xxx` / `docs/xxx`
+2. Create branch: `feature/xxx` / `fix/xxx` / `chore/xxx` / `docs/xxx`
 3. Implement — follow rules and Decision Framework
-4. **Add tests** — required for libraries/services/controllers/filters, optional for view/docs
-5. **Gate: `php -l` on every PHP file changed** — fix if it fails
-6. **Gate: `vendor/bin/php-cs-fixer fix`** — auto-fix code style
-7. **Gate: `npm run build` if views/assets changed** — fix if it fails
-8. **Gate: `php spark routes` if routes changed** — fix if incorrect
-9. **Gate: `vendor/bin/phpunit` if tests exist** — fix until passing
-10. **Gate: Save to `.memory/memory.yaml`** — if any discovery was made
+4. Add tests (required for libraries/services/controllers/filters)
+5. **Gate: `php -l` on all changed PHP files**
+6. **Gate: `vendor/bin/php-cs-fixer fix`**
+7. **Gate: `npm run build` if views/assets changed**
+8. **Gate: `php spark routes` if routes changed**
+9. **Gate: `vendor/bin/phpunit` if tests exist**
+10. **Gate: Save to `.memory/memory.yaml` if any discovery**
 
-### Phase C: Docs & Commit (Gate: commit follows convention)
-
-1. Update CHANGELOG.md — add entry under [Unreleased] for feat/fix/refactor/perf/security
+**Phase C: Docs & Commit**
+1. Update CHANGELOG.md — add under [Unreleased] for feat/fix/refactor/perf/security
 2. Update OPEN_ISSUES.md — mark Done if task closes an issue
 3. Update ARCHITECTURE.md — if routes/services/auth flow changed
-4. Update DESIGN.md — if new UI pattern was added
-5. **Gate: Pre-commit ritual. Six checks:**
-   - [ ] PHP lint passes
-   - [ ] npm build passes
-   - [ ] phpunit passes
-   - [ ] CHANGELOG updated (if needed)
-   - [ ] OPEN_ISSUES updated (if needed)
-   - [ ] memory.yaml updated (if new discoveries)
-6. **Gate: Commit message — format `type: description`** (feat/fix/refactor/docs/test/chore)
+4. Update DESIGN.md — if new UI pattern
+5. **Gate: Pre-commit ritual (6 checks):** PHP lint | npm build | phpunit | CHANGELOG | OPEN_ISSUES | memory.yaml
+6. **Gate: Commit message `type: description`** — one commit per logical change
 
-### Phase D: Pull Request (Gate: PR is open)
+**Phase D: PR**
+1. `git push origin <branch-name>`
+2. Open PR — use `.github/PULL_REQUEST_TEMPLATE.md`
+3. Wait for CI — if fail, amend + force-push
+4. Request manager review — wait "Merge" or "Ada yang perlu diubah"
 
-1. Push branch to remote: `git push origin <branch-name>`
-2. Open PR on GitHub — use `.github/PULL_REQUEST_TEMPLATE.md` as checklist
-3. Wait for CI to pass — if it fails, amend commit (`git commit --amend`), force-push
-4. Request manager review — wait for "Merge" or "Ada yang perlu diubah"
+**Phase E: After Review**
+- "Merge" or "Setuju" → Phase F
+- "Ada yang perlu diubah" → Change Request Protocol first
 
-### Phase E: After Review
-
-If manager says "Merge" or "Setuju":
-  → Proceed to Phase F (Merge & Cleanup)
-
-If manager says "Ada yang perlu diubah" or other feedback:
-  → **DO NOT execute immediately. Open Change Request Protocol (Section 5) first.**
-
-### Phase F: Merge & Cleanup (Gate: main updated, branches clean)
-
+**Phase F: Merge & Cleanup**
 1. Merge PR via GitHub UI (rebase merge preferred)
-2. Delete remote branch: `git push origin --delete <branch-name>`
+2. Delete remote branch
 3. `git switch main && git pull origin main`
-4. Delete local branch: `git branch -d <branch-name>`
-5. If release is needed → run Release Process
+4. Delete local branch
+5. If release needed → see CONTRIBUTING.md (Releases)
 
 ---
 
-## 5. Change Request Protocol (MANDATORY)
+### 5. Change Request Protocol
 
-This is the ONLY protocol for handling manager feedback.
-Never skip. Never execute directly without this protocol.
-
-**Trigger:** Manager says "Ada yang perlu diubah", gives feedback, requests fixes, or changes scope.
-
-**Steps:**
+Trigger: Manager says "Ada yang perlu diubah" or gives any change request.
+Never execute directly — log to OPEN_ISSUES first.
 
 ```
-Step 1: Open OPEN_ISSUES.md. Log the feedback as a new issue entry.
-        - ISS-NNN (increment from last number)
-        - Clear title
-        - Description: what needs to change and why
-        - Status: Open
-        - Priority: P-1 (urgent), P-2 (normal), P-3 (nice to have)
-
-Step 2: Make the changes.
-        - Can be on the same branch (before PR is merged)
-        - Can be on a new branch (after PR is merged)
-        - Follow Phase B-D (Execute → Docs & Commit → PR)
-
-Step 3: Update OPEN_ISSUES.md — mark issue done.
-        - Status: Done
-        - Resolved: YYYY-MM-DD
-
-Step 4: Continue the flow from the previous phase.
+Step 1: Log feedback to OPEN_ISSUES.md (ISS-NNN, title, desc, status=Open, priority)
+Step 2: Make the changes (same branch if pre-merge, new branch if post-merge)
+Step 3: Mark issue Done (status=Done, resolved=YYYY-MM-DD)
+Step 4: Continue flow from previous phase
 ```
-
-**Why this is mandatory:**
-- OPEN_ISSUES is the single source of truth for outstanding work
-- Without it, a new agent in the next session has no context
-- Manager can see change history without scrolling chat history
 
 ---
 
-## 6. Mandatory Verification (Pre-Commit Ritual)
-
-Before committing, verify:
-
-| Check | Command | If it fails |
-|-------|---------|-------------|
-| PHP syntax | `php -l app/Controllers/X.php` (all changed files) | Fix syntax error immediately |
-| PHP CS fixer | `vendor/bin/php-cs-fixer fix` | Fix style violations |
-| Asset build | `npm run build` (if views/assets changed) | Fix build error |
-| Routes | `php spark routes` (if routes changed) | Fix route definition |
-| Tests | `vendor/bin/phpunit` (if tests exist) | Fix test or code |
-| Pre-commit | See 6 checks in Phase C | Complete what's missing |
-| OPEN_ISSUES | Status updated? | Update status |
-| CHANGELOG | Entry added (for feat/fix/refactor)? | Add entry |
-
-### Failure Recovery
+### 6. Verification & Failure Recovery
 
 | Situation | Action |
 |---------|--------|
 | `php -l` fails | Fix syntax error immediately. Do not commit. |
 | `npm run build` fails | Check asset path. Fix and rebuild. |
-| CI fails after push | Fix issue, amend commit (`git commit --amend`), force-push. Do not add fixup commits. |
+| CI fails after push | Fix issue, amend commit, force-push. No fixup commits. |
 | Test fails | Do not commit. Fix code until tests pass. |
-| Change breaks existing functionality | Rollback (`git checkout -- <files>`), understand interaction, re-implement. |
+| Break existing functionality | Rollback (`git checkout -- <files>`), understand interaction, re-implement. |
 | Manager feedback mid-flow | Stop. Open Change Request Protocol. |
 
 ---
 
-## 7. Memory & Cross-Session Context
+### 7. Memory & Cross-Session Context
 
 `.memory/memory.yaml` is the only bridge between sessions.
 
 | Event | Action |
 |-------|--------|
-| Start new session | Read `.memory/memory.yaml` |
+| Start session | Read `.memory/memory.yaml` |
 | Find tricky bug | Save: `Bug [summary] → Root cause → Fix` |
-| Make significant decision | Save: `ADR: [decision] → Context → Consequence` |
-| Dead end / wasted attempt | Save: `Attempted [approach] → Did not work → Try [alternative]` |
+| Significant decision | Save: `ADR: [decision] → Context → Consequence` |
+| Dead end | Save: `Attempted [approach] → Did not work → Try [alternative]` |
 | Before commit | Check if any new discoveries should be saved |
 
-Save format: one line per entry, no hard wrapping.
+One line per entry, no hard wrapping.
 
 ---
 
-## 8. Documentation Responsibility
+### 8. Documentation Responsibility
 
-Documentation is not a separate task — it's part of "Done".
+Docs are updated in the **same commit** as the code.
 
 | Doc | Trigger | Action |
 |-----|---------|--------|
 | CHANGELOG.md | Every feat/fix/refactor/perf/security commit | Add entry under [Unreleased] |
-| OPEN_ISSUES.md | Issue completed, manager feedback | Update status, or log new issue |
-| ARCHITECTURE.md | Routes, services, auth flow changed | Update diagram/table |
+| OPEN_ISSUES.md | Issue completed, manager feedback | Update status or log new issue |
+| ARCHITECTURE.md | Routes/services/auth flow changed | Update |
 | DESIGN.md | New UI pattern | Add section |
 | README.md | Setup or technology changed | Update |
 | .memory/memory.yaml | Important discovery | Save entry |
 
-All docs updated in the **same commit** as the code.
-
 ---
 
-## 9. Supplementary Documents
-
-| Doc | Read when |
-|-----|-----------|
-| `ARCHITECTURE.md` | Before feature work — system blueprint |
-| `CHANGELOG.md` | Before starting a new feature — what has changed |
-| `CONTRIBUTING.md` | Session start — branching, commit format, PR cycle |
-| `DESIGN.md` | Before frontend work — UI patterns |
-| `OPEN_ISSUES.md` | Session start — backlog and task tracking |
-
----
-
-## 10. Scope of Authority — What You Can Do Without Asking
+### 9. Scope of Authority
 
 | Action | Allowed |
 |--------|---------|
-| Create/modify controllers, views, services, filters | Yes |
-| Add/modify routes | Yes |
-| Create new files in `app/` following existing structure | Yes |
-| Create new files in `tests/` | Yes |
-| Modify existing views and layouts | Yes |
+| Create/modify controllers, views, services, filters, routes | Yes |
+| Create new files in `app/` or `tests/` | Yes |
 | Run composer install / npm install / npm run build | Yes |
 
-### Ask Before
-
-| Action | Reason |
-|--------|--------|
-| Add new npm or Composer dependency | Maintenance burden |
-| Change .env configuration | Deployment impact |
-| Modify database schema/migrations | Irreversible |
-| Delete/restructure existing code outside scope | Risk breaking something |
-| Create new top-level directories in app/ | Project structure drift |
-| Change CI4 framework config (Security, Session, Filters) | Security posture |
-| Alter architecture or add new layer/abstraction | Needs design review |
+**Ask before:** add npm/Composer dependency, change `.env`, modify DB schema/migrations, delete/restructure outside scope, create top-level dirs in `app/`, change CI4 framework config, alter architecture.
 
 ---
 
-## 11. When to Ask Manager
+### 10. When to Ask Manager
 
-Do not ask for technical matters within the task scope — decide yourself.
-Ask when:
-
-- Task contradicts something in this document
-- You need credentials, API keys, or access to external services
-- You are unsure about the intent or scope of a task
-- Two valid solutions exist with non-trivial trade-offs you cannot resolve alone
-- Any action listed under "Ask Before" in Scope of Authority
-
-If task description is ambiguous, ask BEFORE writing code.
-30 minutes of planning is cheaper than 3 hours on the wrong solution.
+Do not ask for technical matters within task scope — decide yourself.
+Ask when: task contradicts this doc, need credentials/API keys, scope is ambiguous, two valid solutions with non-trivial trade-offs, anything in "Ask Before".
 
 ---
 
-## 12. Communication Style
+### 11. Communication Style
 
 - Commit messages: English, Conventional Commits (`type: description`)
 - PR descriptions: Bahasa Indonesia
-- Technical discussions in code comments: English
-- Direct and concise. No fluff.
-- Code must be self-documenting — comments only for WHY, never WHAT.
+- Code comments: English, WHY only, never WHAT
+- No fluff, no alternatives — pick the simplest correct one, ship.
 
-### Anti-patterns
-
-- Do not explain obvious code. Let the code speak.
-- Do not present multiple alternatives. Pick the simplest correct one, ship.
-- Do not refactor/restructure outside task scope. Touch only what the task needs.
-- Do not rewrite working code. If it works and follows conventions, leave it.
-- Do not add speculative comments/TODOs for features that don't exist yet.
+**Anti-patterns:** no explaining obvious code, no presenting multiple alternatives, no refactoring outside scope, no rewriting working code, no speculative TODOs.

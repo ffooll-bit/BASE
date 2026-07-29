@@ -38,7 +38,7 @@ _None yet._
 
 ### Changed
 
-- **UI consistency:** login page Google Font updated from `Source Sans Pro` (AdminLTE 3) to `Source Sans 3` (AdminLTE 4) to match the rest of the app
+- **Documentation restructure:** `AGENTS.md` split into Golden Path (must-survive compression) + Reference sections; `CONTRIBUTING.md` deduplicated to human-focused content — lifecycle removed (delegated to AGENTS.md)
 - **Sidebar navigation:** added auto-detection of active page via `active` CSS class on current route
 - **Dashboard version:** replaced hardcoded `v0.1.0` with dynamic value from `config('AppVersion')->version`
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
