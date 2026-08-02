@@ -93,7 +93,7 @@ Allowed types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `buil
 - Bootstrap 5 components via `data-bs-*` attributes and the native API.
 - `console.log()` must never reach a commit.
 - Build layouts with Bootstrap 5 utility classes before writing custom CSS.
-- Font Awesome 6 icons only. Sidebar icons include `nav-icon` class.
+- Font Awesome 7 icons only. Sidebar icons include `nav-icon` class.
 
 ### Anti-patterns
 

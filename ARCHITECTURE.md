@@ -16,7 +16,7 @@ BASE is a CodeIgniter 4 web application that serves as a Web Service Client for 
 | Identity Provider | Neo Feeder WS API | — | Authentication & token validation |
 | UI Template | AdminLTE 4 | ^4.0 | Dashboard layout, sidebar, navbar |
 | CSS Framework | Bootstrap 5 | 5.3.x | Components, grid, utilities (transitive via AdminLTE 4) |
-| Icons | Font Awesome 6 | ^6.0 | UI icons |
+| Icons | Font Awesome 7 | ^7.0 | UI icons |
 | JS Runtime | Vanilla JavaScript | — | AdminLTE 4 native, no jQuery |
 | Session | CI4 FileHandler | — | Auth state storage |
 | HTTP Client | CI4 CURLRequest | — | Neo Feeder API communication |
