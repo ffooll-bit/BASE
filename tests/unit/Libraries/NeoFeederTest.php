@@ -76,7 +76,7 @@ class NeoFeederTest extends CIUnitTestCase
     {
         $responseBody = json_encode([
             'error_code' => 0,
-            'data'       => ['nama_pt' => 'STIEM Bongaya'],
+            'data'       => ['kode_pt' => '123456'],
         ]);
 
         $response = $this->createStub(ResponseInterface::class);
@@ -89,6 +89,6 @@ class NeoFeederTest extends CIUnitTestCase
         $result    = $neoFeeder->getProfilPT('token-abc');
 
         $this->assertSame(0, $result['error_code']);
-        $this->assertSame('STIEM Bongaya', $result['data']['nama_pt']);
+        $this->assertSame('123456', $result['data']['kode_pt']);
     }
 }

@@ -1,4 +1,4 @@
-# BASE (Bongaya Advanced Services Engine)
+# BASE (Backbone for Academic Services & Education)
 
 [![CI](https://github.com/ffooll-bit/BASE/actions/workflows/ci.yml/badge.svg)](https://github.com/ffooll-bit/BASE/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -6,9 +6,9 @@
 
 BASE is a web application built on CodeIgniter 4. Its primary purpose is to act as a **Web Service Client** for **Neo Feeder** — the application that synchronizes data with the PDDIKTI database.
 
-Currently, BASE acts as a **client** of the Neo Feeder web service. Going forward, the application will be developed to integrate with other applications within STIEM Bongaya.
+Currently, BASE acts as a **client** of the Neo Feeder web service. Going forward, the application will be developed to integrate with other academic applications.
 
-The name **BASE** (Bongaya Advanced Services Engine) reflects that the application will serve as the **foundation** for integrating other systems.
+The name **BASE** (Backbone for Academic Services & Education) reflects that the application will serve as the **foundation** for integrating other systems.
 
 ## Development Status
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'BASE - Bongaya Advanced Services Engine') ?></title>
+    <title><?= esc($title ?? 'BASE - Backbone for Academic Services & Education') ?></title>
     <!-- Google Font: Source Sans 3 (AdminLTE 4) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+3:300,400,400i,600,700&display=fallback">
     <!-- Font Awesome -->
