@@ -1,37 +1,32 @@
-## Deskripsi Perubahan
+## Summary
 
-<!-- Jelaskan apa yang diubah dan kenapa -->
+<!-- What does this PR do? Keep it short and clear. -->
 
-## Jenis Perubahan
+## Related issues
 
-- [ ] feat — Fitur baru
-- [ ] fix — Perbaikan bug
-- [ ] refactor — Refactoring (tidak mengubah fungsionalitas)
-- [ ] chore — Tooling, dependency, CI
-- [ ] docs — Dokumentasi
-- [ ] test — Test
+<!-- Link the issue(s) this PR closes - use one "Fixes #N" line per issue. -->
 
-## Checklist (Self-Review)
+Fixes #
+
+## Checklist
 
 - [ ] `php -l` passes on all modified PHP files
-- [ ] `npm run build` succeeds (if UI/assets changed)
+- [ ] `npm run build` succeeds and committed assets are up to date
 - [ ] `php spark routes` shows correct new routes (if routes changed)
+- [ ] `vendor/bin/php-cs-fixer fix` passes (no style violations)
 - [ ] `vendor/bin/phpunit` is green (if tests exist)
 - [ ] No debug code: `dd()`, `var_dump()`, `console.log()`, `print_r()`, `exit()`
-- [ ] All user inputs are validated server-side
+- [ ] All user inputs validated server-side
 - [ ] All POST forms include `csrf_field()`
 - [ ] All HTML output uses `esc()`
-- [ ] No unrelated files were changed
-- [ ] No magic numbers — extract named constants
-- [ ] No code duplication — extract reusable logic
-- [ ] `vendor/bin/php-cs-fixer fix` passes (no style violations)
-- [ ] Commit message follows Conventional Commits format
-- [ ] Screenshots attached for UI changes
+- [ ] No unrelated files changed
+- [ ] CHANGELOG updated if this is a user-facing change
+- [ ] Behaviour verified in the browser if UI changed (attach a screenshot if useful)
 
-## Screenshot (jika ada)
+## Screenshot (if applicable)
 
-<!-- Tempel screenshot di sini -->
+<!-- Paste screenshots here -->
 
-## Catatan Tambahan
+## Notes for reviewers
 
-<!-- Optional: hal-hal yang perlu reviewer ketahui -->
+<!-- Optional: anything the reviewer needs to know -->
