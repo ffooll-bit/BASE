@@ -99,46 +99,46 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-001 — `builds` file (Stability Toggle script)
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #17
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** The CI4 starter "Stability Toggle" script sits at the repo root with no extension, so it looks like a directory next to the ignored `build/` folder. It is unused, and its presence confuses anyone browsing the repository layout.
 - **Possible Fix:** Delete the `builds` file; nothing in the project references it.
-- **Actual Fix:** `—`
+- **Actual Fix:** Delete `builds` from the repo root (`git rm`).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-002 — `preload.php` sample
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #18
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** `preload.php` is an OPcache preload sample shipped with the starter and is not referenced anywhere in the project. It adds dead weight to the repository root and implies configuration that is not in place.
 - **Possible Fix:** Delete `preload.php`; no configuration or code in the project depends on it.
-- **Actual Fix:** `—`
+- **Actual Fix:** Delete `preload.php` from the repo root (`git rm`).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-003 — `package.json` name still `codeigniter4-appstarter`
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #19
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** The project name in `package.json` is `codeigniter4-appstarter`, leaking the starter template, while `composer.json` identifies the project as `ffooll-bit/base`. The mismatch is visible in tooling output and confusing for contributors.
 - **Possible Fix:** Rename the `name` field in `package.json` to `base`, matching the Composer package name.
-- **Actual Fix:** `—`
+- **Actual Fix:** Change `"name": "codeigniter4-appstarter"` to `"name": "base"` in `package.json`.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-004 — `composer.json` homepage case mismatch
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #20
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** `composer.json` sets `homepage` to `https://github.com/ffooll-bit/base` (lowercase), while the repository is `ffooll-bit/BASE`. The link is inconsistent with the actual repository URL.
 - **Possible Fix:** Align the `homepage` URL casing in `composer.json` with the repository (`BASE`).
-- **Actual Fix:** `—`
+- **Actual Fix:** Change `"homepage": "https://github.com/ffooll-bit/base"` to `"homepage": "https://github.com/ffooll-bit/BASE"`.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
