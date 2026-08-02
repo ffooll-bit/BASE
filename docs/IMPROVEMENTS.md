@@ -176,24 +176,24 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-008 — Repo is `private` but planned to be public
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #23
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** The repository is private, and GitHub returns 403 when configuring branch protection on a private free-tier repo. Impact: main cannot be protected (require PR, approvals, status checks), so the workflow guardrails documented in CONTRIBUTING are not enforced by the platform.
 - **Possible Fix:** Publicize the repo when ready, then enable branch protection on `main`: require PRs, one approval, and passing status checks.
-- **Actual Fix:** `—`
+- **Actual Fix:** Publicize the repo via `gh repo edit --visibility public`, then create a branch protection rule on `main`: require PRs, one approval, status checks. Timing depends on when the repo is meant to go public.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-009 — No Dependabot configuration
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #24
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** There is no `.github/dependabot.yml`. Composer, npm, and GitHub Actions dependencies are never auto-checked for updates. Impact: outdated or vulnerable dependencies go unnoticed until a human checks manually.
 - **Possible Fix:** Add `.github/dependabot.yml` covering `composer`, `npm`, and `github-actions`, with a weekly schedule.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add `.github/dependabot.yml` with three `package-ecosystem` entries: `composer`, `npm`, `github-actions`, each `directory: "/"` and `schedule.interval: "weekly"`.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
