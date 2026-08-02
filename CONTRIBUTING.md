@@ -14,12 +14,19 @@ Copy `env` to `.env`, configure `baseURL`, `encryption.key`, `neofeeder.*`.
 
 ---
 
-## Development Workflow
+## Workflow
 
-Read `AGENTS.md` (▸ Golden Path section) for the full gate-based lifecycle.
-This project follows: Plan → Execute → Docs & Commit → PR → Review → Merge & Cleanup.
+BASE follows the standard GitHub Flow:
 
-Every phase has a required gate output. Skip a gate → rollback to previous phase.
+1. Every change starts from a **GitHub Issue** (bug report or feature request).
+2. Create a branch from `main` for the issue.
+3. Implement the change.
+4. Verify locally (see the checklist below).
+5. Open a Pull Request that references the issue (`Fixes #N`).
+6. Wait for CI and review. Fix CI failures with a fixup commit — never force-push.
+7. Merge via GitHub UI (squash merge preferred), then delete the branch.
+
+Never merge directly to `main` — always via Pull Request.
 
 ---
 
@@ -52,6 +59,69 @@ Allowed types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `buil
 
 ---
 
+## Coding Conventions
+
+### PHP
+
+- PSR-12 (`@PSR12` in PHP CS Fixer). PHP 8.2+ required.
+- Use typed properties, union/nullable types, match expressions, named arguments.
+- No `declare(strict_types=1)` — may break existing code relying on type coercion.
+- **Never use:** `dd()`, `var_dump()`, `print_r()`, `exit()`, `eval()`, `extract()`.
+- Type hints required on all properties, parameters, and return types.
+- PHPDoc on every public/protected method with `@param` and `@return`.
+- Inline comments for WHY, not WHAT.
+
+### CodeIgniter 4
+
+- Access services via `service('name')` — never `new` for registered services.
+- Access config via `config('NeoFeeder')->property`.
+- Concatenate view partials (no template inheritance).
+- All routes explicit in `app/Config/Routes.php`. No `$routes->autoRoute()`.
+- Every POST form includes `<?= csrf_field() ?>` immediately after `<form>`.
+- Use `$this->request->getPost('name')` — never `$_POST` / `$_GET`.
+
+### Views
+
+- **ALL dynamic output uses `esc()`**: `esc($username)`, `esc($value, 'url')`, `esc($value, 'attr')`.
+- Use `<?= ?>` for output (never `<?php echo`).
+- Alternate control structures (`if:` / `endif;`).
+- Asset URLs via `base_url('bootstrap/css/bootstrap.min.css')`.
+
+### JavaScript & CSS
+
+- **jQuery is banned.** Vanilla JS only.
+- Bootstrap 5 components via `data-bs-*` attributes and the native API.
+- `console.log()` must never reach a commit.
+- Build layouts with Bootstrap 5 utility classes before writing custom CSS.
+- Font Awesome 6 icons only. Sidebar icons include `nav-icon` class.
+
+### Anti-patterns
+
+| # | Don't | Do |
+|---|-------|----|
+| 1 | `dd()`, `var_dump()`, `print_r()`, `exit()` | Remove before commit |
+| 2 | `new ServiceClass()` for registered services | `service('name')` |
+| 3 | Hardcoded URLs like `/public/index.php/dashboard` | `base_url('dashboard')` |
+| 4 | `array()` syntax | `[]` short array |
+| 5 | Bootstrap 4 utilities (`ml-*`, `data-toggle`) | BS5 equivalents (`ms-*`, `data-bs-toggle`) |
+| 6 | AdminLTE 3 classes (`wrapper`, `main-sidebar`) | AL4 classes (`app-wrapper`, `app-sidebar`) |
+| 7 | `onclick` HTML attributes | `addEventListener('click', handler)` or `data-bs-*` |
+| 8 | PHP closing tag `?>` at end of pure PHP files | Omit |
+
+### Decision Framework
+
+When a choice has non-trivial trade-offs, resolve by priority:
+
+1. **Security** — protects user data and prevents abuse
+2. **Correctness** — works for all cases, including edge cases
+3. **Simplicity** — fewer components
+4. **Performance** — fast enough (not "fastest possible")
+5. **Aesthetics** — clean and consistent
+
+When in doubt: CI4 built-in features over custom code, Bootstrap utilities over custom CSS, vanilla JS over libraries.
+
+---
+
 ## Pull Request Checklist
 
 Before opening a PR, confirm every item:
@@ -63,6 +133,7 @@ Before opening a PR, confirm every item:
 - [ ] `vendor/bin/phpunit` green (if tests exist)
 - [ ] No debug code: `dd()`, `var_dump()`, `console.log()`, `print_r()`, `exit()`
 - [ ] All user inputs validated server-side
+- [ ] All POST forms include `csrf_field()`
 - [ ] All HTML output uses `esc()`
 - [ ] No unrelated files changed
 - [ ] No magic numbers — extract named constants
@@ -105,14 +176,12 @@ git add CHANGELOG.md && git commit -m "chore: release v0.X.0"
 # 3. Tag and push
 git tag v0.X.0 && git push origin v0.X.0
 
-# 4. Create GitHub Release (extract only the version section)
-$notes = [regex]::Match((Get-Content CHANGELOG.md -Raw), "(?s)## \[0\.X\.0\].*?(?=\n## \[|\z)").Value
-$notes += "`r`n[0.X.0]: https://github.com/ffooll-bit/BASE/compare/v0.(X-1).0...v0.X.0"
-[System.IO.File]::WriteAllText("$pwd\release_notes.md", $notes)
+# 4. Create GitHub Release
+#    Copy .github/RELEASE_NOTES_TEMPLATE.md, fill in the release-specific
+#    sections (Summary, Added, Changed, Fixed, ...), and remove the ones
+#    that don't apply. Save as release_notes.md, then:
 gh release create v0.X.0 --title "v0.X.0" --notes-file release_notes.md
 Remove-Item release_notes.md
-
-# 5. Update OPEN_ISSUES.md — mark released items
 ```
 
 Before every release: `vendor/bin/phpunit`, `php -l`, `npm run build`.

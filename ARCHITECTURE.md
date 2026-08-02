@@ -4,7 +4,7 @@
 
 BASE is a CodeIgniter 4 web application that serves as a Web Service Client for Neo Feeder (PDDIKTI). Authentication is session-based using Neo Feeder as the external identity provider — no local user database is used. The UI uses AdminLTE 4 (Bootstrap 5) with vanilla JavaScript.
 
-> **Related documents:** See `DESIGN.md` for UI/UX patterns, `CODING_STANDARDS.md` for code conventions, and `AGENTS.md` for the decision framework.
+> **Related documents:** See `CONTRIBUTING.md` for coding conventions and the decision framework.
 
 ---
 

@@ -12,6 +12,6 @@ All items below are **Done** (or Deferred). Kept for historical reference.
 | ISS-006 | .github/workflows/ci.yml | P-2 | Done | 2026-07-27 | PHP 8.2 + Node 20 |
 | ISS-007 | Unit Tests — Auth & NeoFeeder | P-3 | Done | 2026-07-27 | 4 test files |
 | ISS-008 | RBAC — Future Scope | P-3 | Deferred | — | No specification yet |
-| ISS-009 | Dashboard Tidak Kirim $username ke Header | P-1 | Done | 2026-07-27 | Missing view parameter fix |
+| ISS-009 | Dashboard Does Not Pass $username to Header | P-1 | Done | 2026-07-27 | Missing view parameter fix |
 
 For full details (acceptance criteria, subtasks, files changed), see git history on the Sprint 1 branch.
