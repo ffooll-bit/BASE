@@ -7,7 +7,8 @@
 
         <div class="sidebar-wrapper">
             <!-- Sidebar Menu -->
-            <?php $currentUrl = (string) current_url(); $currentRoute = basename(parse_url($currentUrl, PHP_URL_PATH)); ?>
+            <?php $currentUrl = (string) current_url();
+            $currentRoute = basename(parse_url($currentUrl, PHP_URL_PATH)); ?>
             <nav class="mt-2">
                 <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
                     <li class="nav-item">
