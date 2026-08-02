@@ -117,6 +117,9 @@ temp/
 # Agent memory (session-local, not part of the repo)
 .memory/
 
+# CortexKit
+.cortexkit/
+
 # Netbeans
 nbproject/
 build/
