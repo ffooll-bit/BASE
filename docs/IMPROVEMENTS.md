@@ -198,23 +198,23 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Dependabot now checks Composer, npm, and GitHub Actions dependencies weekly and opens update PRs automatically.
 
 ### ENH-010 — Extra merge methods enabled
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #21
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** The repository allows merge commits and rebase merges even though the workflow prefers squash merges. Impact: a contributor can merge a PR with a non-squash history, producing noisy or non-atomic history that contradicts CONTRIBUTING.
 - **Possible Fix:** Disable `allow_merge_commit` and `allow_rebase_merge`; keep squash merge only.
 - **Actual Fix:** Disable `allow_merge_commit` and `allow_rebase_merge` via `gh api -X PATCH` on the repo; keep squash merge only. GitHub docs confirm enforcing one method is supported.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Set `allow_merge_commit=false` and `allow_rebase_merge=false` via `gh api -X PATCH` on the repo (F1).
+- **Changes:** Only squash merge is now available; merge-commit and rebase-merge are disabled in repo settings.
 
 ### ENH-011 — `delete_branch_on_merge` is off
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #22
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** Branches are not auto-deleted on merge. Impact: stale branches accumulate on the remote (as happened with PRs #8-#11), requiring manual cleanup and confusing `git branch -r` output.
 - **Possible Fix:** Enable "Automatically delete head branches" in repository settings.
 - **Actual Fix:** Set `delete_branch_on_merge=true` via `gh api -X PATCH` on the repo so GitHub auto-deletes head branches on merge.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Set `delete_branch_on_merge=true` via `gh api -X PATCH` on the repo (F1).
+- **Changes:** Head branches are auto-deleted on merge; stale remote branches no longer accumulate.
