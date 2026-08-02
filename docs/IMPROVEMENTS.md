@@ -187,15 +187,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-009 — No Dependabot configuration
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #24
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** There is no `.github/dependabot.yml`. Composer, npm, and GitHub Actions dependencies are never auto-checked for updates. Impact: outdated or vulnerable dependencies go unnoticed until a human checks manually.
 - **Possible Fix:** Add `.github/dependabot.yml` covering `composer`, `npm`, and `github-actions`, with a weekly schedule.
 - **Actual Fix:** Add `.github/dependabot.yml` with three `package-ecosystem` entries: `composer`, `npm`, `github-actions`, each `directory: "/"` and `schedule.interval: "weekly"`.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `.github/dependabot.yml` added via PR #32.
+- **Changes:** Dependabot now checks Composer, npm, and GitHub Actions dependencies weekly and opens update PRs automatically.
 
 ### ENH-010 — Extra merge methods enabled
 - **Status:** `verified`
