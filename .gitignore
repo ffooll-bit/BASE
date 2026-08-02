@@ -111,6 +111,9 @@ _modules/*
 audit/
 reports/
 
+# Temporary files (PR bodies, scratch files)
+temp/
+
 # Agent memory (session-local, not part of the repo)
 .memory/
 
