@@ -38,12 +38,13 @@ _None yet._
 
 ### Changed
 
-- **Documentation shrinkage for model context:** `DESIGN.md` 1138→473 lines (removed Bootstrap 5 boilerplate, kept project-specific patterns only); `CODING_STANDARDS.md` 537→287 lines (trimmed general PHP knowledge); `OPEN_ISSUES.md` 295→54 lines (archived 9 done Sprint 1 items to `archive/SPRINT1_ISSUES.md`)
+- **Repo restructured to professional GitHub standard:** removed agent-only docs (`AGENTS.md`, `OPEN_ISSUES.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `.memory/`); archived Sprint 1 issues to `docs/archived/`; added `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md` (supported versions + disclosure policy), GitHub issue templates (bug report, feature request), and a release notes template (`.github/RELEASE_NOTES_TEMPLATE.md`); `CONTRIBUTING.md` now holds coding conventions + GitHub Flow workflow; LICENSE adds project copyright; all documentation translated to English
+- **Documentation shrinkage for model context:** `DESIGN.md` 1138→473 lines (removed Bootstrap 5 boilerplate, kept project-specific patterns only); `CODING_STANDARDS.md` 537→287 lines (trimmed general PHP knowledge); `OPEN_ISSUES.md` 295→54 lines (archived 9 done Sprint 1 items to `docs/archived/SPRINT1_ISSUES.md`)
 - **Documentation restructure:** `AGENTS.md` split into Golden Path (must-survive compression) + Reference sections; `CONTRIBUTING.md` deduplicated to human-focused content — lifecycle removed (delegated to AGENTS.md)
 - **Sidebar navigation:** added auto-detection of active page via `active` CSS class on current route
 - **Dashboard version:** replaced hardcoded `v0.1.0` with dynamic value from `config('AppVersion')->version`
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
-- **Profil PT page:** redesain layout dengan visual hierarchy — hero card `card-outline-primary` (nama `display-6` + badge Akreditasi, info identitas & legalitas dalam `d-flex gap-4`), dua card `card-info h-100` sejajar (Kontak dengan clickable links + Alamat), `fa-fw` untuk icon rata, equal-height via `d-flex flex-column` + `mt-auto`, prepend `https://` ke website, format tanggal Bahasa Indonesia via `strtr()`, lebar maksimal via `col-xxl-10`
+- **Profil PT page:** redesigned layout with visual hierarchy — hero card `card-outline-primary` (name in `display-6` + accreditation badge, identity & legalitas info in `d-flex gap-4`), two `card-info h-100` cards side by side (Contact with clickable links + Address), `fa-fw` for aligned icons, equal-height via `d-flex flex-column` + `mt-auto`, `https://` prepended to website URL, Indonesian date format via `strtr()`, max width via `col-xxl-10`
 
 ### Fixed
 
