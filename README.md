@@ -15,7 +15,7 @@ The name **BASE** (Bongaya Advanced Services Engine) reflects that the applicati
 Two main features are complete:
 
 1. **Login / Authentication** - Implemented and verified (10/10 E2E passed). The login system uses the Neo Feeder API (`GetToken`) for authentication, with session-based auth via CodeIgniter 4.
-2. **AdminLTE 3 → AdminLTE 4 Migration** - The UI layer migrated from AdminLTE 3.2 (Bootstrap 4, jQuery) to AdminLTE 4 (Bootstrap 5, vanilla JS, Font Awesome 6).
+2. **AdminLTE 3 → AdminLTE 4 Migration** - The UI layer migrated from AdminLTE 3.2 (Bootstrap 4, jQuery) to AdminLTE 4 (Bootstrap 5, vanilla JS, Font Awesome 7).
 
 ## Technology Stack
 
@@ -45,7 +45,7 @@ BASE/
 |-- public/              # Document root (index.php)
 |   |-- adminlte/        # AdminLTE 4 CSS/JS (from npm build)
 |   |-- bootstrap/       # Bootstrap 5 CSS/JS (from npm build)
-|   |-- fontawesome/     # Font Awesome 6 CSS/webfonts (from npm build)
+|   |-- fontawesome/     # Font Awesome 7 CSS/webfonts (from npm build)
 |-- tests/               # Unit & integration tests
 |-- package.json         # Frontend dependencies (npm)
 |-- node_modules/        # Frontend packages (generated)
