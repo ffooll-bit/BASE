@@ -143,37 +143,37 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `composer.json` homepage matches the repository URL exactly.
 
 ### ENH-005 — CI job has no least-privilege `permissions`
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #27
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** The CI workflow runs without a `permissions` block, so the job receives the default token permissions. Impact: the Actions token is granted more access than the job needs, widening the blast radius if a dependency or script is compromised.
 - **Possible Fix:** Add `permissions: contents: read` to the job, limiting the token to read-only access to repository contents.
 - **Actual Fix:** Add `permissions: contents: read` at the workflow level. GitHub docs + security guidance (GitGuardian, StepSecurity, Exercism) confirm least-privilege for read-only CI.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `permissions: contents: read` added at workflow level via PR #31.
+- **Changes:** The Actions token in CI is now read-only for repo contents; no other scopes granted.
 
 ### ENH-006 — CI has no `concurrency` control
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #28
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** Re-pushing to a PR starts a new CI run without cancelling the previous one. Impact: wasted Actions minutes and out-of-order results when multiple commits land in quick succession.
 - **Possible Fix:** Add a `concurrency` group keyed on the PR/branch with `cancel-in-progress: true`.
 - **Actual Fix:** Add at workflow level: `concurrency: group: ${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true` (GitHub docs pattern).
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `concurrency` group with `cancel-in-progress: true` added via PR #31.
+- **Changes:** Re-pushes to a PR cancel the in-flight CI run for that ref instead of queueing parallel runs.
 
 ### ENH-007 — CI has no `timeout-minutes`
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #29
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** The CI job has no `timeout-minutes`, so a hung step (e.g. a stuck composer/npm install) can run indefinitely and consume Actions minutes without finishing. Impact: builds never fail-closed and billable time accrues.
 - **Possible Fix:** Add a sensible `timeout-minutes` to the job.
 - **Actual Fix:** Add `timeout-minutes: 30` to the `build` job. GitHub default is 360; Exercism recommends ~30 for test workflows.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `timeout-minutes: 30` added to the `build` job via PR #31.
+- **Changes:** A CI job that hangs now fails after 30 minutes instead of running up to GitHub's 360-minute default.
 
 ### ENH-008 — Repo is `private` but planned to be public
 - **Status:** `verified`
