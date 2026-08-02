@@ -176,15 +176,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** A CI job that hangs now fails after 30 minutes instead of running up to GitHub's 360-minute default.
 
 ### ENH-008 — Repo is `private` but planned to be public
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #23
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** The repository is private, and GitHub returns 403 when configuring branch protection on a private free-tier repo. Impact: main cannot be protected (require PR, approvals, status checks), so the workflow guardrails documented in CONTRIBUTING are not enforced by the platform.
 - **Possible Fix:** Publicize the repo when ready, then enable branch protection on `main`: require PRs, one approval, and passing status checks.
 - **Actual Fix:** Publicize the repo via `gh repo edit --visibility public`, then create a branch protection rule on `main`: require PRs, one approval, status checks. Timing depends on when the repo is meant to go public.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Repo set to PUBLIC on 2026-08-02 (`gh repo edit --visibility public`). Branch protection on `main` enabled: 1 required approval, strict `build` status check, enforce admins, force-push disabled, deletions disabled (F6).
+- **Changes:** The repository is now public; `main` is protected — direct pushes and force-pushes are blocked, all merges require an approved PR with a green CI build.
 
 ### ENH-009 — No Dependabot configuration
 - **Status:** `implemented`
