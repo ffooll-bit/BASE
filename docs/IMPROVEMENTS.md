@@ -99,48 +99,48 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-001 — `builds` file (Stability Toggle script)
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #17
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** The CI4 starter "Stability Toggle" script sits at the repo root with no extension, so it looks like a directory next to the ignored `build/` folder. It is unused, and its presence confuses anyone browsing the repository layout.
 - **Possible Fix:** Delete the `builds` file; nothing in the project references it.
 - **Actual Fix:** Delete `builds` from the repo root (`git rm`).
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `builds` deleted via PR #30.
+- **Changes:** Repo root no longer has an extensionless script file; `git grep "builds"` is clean.
 
 ### ENH-002 — `preload.php` sample
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #18
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** `preload.php` is an OPcache preload sample shipped with the starter and is not referenced anywhere in the project. It adds dead weight to the repository root and implies configuration that is not in place.
 - **Possible Fix:** Delete `preload.php`; no configuration or code in the project depends on it.
 - **Actual Fix:** Delete `preload.php` from the repo root (`git rm`).
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `preload.php` deleted via PR #30.
+- **Changes:** Repo root no longer carries an unused OPcache sample; `git grep "preload"` is clean.
 
 ### ENH-003 — `package.json` name still `codeigniter4-appstarter`
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #19
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** The project name in `package.json` is `codeigniter4-appstarter`, leaking the starter template, while `composer.json` identifies the project as `ffooll-bit/base`. The mismatch is visible in tooling output and confusing for contributors.
 - **Possible Fix:** Rename the `name` field in `package.json` to `base`, matching the Composer package name.
 - **Actual Fix:** Change `"name": "codeigniter4-appstarter"` to `"name": "base"` in `package.json`.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `name` changed to `base` via PR #30.
+- **Changes:** npm tooling now reports `base`; `npm run build` still works.
 
 ### ENH-004 — `composer.json` homepage case mismatch
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #20
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-02
 - **Problem:** `composer.json` sets `homepage` to `https://github.com/ffooll-bit/base` (lowercase), while the repository is `ffooll-bit/BASE`. The link is inconsistent with the actual repository URL.
 - **Possible Fix:** Align the `homepage` URL casing in `composer.json` with the repository (`BASE`).
 - **Actual Fix:** Change `"homepage": "https://github.com/ffooll-bit/base"` to `"homepage": "https://github.com/ffooll-bit/BASE"`.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** `homepage` casing fixed via PR #30.
+- **Changes:** `composer.json` homepage matches the repository URL exactly.
 
 ### ENH-005 — CI job has no least-privilege `permissions`
 - **Status:** `verified`
