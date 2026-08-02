@@ -119,6 +119,7 @@ temp/
 
 # CortexKit
 .cortexkit/
+.venv/
 
 # Netbeans
 nbproject/
