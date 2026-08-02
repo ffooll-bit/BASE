@@ -3,7 +3,7 @@
     "description": "Bongaya Advanced Services Engine - Neo Feeder Web Service Client",
     "license": "MIT",
     "type": "project",
-    "homepage": "https://github.com/ffooll-bit/base",
+    "homepage": "https://github.com/ffooll-bit/BASE",
     "support": {},
     "require": {
         "php": "^8.2",
