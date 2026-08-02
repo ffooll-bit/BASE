@@ -143,35 +143,35 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-005 — CI job has no least-privilege `permissions`
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #27
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** The CI workflow runs without a `permissions` block, so the job receives the default token permissions. Impact: the Actions token is granted more access than the job needs, widening the blast radius if a dependency or script is compromised.
 - **Possible Fix:** Add `permissions: contents: read` to the job, limiting the token to read-only access to repository contents.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add `permissions: contents: read` at the workflow level. GitHub docs + security guidance (GitGuardian, StepSecurity, Exercism) confirm least-privilege for read-only CI.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-006 — CI has no `concurrency` control
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #28
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** Re-pushing to a PR starts a new CI run without cancelling the previous one. Impact: wasted Actions minutes and out-of-order results when multiple commits land in quick succession.
 - **Possible Fix:** Add a `concurrency` group keyed on the PR/branch with `cancel-in-progress: true`.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add at workflow level: `concurrency: group: ${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true` (GitHub docs pattern).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-007 — CI has no `timeout-minutes`
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #29
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** The CI job has no `timeout-minutes`, so a hung step (e.g. a stuck composer/npm install) can run indefinitely and consume Actions minutes without finishing. Impact: builds never fail-closed and billable time accrues.
 - **Possible Fix:** Add a sensible `timeout-minutes` to the job.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add `timeout-minutes: 30` to the `build` job. GitHub default is 360; Exercism recommends ~30 for test workflows.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
