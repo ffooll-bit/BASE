@@ -111,6 +111,9 @@ _modules/*
 audit/
 reports/
 
+# Agent memory (session-local, not part of the repo)
+.memory/
+
 # Netbeans
 nbproject/
 build/
