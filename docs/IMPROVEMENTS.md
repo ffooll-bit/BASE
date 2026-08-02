@@ -77,24 +77,24 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 ## Active Items
 
 ### DOC-001 — ARCHITECTURE.md environment table is wrong
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #25
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** The environment variable table in `ARCHITECTURE.md` lists `neofeeder.api_url`, `neofeeder.timeout`, and `neofeeder.ttl`, which do not match the actual config (`app/Config/NeoFeeder.php`). A contributor following the documentation sets variables that the application ignores, so the Neo Feeder connection falls back to defaults silently.
 - **Possible Fix:** Update the env var table in `ARCHITECTURE.md` to match the four variables actually used by `app/Config/NeoFeeder.php`: `neofeeder.apiBaseUrl`, `neofeeder.connectionTimeout`, `neofeeder.requestTimeout`, `neofeeder.validationTTL`.
-- **Actual Fix:** `—`
+- **Actual Fix:** Rewrite the env var table rows to the real keys: `neofeeder.apiBaseUrl`, `neofeeder.connectionTimeout`, `neofeeder.requestTimeout`, `neofeeder.validationTTL`.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### DOC-002 — `env` template missing `neofeeder.*` section
-- **Status:** `recorded`
-- **Issue:** `—`
+- **Status:** `verified`
+- **Issue:** #26
 - **Recorded:** 2026-08-02
 - **Implemented:** `—`
 - **Problem:** README and CONTRIBUTING instruct contributors to configure `neofeeder.*` in `.env`, but the `env` template has no such section. A contributor copying `env` to `.env` has no documented list of required variables, which is also why DOC-001 went unnoticed.
 - **Possible Fix:** Add a `neofeeder.*` section to the `env` template documenting the four variables from `app/Config/NeoFeeder.php`, each with a short comment and a safe default.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add a `neofeeder.*` section to `env` documenting the four overridable properties with commented defaults (`apiBaseUrl`, `connectionTimeout`, `requestTimeout`, `validationTTL`).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
