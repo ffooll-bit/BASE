@@ -18,7 +18,7 @@ Copy `env` to `.env`, configure `baseURL`, `encryption.key`, `neofeeder.*`.
 
 BASE follows the standard GitHub Flow:
 
-1. Every change starts from a **GitHub Issue** (bug report or feature request).
+1. Every change starts from a **GitHub Issue** (bug report or feature request). Planned improvements and findings are first logged in `docs/IMPROVEMENTS.md` (see its lifecycle: Recorded → Verified → Issue → Implemented → Archived), then turned into an Issue once verified.
 2. Create a branch from `main` for the issue.
 3. Implement the change.
 4. Verify locally (see the checklist below).
