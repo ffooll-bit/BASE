@@ -189,9 +189,10 @@ Key `.env` variables used by the application:
 |----------|------|---------|---------|
 | `app.baseURL` | string | CI4 Router | Base URL for `base_url()` helper |
 | `encryption.key` | hex string | CI4 Encryption Service | Cookie encryption (32-byte hex) |
-| `neofeeder.api_url` | string | `Config/NeoFeeder.php` | Neo Feeder API base URL |
-| `neofeeder.timeout` | int | `Config/NeoFeeder.php` | HTTP request timeout (seconds) |
-| `neofeeder.ttl` | int | `Config/NeoFeeder.php` | Token cache TTL (seconds) |
+| `neofeeder.apiBaseUrl` | string | `Config/NeoFeeder.php` | Neo Feeder API base URL (required) |
+| `neofeeder.connectionTimeout` | int | `Config/NeoFeeder.php` | Connection timeout (seconds) |
+| `neofeeder.requestTimeout` | int | `Config/NeoFeeder.php` | HTTP request timeout (seconds) |
+| `neofeeder.validationTTL` | int | `Config/NeoFeeder.php` | Token validation cache TTL (seconds) |
 
 Set these in `.env` (copy from `env` template). Never commit `.env`.
 

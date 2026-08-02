@@ -56,6 +56,20 @@
 # encryption.key =
 
 #--------------------------------------------------------------------
+# NEO FEEDER
+#--------------------------------------------------------------------
+
+# Base URL of the Neo Feeder Web Service API endpoint.
+# Required — no default is provided; API requests fail if this is empty.
+# neofeeder.apiBaseUrl =
+# Maximum seconds to wait for a connection to the API server.
+# neofeeder.connectionTimeout = 10
+# Maximum seconds to wait for a complete API request (including connection).
+# neofeeder.requestTimeout = 30
+# Cache TTL (seconds) for token validation results.
+# neofeeder.validationTTL = 300
+
+#--------------------------------------------------------------------
 # SESSION
 #--------------------------------------------------------------------
 
