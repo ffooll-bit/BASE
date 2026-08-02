@@ -55,7 +55,7 @@ BASE/
 
 ## Neo Feeder API
 
-Endpoint: `https://neofeeder.example.com/ws/live2.php`
+The API base URL is configured via `neofeeder.apiBaseUrl` in `.env` (see the `env` template).
 
 ### Authentication (GetToken)
 

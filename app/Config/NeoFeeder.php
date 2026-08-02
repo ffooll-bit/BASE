@@ -14,9 +14,10 @@ class NeoFeeder extends BaseConfig
      * The base URL for the Neo Feeder Web Service API endpoint.
      * All API requests (GetToken, GetProfilPT, etc.) are sent to this URL.
      *
-     * Override via .env: neofeeder.apiBaseUrl
+     * Required — must be set via .env: neofeeder.apiBaseUrl
+     * No default is provided to prevent leaking a deployment-specific endpoint.
      */
-    public string $apiBaseUrl = 'https://neofeeder.example.com/ws/live2.php';
+    public string $apiBaseUrl = '';
 
     /**
      * --------------------------------------------------------------------------

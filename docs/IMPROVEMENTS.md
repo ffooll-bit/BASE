@@ -218,3 +218,14 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Actual Fix:** Set `delete_branch_on_merge=true` via `gh api -X PATCH` on the repo so GitHub auto-deletes head branches on merge.
 - **Actual Implemented:** Set `delete_branch_on_merge=true` via `gh api -X PATCH` on the repo (F1).
 - **Changes:** Head branches are auto-deleted on merge; stale remote branches no longer accumulate.
+
+### ENH-012 — Local php-cs-fixer reports CRLF false positives on Windows
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-02
+- **Implemented:** `—`
+- **Problem:** Running `php-cs-fixer fix --dry-run` locally on Windows flags all PHP files (29 files) even though their content already conforms to the configured rules. Impact: the local dev cannot use the dry-run diff as a real signal, since every file is reported regardless of actual style violations. CI is unaffected (Linux checks out LF and passes), so this is purely a local-developer experience issue.
+- **Possible Fix:** Option A (full): set `.editorconfig` `end_of_line = lf`, set `.gitattributes` to `* text=auto eol=lf`, run `git add --renormalize .` and re-checkout so Windows always checks out LF. Trade-off: produces a noisy diff touching every PHP file. Option B (minimal): change `.editorconfig` `end_of_line` to `lf` so editors stop writing CRLF, and document in CONTRIBUTING that Windows devs should set `git config --global core.autocrlf false`. Old CRLF files are still flagged once, but no new ones appear.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
