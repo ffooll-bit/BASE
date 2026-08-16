@@ -6,7 +6,7 @@
         "test": "echo \"No test specified\""
     },
     "dependencies": {
-        "admin-lte": "^4.0",
+        "admin-lte": "^4.3",
         "@fortawesome/fontawesome-free": "^7.3"
     }
 }
