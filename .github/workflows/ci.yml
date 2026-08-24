@@ -21,6 +21,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Check line endings
+        run: |
+          if grep -rlP '\r$' --include="*.md" .; then
+            echo "::error::CRLF line endings found in markdown files"
+            exit 1
+          fi
+
+      - name: Check no BOM
+        run: |
+          if grep -rlU $'\xEF\xBB\xBF' --include="*.md" .; then
+            echo "::error::UTF-8 BOM found in markdown files"
+            exit 1
+          fi
+
       - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
         with:

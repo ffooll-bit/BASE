@@ -16,7 +16,7 @@ BASE is a CodeIgniter 4 web application that serves as a Web Service Client for 
 | Identity Provider | Neo Feeder WS API | — | Authentication & token validation |
 | UI Template | AdminLTE 4 | ^4.0 | Dashboard layout, sidebar, navbar |
 | CSS Framework | Bootstrap 5 | 5.3.x | Components, grid, utilities (transitive via AdminLTE 4) |
-| Icons | Font Awesome 7 | ^7.0 | UI icons |
+| Icons | Font Awesome 7 | ^7.3 | UI icons |
 | JS Runtime | Vanilla JavaScript | — | AdminLTE 4 native, no jQuery |
 | Session | CI4 FileHandler | — | Auth state storage |
 | HTTP Client | CI4 CURLRequest | — | Neo Feeder API communication |
@@ -70,6 +70,7 @@ Filter ordering: **Required before** → **Global before** → Route → Control
 | POST | `/login` | `Login::attemptLogin` | Whitelisted | Enabled |
 | POST | `/logout` | `Login::logout` | Protected | Enabled |
 | GET | `/dashboard` | `Dashboard::index` | Protected | — |
+| GET | `/profil-pt` | `ProfilPT::index` | Protected | — |
 
 ---
 
@@ -78,9 +79,10 @@ Filter ordering: **Required before** → **Global before** → Route → Control
 | Class | File | Responsibility | Dependencies |
 |-------|------|---------------|--------------|
 | `BaseController` | `Controllers/BaseController.php` | Shared controller setup (session, helpers) | — |
-| `Home` | `Controllers/Home.php` | Welcome / landing page (pre-auth) | — |
+| `Home` | `Controllers/Home.php` | Root redirect: `/login` (anonymous) or `/dashboard` (authenticated) | `Auth` service |
 | `Login` | `Controllers/Login.php` | Login form, login attempt, logout | `Auth` service |
 | `Dashboard` | `Controllers/Dashboard.php` | Protected landing page | `Auth` service, 4 views |
+| `ProfilPT` | `Controllers/ProfilPT.php` | PT profile page: formats `GetProfilPT` data (SK date to Indonesian, website URL normalization) | `Auth`, `NeoFeeder` services, view `profil_pt/index` |
 | `AuthFilter` | `Filters/AuthFilter.php` | Route protection middleware | `Auth` service, CI4 Session |
 | `Auth` | `Libraries/Auth.php` | Auth logic: login, logout, validate, caching | `NeoFeeder`, `Session`, `EncrypterInterface` |
 | `NeoFeeder` | `Libraries/NeoFeeder.php` | HTTP layer for Neo Feeder API | `NeoFeederConfig`, `CURLRequest` |
@@ -226,10 +228,10 @@ All assets are pre-compiled (no bundler). The build script copies files from `no
 ```
 app/
 ├── Config/          # NeoFeeder, Filters, Routes, Services
-├── Controllers/     # Login, Dashboard, Home, BaseController
+├── Controllers/     # Login, Dashboard, ProfilPT, Home, BaseController
 ├── Filters/         # AuthFilter (route protection)
 ├── Libraries/       # Auth, NeoFeeder (service layer)
-└── Views/           # login/ (standalone), layout/ (header,sidebar,footer), dashboard/
+└── Views/           # login/ (standalone), layout/ (header,sidebar,footer), dashboard/, profil_pt/
 public/              # index.php + built assets
 ├── adminlte/        # adminlte.min.css, adminlte.min.js
 ├── bootstrap/       # bootstrap.min.css, bootstrap.bundle.min.js
