@@ -253,10 +253,10 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-014 — Standalone Neo Feeder menu pages used by the graduation flow
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #51
-- **Recorded:** 2026-08-27
-- **Implemented:** `—`
+- **Recorded:** 2026-08-25
+- **Implemented:** 2026-08-27
 - **Problem:** The graduation flow (ENH-013) needs access to several Neo Feeder menus — *Daftar Mahasiswa*, *Aktifitas Kuliah Mahasiswa*, *Daftar Mahasiswa Lulus/Dropout*. BASE has no standalone menu pages mirroring Neo Feeder navigation, so the admin must switch to Neo Feeder for each verification/input step.
 - **Possible Fix:** Add standalone menu pages in BASE mapping the Neo Feeder menus used in the ENH-013 flow: *Daftar Mahasiswa*, *Aktifitas Kuliah Mahasiswa*, *Daftar Mahasiswa Lulus/Dropout* (and any other menus that surface during ENH-013 implementation). Each page calls the NeoFeeder API through the existing service layer (`Libraries/NeoFeeder`). These become the navigation surface for the ENH-013 wizard.
 - **Actual Fix:** Feasible — the NeoFeeder WS API exposes GetListMahasiswa, GetAktivitasKuliahMahasiswa, GetListMahasiswaLulusDO. Add read-only pages in BASE (controller + view + route) calling the `Libraries/NeoFeeder` layer extended with these three Get methods. These become the navigation surface for the ENH-013 wizard.

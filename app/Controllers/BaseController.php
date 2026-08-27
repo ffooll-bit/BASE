@@ -44,6 +44,26 @@ abstract class BaseController extends Controller
     // protected $session;
 
     /**
+     * Collects non-empty filter values from the request query string.
+     *
+     * @param list<string> $allowed Allowed filter field names.
+     *
+     * @return array<string, string> The non-empty filter values.
+     */
+    protected function collectFilters(array $allowed): array
+    {
+        $filters = [];
+        foreach ($allowed as $key) {
+            $value = $this->request->getGet($key);
+            if ($value !== null && $value !== '') {
+                $filters[$key] = $value;
+            }
+        }
+
+        return $filters;
+    }
+
+    /**
      * @return void
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)

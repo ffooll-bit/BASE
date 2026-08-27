@@ -91,4 +91,64 @@ class NeoFeederTest extends CIUnitTestCase
         $this->assertSame(0, $result['error_code']);
         $this->assertSame('123456', $result['data']['kode_pt']);
     }
+
+    public function testGetListMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode([
+            'error_code' => 0,
+            'data'       => [['nim' => '201731009', 'nama_mahasiswa' => 'Joko']],
+        ]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getListMahasiswa('token-abc', ['limit' => 20, 'offset' => 0]);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('201731009', $result['data'][0]['nim']);
+    }
+
+    public function testGetAktivitasKuliahMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode([
+            'error_code' => 0,
+            'data'       => [['nim' => '201731009', 'ips' => '3.50']],
+        ]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getAktivitasKuliahMahasiswa('token-abc', ['limit' => 20, 'offset' => 0]);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('3.50', $result['data'][0]['ips']);
+    }
+
+    public function testGetListMahasiswaLulusDOReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode([
+            'error_code' => 0,
+            'data'       => [['nim' => '201731009', 'nama_jenis_keluar' => 'Lulus']],
+        ]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getListMahasiswaLulusDO('token-abc', ['limit' => 20, 'offset' => 0]);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('Lulus', $result['data'][0]['nama_jenis_keluar']);
+    }
 }

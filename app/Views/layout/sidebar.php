@@ -23,6 +23,24 @@
                             <p>Profil Perguruan Tinggi</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('mahasiswa') ?>" class="nav-link <?= $currentRoute === 'mahasiswa' ? 'active' : '' ?>">
+                            <i class="nav-icon fas fa-user-graduate"></i>
+                            <p>Mahasiswa</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('aktivitas-kuliah') ?>" class="nav-link <?= $currentRoute === 'aktivitas-kuliah' ? 'active' : '' ?>">
+                            <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                            <p>Aktivitas Kuliah</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('mahasiswa-lulus-do') ?>" class="nav-link <?= $currentRoute === 'mahasiswa-lulus-do' ? 'active' : '' ?>">
+                            <i class="nav-icon fas fa-user-check"></i>
+                            <p>Mahasiswa Lulus / DO</p>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

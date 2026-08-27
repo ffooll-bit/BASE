@@ -35,6 +35,7 @@ _None yet._
 
 - **Profil PT page:** dedicated page (`/profil-pt`) displaying institution profile data from NeoFeeder API — identity, contact, address, and legalitas in two AdminLTE cards; sidebar navigation item added
 - **Route:** `GET /profil-pt` → `ProfilPT::index` with auth+csrf filters
+- **Neo Feeder menu pages:** read-only pages for `Daftar Mahasiswa` (`/mahasiswa`), `Aktivitas Kuliah Mahasiswa` (`/aktivitas-kuliah`), and `Daftar Mahasiswa Lulus/Dropout` (`/mahasiswa-lulus-do`). Each calls the corresponding NeoFeeder `Get` API through the service layer with `filter`/`limit`/`offset` pagination — a direct browsing surface for the graduation-flow verification (ENH-014) — #51
 
 ### Changed
 
