@@ -276,7 +276,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-016 — Graduation wizard progress resumable across auth-session expiry (no database)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #55
 - **Recorded:** 2026-08-27
 - **Implemented:** `—`
 - **Problem:** The PISN graduation wizard (ENH-013) verifies a batch manually, one student at a time (click Next per record). The current batch is 85 records (34 + 51). CI4 session lifetime is 7200s (2h, `app/Config/Session.php:53`) using the files driver in `writable/session`. Manual verification is slow (the admin must open KTP/transcript images and compare), so a single record can take long or the admin may be interrupted. If the auth session expires mid-wizard, the wizard state (current step index + per-record verification flags/notes) is lost and the admin must restart from the first record — a major usability and data-integrity risk for an 85-record batch.
