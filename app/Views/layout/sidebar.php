@@ -41,6 +41,12 @@
                             <p>Mahasiswa Lulus / DO</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('graduation') ?>" class="nav-link <?= in_array($currentRoute, ['graduation', 'step', 'guidance'], true) ? 'active' : '' ?>">
+                            <i class="nav-icon fas fa-graduation-cap"></i>
+                            <p>PISN Graduation</p>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
