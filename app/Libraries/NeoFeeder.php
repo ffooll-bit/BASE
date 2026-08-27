@@ -131,6 +131,66 @@ class NeoFeeder
     }
 
     /**
+     * Sends a list-style request (Get action with optional filter/order/limit/offset).
+     *
+     * @param string $act     The API action name.
+     * @param string $token   The authentication token.
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    private function sendListRequest(string $act, string $token, array $options = []): array
+    {
+        $payload = ['act' => $act, 'token' => $token];
+        foreach (['filter', 'order', 'limit', 'offset'] as $key) {
+            if (array_key_exists($key, $options)) {
+                $payload[$key] = $options[$key];
+            }
+        }
+
+        return $this->sendRequest($payload);
+    }
+
+    /**
+     * Retrieves the list of students (Daftar Mahasiswa) from the Neo Feeder API.
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getListMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetListMahasiswa', $token, $options);
+    }
+
+    /**
+     * Retrieves the student course activities (Aktivitas Kuliah Mahasiswa) from the Neo Feeder API.
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getAktivitasKuliahMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetAktivitasKuliahMahasiswa', $token, $options);
+    }
+
+    /**
+     * Retrieves the graduated/dropped-out student list (Daftar Mahasiswa Lulus/DO) from the Neo Feeder API.
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getListMahasiswaLulusDO(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetListMahasiswaLulusDO', $token, $options);
+    }
+
+    /**
      * Encodes a payload as JSON, returning a validated string.
      *
      * @param array $payload The payload to encode.

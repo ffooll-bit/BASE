@@ -17,3 +17,6 @@ $routes->post('login', 'Login::attemptLogin');
 $routes->post('logout', 'Login::logout');
 $routes->get('dashboard', 'Dashboard::index');
 $routes->get('profil-pt', 'ProfilPT::index');
+$routes->get('mahasiswa', 'Mahasiswa::index');
+$routes->get('aktivitas-kuliah', 'AktivitasKuliah::index');
+$routes->get('mahasiswa-lulus-do', 'MahasiswaLulusDo::index');
