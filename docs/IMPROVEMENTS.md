@@ -220,15 +220,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Head branches are auto-deleted on merge; stale remote branches no longer accumulate.
 
 ### ENH-012 — Local php-cs-fixer reports CRLF false positives on Windows
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #48
 - **Recorded:** 2026-08-02
-- **Implemented:** `—`
+- **Implemented:** 2026-08-27
 - **Problem:** Running `php-cs-fixer fix --dry-run` locally on Windows flags all PHP files (29 files) even though their content already conforms to the configured rules. Impact: the local dev cannot use the dry-run diff as a real signal, since every file is reported regardless of actual style violations. CI is unaffected (Linux checks out LF and passes), so this is purely a local-developer experience issue.
 - **Possible Fix:** Option A (full): set `.editorconfig` `end_of_line = lf`, set `.gitattributes` to `* text=auto eol=lf`, run `git add --renormalize .` and re-checkout so Windows always checks out LF. Trade-off: produces a noisy diff touching every PHP file. Option B (minimal): change `.editorconfig` `end_of_line` to `lf` so editors stop writing CRLF, and document in CONTRIBUTING that Windows devs should set `git config --global core.autocrlf false`. Old CRLF files are still flagged once, but no new ones appear.
 - **Actual Fix:** Applied Option A: `.editorconfig` `end_of_line = lf`, `.gitattributes` `* text=auto eol=lf`, `git add --renormalize .`, CI line-ending/BOM checks — all done in workflow-adoption PR #46. php-cs-fixer dry-run should now pass cleanly on Windows.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Line-ending false positives resolved repo-wide via PR #46: `.editorconfig` `end_of_line = lf`, `.gitattributes` `* text=auto eol=lf`, `git add --renormalize .`, and CI `build` now checks CRLF line endings and UTF-8 BOM in `*.md`.
+- **Changes:** Running `php-cs-fixer fix --dry-run` on Windows no longer flags every PHP file; CI guards against regression.
 
 ### DOC-003 — Inconsistent tracking of auto-generated docs (ARCHITECTURE.md committed, STRUCTURE.md untracked)
 - **Status:** `verified`
