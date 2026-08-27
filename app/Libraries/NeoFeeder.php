@@ -191,6 +191,36 @@ class NeoFeeder
     }
 
     /**
+     * Retrieves a single student's full biodata (GetBiodataMahasiswa).
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getBiodataMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetBiodataMahasiswa', $token, $options);
+    }
+
+    /**
+     * Retrieves a single student course-activity record (GetDetailPerkuliahanMahasiswa).
+     *
+     * @param string $token The authentication token obtained from getToken().
+     * @param array  $key   The primary-key fields (id_registrasi_mahasiswa, id_semester).
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getDetailPerkuliahanMahasiswa(string $token, array $key): array
+    {
+        $idReg = str_replace("'", "\'", (string) ($key['id_registrasi_mahasiswa'] ?? ''));
+        $idSmt = str_replace("'", "\'", (string) ($key['id_semester'] ?? ''));
+        $filter = "id_registrasi_mahasiswa='{$idReg}' AND id_semester='{$idSmt}'";
+
+        return $this->sendListRequest('GetDetailPerkuliahanMahasiswa', $token, ['filter' => $filter]);
+    }
+
+    /**
      * Submits a graduated/dropped-out student record to the Neo Feeder API.
      *
      * @param string $token  The authentication token obtained from getToken().

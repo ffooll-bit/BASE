@@ -58,6 +58,7 @@ _None yet._
 - **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
 
 - **Windows php-cs-fixer CRLF false positives:** resolved by repo-wide LF normalization (`.editorconfig` `end_of_line = lf`, `.gitattributes` `* text=auto eol=lf`, `git add --renormalize .`); CI `build` now asserts LF line endings / no BOM on `*.md` — #48
+- **Neo Feeder edit/delete loader (BUG-001, #65):** the edit route handlers were defined without a `$1`/`$2` back-reference, so CodeIgniter 4.7.4 discarded the route parameter and `$id` was always `null` — the loader filtered by `null` and `GetBiodataMahasiswa`/`GetDetailPerkuliahanMahasiswa` returned empty, showing "Data tidak ditemukan." Fixed by adding `$1`/`$2` back-references to the route handlers (`Mahasiswa::edit/$1`, `AktivitasKuliah::edit/$1/$2`, etc.) and switching the loaders to the dedicated per-record endpoints with the SQL-string `filter` (`id_mahasiswa='…'`) — Edit/Delete now open the correct record.
 
 ### Removed
 _None yet._

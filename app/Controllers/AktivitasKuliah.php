@@ -49,9 +49,9 @@ class AktivitasKuliah extends BaseController
         $token = session('auth.token');
 
         if ($token !== null && $idRegistrasi !== null && $idSemester !== null) {
-            $response = service('neoFeeder')->getAktivitasKuliahMahasiswa($token, [
-                'filter' => ['id_registrasi_mahasiswa' => $idRegistrasi, 'id_semester' => $idSemester],
-                'limit'  => 1,
+            $response = service('neoFeeder')->getDetailPerkuliahanMahasiswa($token, [
+                'id_registrasi_mahasiswa' => $idRegistrasi,
+                'id_semester'             => $idSemester,
             ]);
             if (($response['error_code'] ?? -1) === 0 && !empty($response['data'])) {
                 $row = $response['data'][0];
