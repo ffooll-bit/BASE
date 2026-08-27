@@ -243,7 +243,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-013 — PISN student graduation flow (Excel upload + sequential manual verification)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #53
 - **Recorded:** 2026-08-27
 - **Implemented:** `—`
 - **Problem:** Admin processes student graduation for PISN (Penomoran Ijazah dan Sertifikat Profesi Nasional / National Diploma & Professional Certificate Numbering) manually in Neo Feeder through a multi-step flow with strict verification gates. BASE has no structured interface guiding this flow, making it error-prone — especially because post-graduation data corrections (KTP/Nama/Jenis Kelamin) require formal correspondence with LLDIKTI. Evidence (KTP, transcript) is still in image form, so verification cannot be automated. Current manual flow (from the Neo Feeder admin's perspective): (1) verify identity — KTP, Nama, Jenis Kelamin via *Mahasiswa → Daftar Mahasiswa → search by NIM/NPM*; these three fields must be correct before graduation because post-graduation correction requires writing to LLDIKTI; (2) verify academics — *Perkuliahan → Aktifitas Kuliah Mahasiswa → find in the graduation semester period*; ensure active status that semester, IPK & SKS match the transcript; correct immediately, and editing data requires *Biaya Kuliah Semester* to be filled (not empty); (3) check eligibility in the PISN application — the PISN API is reported available but still awaiting confirmation from LLDIKTI admin; for now the admin checks manually; if not eligible, the data must be adjusted; (4) the graduation input — Neo Feeder → *Perkuliahan → Daftar Mahasiswa Lulus/Dropout → add student*, fill NPM, Nama, Jenis Keluar, Tanggal Keluar/Tanggal Lulus, Periode Keluar, IPK, and No Ijazah/No Sertifikat Profesi = "-"; (5) post-graduation — wait several days until data syncs to PISN, then generate the Ijazah number in the PISN web application.
@@ -254,7 +254,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-014 — Standalone Neo Feeder menu pages used by the graduation flow
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #51
 - **Recorded:** 2026-08-27
 - **Implemented:** `—`
 - **Problem:** The graduation flow (ENH-013) needs access to several Neo Feeder menus — *Daftar Mahasiswa*, *Aktifitas Kuliah Mahasiswa*, *Daftar Mahasiswa Lulus/Dropout*. BASE has no standalone menu pages mirroring Neo Feeder navigation, so the admin must switch to Neo Feeder for each verification/input step.
@@ -265,7 +265,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-015 — CRUD operations for Neo Feeder entities (optional)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #52
 - **Recorded:** 2026-08-27
 - **Implemented:** `—`
 - **Problem:** The menu pages (ENH-014) are initially read-only. Several graduation-flow steps (ENH-013) require changing data (e.g. correcting Aktifitas Kuliah Mahasiswa, inputting graduation), so edit/add/delete features are useful where the NeoFeeder API supports them.
