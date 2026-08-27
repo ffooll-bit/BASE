@@ -284,3 +284,80 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Actual Fix:** Verified feasible — no new external dependency. CI4 session lifetime is 7200s (2h, `app/Config/Session.php:53`, files driver in `writable/session`), confirming the mid-wizard expiry risk for an 85-record (34+51) manual batch. The `prior_auth` cookie already exists (`app/Libraries/Auth.php:149/165/180`) and is used by the Auth Filter to detect session timeout and re-establish login — so resumption after re-login is supported by existing infra. CI4 Cache is a built-in framework service with a filesystem store already present at `writable/cache`; persisting wizard progress keyed by a resume token (long TTL, e.g. 24h) requires no new package. No existing wizard/resume/progress code was found (`grep` for wizard|resume|progress returned nothing) — so this is net-new, no duplication. Architecture preserved: no local database introduced, consistent with `ARCHITECTURE.md` ("no local user database") and empty `Models/`. Audit trail remains a separate optional concern (would justify a small DB table, tracked as its own item if wanted).
 - **Actual Implemented:** Implemented via the code-implementation workflow: added `App/Libraries/WizardProgress` (CI4 Cache-backed, TTL 24h, key `wizard_progress_<token>`, methods generateToken/save/load/clear) registered as `Services::wizardProgress()`; added resume-token cookie helpers to `Auth` (`setWizardResumeCookie`/`getWizardResumeToken`/`clearWizardResumeCookie`, httpOnly, 24h, SameSite Lax) mirroring the existing `prior_auth` cookie. The resume token lives in a separate cookie that `AuthFilter` does not clear, so it survives the re-login after session expiry; the wizard UI (ENH-013) calls these. Project CI only checks `.md` line endings/BOM (ci.yml), so no `.php` concern beyond php-cs-fixer/phpunit.
 - **Changes:** Verification progress for the graduation wizard can be persisted independently of the auth session; a wizard interrupted by the 2h session expiry resumes at the saved step after re-login instead of restarting the 85-record batch. No local database introduced.
+
+### ENH-017 — Menu to review not-yet-synchronized data before pushing to Neo Feeder
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** The application can stage data intended for Neo Feeder (e.g. graduation inputs produced by the ENH-013 wizard) but has no dedicated page to preview those staged records before they are actually sent/synchronized. An admin cannot review what will be pushed, increasing the risk of transmitting wrong data.
+- **Possible Fix:** Add a read-only review menu/page that lists records pending synchronization (sourced from the graduation wizard's staged state, or a new staging store) so the admin can inspect them before submission to Neo Feeder. Exact source of "pending" data and scope to be confirmed during Verify.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-018 — Downloadable and re-uploadable Excel template for PISN Graduation
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** The PISN Graduation upload (ENH-013) accepts a free-form Excel file but offers no template for the admin to download, fill in, and re-upload. Admins must build the file from scratch, which raises formatting errors and mismatched columns.
+- **Possible Fix:** Add a "Download template" action on the graduation upload page that exports a blank/example `.xlsx` (via `phpoffice/phpspreadsheet`) with the required columns; reuse the existing upload flow for re-upload.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-019 — Pre-submit preview of PISN Graduation data
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** After all students are verified in the ENH-013 wizard, there is no consolidated preview/confirmation screen before the data is submitted (registered) to PDDIKTI via `InsertMahasiswaLulusDO`. A mistake is only visible after submission.
+- **Possible Fix:** Add a final preview/confirmation step in the graduation wizard that lists every verified student and the values to be submitted, with an explicit "Submit" action only after review.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-020 — Completeness check of student grades (especially thesis grade) in PISN Graduation via GetTranskripMahasiswa
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** Before submitting graduation data, the admin must ensure all grades — especially the thesis (skripsi) grade — are entered. BASE currently has no completeness check and no source for an individual student's grades.
+- **Possible Fix:** Add a validation step in the graduation wizard that confirms required grade fields are present. Source the grades from a new Neo Feeder call (candidate `GetTranskripMahasiswa`) or a new menu/endpoint; confirm the exact `act` name and response schema during Verify (and implementation). May include a new transcript menu page.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### BUG-001 — "Data tidak ditemukan." shown when pressing EDIT/DELETE
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** On the menu pages (Daftar Mahasiswa, Aktivitas Kuliah Mahasiswa) added in ENH-015, pressing the Edit or Delete action opens the edit page showing "Data tidak ditemukan." instead of the record. The Get-by-key load used by the edit handler returns no row, so the form cannot be prefilled and delete cannot resolve the key.
+- **Possible Fix:** Investigate the edit loader's Get call — likely the filter `id_mahasiswa` (or `id_registrasi_mahasiswa`+`id_semester`) does not match how the Neo Feeder API filters, or the column used as the key differs from the row's actual primary-key value. Fix the key/filter so the row is returned; add a check. Root cause to be confirmed in Verify.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-021 — Per-student detail page
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** The menu tables hide several columns because the dataset is large (Mahasiswa ~25k, Aktivitas Kuliah ~222k rows). There is no way to open a single student and see the full detail.
+- **Possible Fix:** Add a detail page (route + view) that selects one student (by `id_mahasiswa` / by NIM) and renders all columns returned by the relevant Neo Feeder Get call, reusing the existing menu service methods.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-022 — Pagination and general UI/UX refinements
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-27 23:35
+- **Implemented:** `—`
+- **Problem:** The pagination on the menu pages does not follow common UI/UX conventions, and other UI/UX areas remain rough. (Broad — scope to be narrowed in Verify.)
+- **Possible Fix:** Improve pagination (page-size control, current-page indicator, first/last links, accessible markup) and apply general UI/UX polish across the menu/wizard pages. Scope will be narrowed during Verify to concrete, bounded changes.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
