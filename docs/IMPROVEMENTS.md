@@ -275,12 +275,12 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-016 — Graduation wizard progress resumable across auth-session expiry (no database)
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27
 - **Implemented:** `—`
 - **Problem:** The PISN graduation wizard (ENH-013) verifies a batch manually, one student at a time (click Next per record). The current batch is 85 records (34 + 51). CI4 session lifetime is 7200s (2h, `app/Config/Session.php:53`) using the files driver in `writable/session`. Manual verification is slow (the admin must open KTP/transcript images and compare), so a single record can take long or the admin may be interrupted. If the auth session expires mid-wizard, the wizard state (current step index + per-record verification flags/notes) is lost and the admin must restart from the first record — a major usability and data-integrity risk for an 85-record batch.
 - **Possible Fix:** Persist wizard progress independently of the auth session, in CI4 Cache (filesystem, `writable/cache` — already present), keyed by a resume token with a long TTL (e.g. 24h). On every Next click, write the progress entry (current step index + per-record flags/notes). When the auth session expires, the existing `prior_auth` cookie (24h, ARCHITECTURE.md) lets the Auth Filter detect the timeout and re-establish login; the wizard then reads progress from cache and resumes at the saved step instead of restarting. Introduces no local database — consistent with the thin-client architecture (`ARCHITECTURE.md`: "no local user database"; `Models/` is an empty placeholder). Audit trail (who verified what/when) is a separate, optional concern that would justify a small DB table and should be its own item if required.
-- **Actual Fix:** `—`
+- **Actual Fix:** Verified feasible — no new external dependency. CI4 session lifetime is 7200s (2h, `app/Config/Session.php:53`, files driver in `writable/session`), confirming the mid-wizard expiry risk for an 85-record (34+51) manual batch. The `prior_auth` cookie already exists (`app/Libraries/Auth.php:149/165/180`) and is used by the Auth Filter to detect session timeout and re-establish login — so resumption after re-login is supported by existing infra. CI4 Cache is a built-in framework service with a filesystem store already present at `writable/cache`; persisting wizard progress keyed by a resume token (long TTL, e.g. 24h) requires no new package. No existing wizard/resume/progress code was found (`grep` for wizard|resume|progress returned nothing) — so this is net-new, no duplication. Architecture preserved: no local database introduced, consistent with `ARCHITECTURE.md` ("no local user database") and empty `Models/`. Audit trail remains a separate optional concern (would justify a small DB table, tracked as its own item if wanted).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
