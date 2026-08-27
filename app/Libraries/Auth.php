@@ -181,6 +181,52 @@ class Auth
     }
 
     /**
+     * Issues a wizard resume cookie holding an opaque token that survives
+     * auth-session expiry (unlike the session), so an in-progress graduation
+     * wizard can resume after re-login.
+     *
+     * @param string $token The opaque resume token.
+     *
+     * @return void
+     */
+    public function setWizardResumeCookie(string $token): void
+    {
+        // ponytail: opaque random key, not sensitive, so no encryption needed
+        setcookie('wizard_resume', $token, [
+            'expires'  => time() + 86400,
+            'path'     => '/',
+            'secure'   => ENVIRONMENT === 'production',
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+
+    /**
+     * Reads the wizard resume token from the request cookie.
+     *
+     * @return string|null The token, or null if absent.
+     */
+    public function getWizardResumeToken(): ?string
+    {
+        return $_COOKIE['wizard_resume'] ?? null;
+    }
+
+    /**
+     * Clears the wizard resume cookie.
+     *
+     * @return void
+     */
+    public function clearWizardResumeCookie(): void
+    {
+        setcookie('wizard_resume', '', [
+            'expires'  => 1,
+            'path'     => '/',
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+
+    /**
      * Checks whether the user is currently logged in.
      *
      * Returns true only if a session token exists and has been validated
