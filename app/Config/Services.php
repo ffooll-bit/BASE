@@ -41,6 +41,15 @@ class Services extends BaseService
         return new \App\Libraries\NeoFeeder($config, $curl);
     }
 
+    public static function wizardProgress($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('wizardProgress');
+        }
+
+        return new \App\Libraries\WizardProgress(service('cache'));
+    }
+
     /**
      * Authentication Service
      *

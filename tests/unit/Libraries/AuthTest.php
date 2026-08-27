@@ -149,4 +149,36 @@ class AuthTest extends CIUnitTestCase
 
         $this->auth->logout();
     }
+
+    public function testSetWizardResumeCookieExecutesWithoutError(): void
+    {
+        // ponytail: setcookie side-effects are not observable via headers_list() in the
+        // CLI/PHPUnit SAPI, so we only assert the wrapper runs without error.
+        $this->expectNotToPerformAssertions();
+
+        $this->auth->setWizardResumeCookie('resume-tok');
+    }
+
+    public function testClearWizardResumeCookieExecutesWithoutError(): void
+    {
+        $this->expectNotToPerformAssertions();
+
+        $this->auth->clearWizardResumeCookie();
+    }
+
+    public function testGetWizardResumeTokenReadsCookie(): void
+    {
+        $_COOKIE['wizard_resume'] = 'resume-tok';
+
+        $this->assertSame('resume-tok', $this->auth->getWizardResumeToken());
+
+        unset($_COOKIE['wizard_resume']);
+    }
+
+    public function testGetWizardResumeTokenReturnsNullWhenAbsent(): void
+    {
+        unset($_COOKIE['wizard_resume']);
+
+        $this->assertNull($this->auth->getWizardResumeToken());
+    }
 }
