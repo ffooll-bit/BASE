@@ -287,7 +287,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-017 — Menu to review not-yet-synchronized data before pushing to Neo Feeder
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #69
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The application can stage data intended for Neo Feeder (e.g. graduation inputs produced by the ENH-013 wizard) but has no dedicated page to preview those staged records before they are actually sent/synchronized. An admin cannot review what will be pushed, increasing the risk of transmitting wrong data.
@@ -298,7 +298,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-018 — Downloadable and re-uploadable Excel template for PISN Graduation
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #70
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The PISN Graduation upload (ENH-013) accepts a free-form Excel file but offers no template for the admin to download, fill in, and re-upload. Admins must build the file from scratch, which raises formatting errors and mismatched columns.
@@ -309,7 +309,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-019 — Pre-submit preview of PISN Graduation data
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #64
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** After all students are verified in the ENH-013 wizard, there is no consolidated preview/confirmation screen before the data is submitted (registered) to PDDIKTI via `InsertMahasiswaLulusDO`. A mistake is only visible after submission.
@@ -320,7 +320,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-020 — Completeness check of student grades (especially thesis grade) in PISN Graduation via GetTranskripMahasiswa
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #67
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** Before submitting graduation data, the admin must ensure all grades — especially the thesis (skripsi) grade — are entered. BASE currently has no completeness check and no source for an individual student's grades.
@@ -331,7 +331,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### BUG-001 — "Data tidak ditemukan." shown when pressing EDIT/DELETE
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #65
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** On the menu pages (Daftar Mahasiswa, Aktivitas Kuliah Mahasiswa) added in ENH-015, pressing the Edit or Delete action opens the edit page showing "Data tidak ditemukan." instead of the record. The Get-by-key load used by the edit handler returns no row, so the form cannot be prefilled and delete cannot resolve the key.
@@ -342,7 +342,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-021 — Per-student detail page
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #66
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The menu tables hide several columns because the dataset is large (Mahasiswa ~25k, Aktivitas Kuliah ~222k rows). There is no way to open a single student and see the full detail.
@@ -353,7 +353,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-022 — Pagination and general UI/UX refinements
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #68
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The pagination on the menu pages does not follow common UI/UX conventions, and other UI/UX areas remain rough. (Broad — scope to be narrowed in Verify.)
