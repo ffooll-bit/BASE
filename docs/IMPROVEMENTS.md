@@ -264,15 +264,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-015 — CRUD operations for Neo Feeder entities (optional)
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #52
 - **Recorded:** 2026-08-27
-- **Implemented:** `—`
+- **Implemented:** 2026-08-27
 - **Problem:** The menu pages (ENH-014) are initially read-only. Several graduation-flow steps (ENH-013) require changing data (e.g. correcting Aktifitas Kuliah Mahasiswa, inputting graduation), so edit/add/delete features are useful where the NeoFeeder API supports them.
 - **Possible Fix:** Beyond the read-only menus (ENH-014), add create/edit/delete operations for NeoFeeder entities where the API supports them (check the NeoFeeder API documentation per endpoint). Marked **optional** by the user — can be done partially or deferred. Ensure it is built on top of ENH-014.
 - **Actual Fix:** Feasible — the NeoFeeder WS API supports Insert/Update/Delete (InsertBiodataMahasiswa, InsertPerkuliahanMahasiswa, etc.). Add CRUD where the API permits. Optional — implement per endpoint availability, built on top of the ENH-014 pages.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Implemented via the code-implementation workflow: added `insertBiodataMahasiswa`/`updateBiodataMahasiswa`/`deleteBiodataMahasiswa` and `insertPerkuliahanMahasiswa`/`updatePerkuliahanMahasiswa`/`deletePerkuliahanMahasiswa` to `Libraries/NeoFeeder` through a shared `sendMutation` helper carrying `act`/`token`/`record`/`key`; added routes, controller handlers (`edit`/`editPost`/`delete`), and edit views for `Mahasiswa` and `AktivitasKuliah`; index views gained Edit/Delete action buttons. No `Mahasiswa Lulus/DO` mutation was added because its Update/Delete WS actions are absent from `docs/NeoFeederWSGuide.md`.
+- **Changes:** Admins can now edit and delete Biodata Mahasiswa and Perkuliahan Mahasiswa records directly from BASE; those actions are routed to the NeoFeeder WS mutations. `Mahasiswa Lulus/DO` remains without CRUD (only the `InsertMahasiswaLulusDO` used by the ENH-013 wizard exists). No local database introduced.
 
 ### ENH-016 — Graduation wizard progress resumable across auth-session expiry (no database)
 - **Status:** `implemented`

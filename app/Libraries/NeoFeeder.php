@@ -208,6 +208,123 @@ class NeoFeeder
     }
 
     /**
+     * Sends a mutation request (Insert/Update/Delete) to the Neo Feeder API.
+     *
+     * Builds the payload with the action, token, and the optional `key` (primary
+     * key for Update/Delete) and `record` (fields for Insert/Update) fields, then
+     * delegates to {@see sendRequest()}.
+     *
+     * @param string $act     The API action name (e.g. InsertBiodataMahasiswa).
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $record  The record fields for Insert/Update. Null for Delete.
+     * @param array  $key     The primary-key fields for Update/Delete. Empty for Insert.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    private function sendMutation(string $act, string $token, ?array $record = null, ?array $key = null): array
+    {
+        $payload = ['act' => $act, 'token' => $token];
+
+        if ($key !== null) {
+            $payload['key'] = $key;
+        }
+
+        if ($record !== null) {
+            $payload['record'] = $record;
+        }
+
+        return $this->sendRequest($payload);
+    }
+
+    /**
+     * Inserts a student biodata record (InsertBiodataMahasiswa).
+     *
+     * @param string $token  The authentication token obtained from getToken().
+     * @param array  $record The biodata record fields.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function insertBiodataMahasiswa(string $token, array $record): array
+    {
+        return $this->sendMutation('InsertBiodataMahasiswa', $token, $record);
+    }
+
+    /**
+     * Updates a student biodata record (UpdateBiodataMahasiswa).
+     *
+     * @param string $token       The authentication token obtained from getToken().
+     * @param string $idMahasiswa The primary key (id_mahasiswa).
+     * @param array  $record      The biodata record fields.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function updateBiodataMahasiswa(string $token, string $idMahasiswa, array $record): array
+    {
+        return $this->sendMutation('UpdateBiodataMahasiswa', $token, $record, ['id_mahasiswa' => $idMahasiswa]);
+    }
+
+    /**
+     * Deletes a student biodata record (DeleteBiodataMahasiswa).
+     *
+     * @param string $token       The authentication token obtained from getToken().
+     * @param string $idMahasiswa The primary key (id_mahasiswa).
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function deleteBiodataMahasiswa(string $token, string $idMahasiswa): array
+    {
+        return $this->sendMutation('DeleteBiodataMahasiswa', $token, null, ['id_mahasiswa' => $idMahasiswa]);
+    }
+
+    /**
+     * Inserts a student course-activity record (InsertPerkuliahanMahasiswa).
+     *
+     * @param string $token  The authentication token obtained from getToken().
+     * @param array  $record The perkuliahan record fields.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function insertPerkuliahanMahasiswa(string $token, array $record): array
+    {
+        return $this->sendMutation('InsertPerkuliahanMahasiswa', $token, $record);
+    }
+
+    /**
+     * Updates a student course-activity record (UpdatePerkuliahanMahasiswa).
+     *
+     * @param string $token           The authentication token obtained from getToken().
+     * @param string $idRegistrasi    The primary key (id_registrasi_mahasiswa).
+     * @param string $idSemester      The primary key (id_semester).
+     * @param array  $record          The perkuliahan record fields.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function updatePerkuliahanMahasiswa(string $token, string $idRegistrasi, string $idSemester, array $record): array
+    {
+        return $this->sendMutation('UpdatePerkuliahanMahasiswa', $token, $record, [
+            'id_registrasi_mahasiswa' => $idRegistrasi,
+            'id_semester'             => $idSemester,
+        ]);
+    }
+
+    /**
+     * Deletes a student course-activity record (DeletePerkuliahanMahasiswa).
+     *
+     * @param string $token        The authentication token obtained from getToken().
+     * @param string $idRegistrasi The primary key (id_registrasi_mahasiswa).
+     * @param string $idSemester   The primary key (id_semester).
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function deletePerkuliahanMahasiswa(string $token, string $idRegistrasi, string $idSemester): array
+    {
+        return $this->sendMutation('DeletePerkuliahanMahasiswa', $token, null, [
+            'id_registrasi_mahasiswa' => $idRegistrasi,
+            'id_semester'             => $idSemester,
+        ]);
+    }
+
+    /**
      * Encodes a payload as JSON, returning a validated string.
      *
      * @param array $payload The payload to encode.
