@@ -61,7 +61,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ```markdown
 ### <ID> — <Title>
-- **Status:** `recorded` | `verified` | `rejected` | `implemented`
+- **Status:** `verified` | `verified` | `rejected` | `implemented`
 - **Issue:** <#NN> | `—`
 - **Recorded:** YYYY-MM-DD
 - **Implemented:** YYYY-MM-DD | `—`
@@ -286,78 +286,78 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Verification progress for the graduation wizard can be persisted independently of the auth session; a wizard interrupted by the 2h session expiry resumes at the saved step after re-login instead of restarting the 85-record batch. No local database introduced.
 
 ### ENH-017 — Menu to review not-yet-synchronized data before pushing to Neo Feeder
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The application can stage data intended for Neo Feeder (e.g. graduation inputs produced by the ENH-013 wizard) but has no dedicated page to preview those staged records before they are actually sent/synchronized. An admin cannot review what will be pushed, increasing the risk of transmitting wrong data.
 - **Possible Fix:** Add a read-only review menu/page that lists records pending synchronization (sourced from the graduation wizard's staged state, or a new staging store) so the admin can inspect them before submission to Neo Feeder. Exact source of "pending" data and scope to be confirmed during Verify.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add a review page that reads the active graduation-wizard state from the `WizardProgress` cache store (`Services::wizardProgress()->load(resumeToken)`) and lists every staged student with its graduation record before `finish()` submits them via `InsertMahasiswaLulusDO`. Source is the existing wizard staging — no new store.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-018 — Downloadable and re-uploadable Excel template for PISN Graduation
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The PISN Graduation upload (ENH-013) accepts a free-form Excel file but offers no template for the admin to download, fill in, and re-upload. Admins must build the file from scratch, which raises formatting errors and mismatched columns.
 - **Possible Fix:** Add a "Download template" action on the graduation upload page that exports a blank/example `.xlsx` (via `phpoffice/phpspreadsheet`) with the required columns; reuse the existing upload flow for re-upload.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add a "Download template" action on `graduation/upload` that writes a blank `.xlsx` (via `phpoffice/phpspreadsheet` writer) with the required headers (nim, nama, jenis_keluar, tgl_keluar, periode_keluar, ipk); re-upload reuses the existing `parseExcel` flow. `phpoffice/phpspreadsheet` is already a dependency (ENH-013).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-019 — Pre-submit preview of PISN Graduation data
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** After all students are verified in the ENH-013 wizard, there is no consolidated preview/confirmation screen before the data is submitted (registered) to PDDIKTI via `InsertMahasiswaLulusDO`. A mistake is only visible after submission.
 - **Possible Fix:** Add a final preview/confirmation step in the graduation wizard that lists every verified student and the values to be submitted, with an explicit "Submit" action only after review.
-- **Actual Fix:** `—`
+- **Actual Fix:** Change `Graduation::stepPost()` so that on the last student it redirects to a new preview page (instead of calling `finish()` directly). The preview lists every verified student and the values to be submitted, with an explicit "Submit" button that triggers `finish()`. No behavior change to the submission itself.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-020 — Completeness check of student grades (especially thesis grade) in PISN Graduation via GetTranskripMahasiswa
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** Before submitting graduation data, the admin must ensure all grades — especially the thesis (skripsi) grade — are entered. BASE currently has no completeness check and no source for an individual student's grades.
 - **Possible Fix:** Add a validation step in the graduation wizard that confirms required grade fields are present. Source the grades from a new Neo Feeder call (candidate `GetTranskripMahasiswa`) or a new menu/endpoint; confirm the exact `act` name and response schema during Verify (and implementation). May include a new transcript menu page.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add `getTranskripMahasiswa($token, $options)` to `NeoFeeder` (filter-based Get, per WS guide 3.86) and call it in `Graduation::step` (filter by `id_registrasi_mahasiswa`/nim) to retrieve the transcript; validate that the thesis/skripsi grade field is present and non-empty before allowing Next. The exact grade field name is confirmed against the live API during implementation.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### BUG-001 — "Data tidak ditemukan." shown when pressing EDIT/DELETE
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** On the menu pages (Daftar Mahasiswa, Aktivitas Kuliah Mahasiswa) added in ENH-015, pressing the Edit or Delete action opens the edit page showing "Data tidak ditemukan." instead of the record. The Get-by-key load used by the edit handler returns no row, so the form cannot be prefilled and delete cannot resolve the key.
 - **Possible Fix:** Investigate the edit loader's Get call — likely the filter `id_mahasiswa` (or `id_registrasi_mahasiswa`+`id_semester`) does not match how the Neo Feeder API filters, or the column used as the key differs from the row's actual primary-key value. Fix the key/filter so the row is returned; add a check. Root cause to be confirmed in Verify.
-- **Actual Fix:** `—`
+- **Actual Fix:** Confirmed: `Mahasiswa::edit`/`AktivitasKuliah::edit` call the list endpoints filtered by primary key and get no row, so the form shows "Data tidak ditemukan." The WS guide provides dedicated per-record endpoints: `GetBiodataMahasiswa` (3.7, filter-based, returns full biodata) and `GetDetailPerkuliahanMahasiswa` (3.128). Fix: add `getBiodataMahasiswa($token,$options)` and `getDetailPerkuliahanMahasiswa($token,$key)` to `NeoFeeder`, and switch both edit loaders to them. The `Update`/`Delete` mutations already send the correct `key`, so the round-trip works once the loader is fixed. Exact filter/key field names confirmed via a live re-probe (re-login to refresh the token) during implementation.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-021 — Per-student detail page
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The menu tables hide several columns because the dataset is large (Mahasiswa ~25k, Aktivitas Kuliah ~222k rows). There is no way to open a single student and see the full detail.
 - **Possible Fix:** Add a detail page (route + view) that selects one student (by `id_mahasiswa` / by NIM) and renders all columns returned by the relevant Neo Feeder Get call, reusing the existing menu service methods.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add a per-student detail page using `getBiodataMahasiswa` (by `id_mahasiswa`, WS 3.7) and `getDetailPerkuliahanMahasiswa` (by composite key, WS 3.128) instead of the list endpoints — reusing the same single-record fetch the BUG-001 fix introduces. New route + view rendering all returned columns.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-022 — Pagination and general UI/UX refinements
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The pagination on the menu pages does not follow common UI/UX conventions, and other UI/UX areas remain rough. (Broad — scope to be narrowed in Verify.)
 - **Possible Fix:** Improve pagination (page-size control, current-page indicator, first/last links, accessible markup) and apply general UI/UX polish across the menu/wizard pages. Scope will be narrowed during Verify to concrete, bounded changes.
-- **Actual Fix:** `—`
+- **Actual Fix:** Improve pagination in the menu pages: add a page-size selector, "Page X of Y" indicator, first/last navigation links, and accessible nav markup (reusing `BaseController::collectFilters` + the existing `limit`/`offset` wiring). Apply small UI/UX polish (column labels, empty-states) across menu and wizard pages. Implemented incrementally, not as one large rewrite.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
