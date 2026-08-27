@@ -103,7 +103,7 @@
                     <?php
                         $g = $student['graduation']
                             ?? ['nim' => $student['nim'], 'nama' => $student['nama'], 'jenis_keluar' => $student['jenis_keluar'], 'tgl_keluar' => $student['tgl_keluar'], 'periode_keluar' => $student['periode_keluar'], 'ipk' => $student['ipk'], 'no_ijazah' => '-'];
-                    ?>
+                        ?>
                     <div class="row g-2">
                         <div class="col-md-4"><label class="form-label">NPM / NIM</label><input class="form-control" name="nim" value="<?= esc($g['nim']) ?>" required></div>
                         <div class="col-md-8"><label class="form-label">Nama</label><input class="form-control" name="nama" value="<?= esc($g['nama']) ?>" required></div>
