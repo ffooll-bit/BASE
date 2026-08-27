@@ -37,6 +37,8 @@ _None yet._
 - **Route:** `GET /profil-pt` → `ProfilPT::index` with auth+csrf filters
 - **Neo Feeder menu pages:** read-only pages for `Daftar Mahasiswa` (`/mahasiswa`), `Aktivitas Kuliah Mahasiswa` (`/aktivitas-kuliah`), and `Daftar Mahasiswa Lulus/Dropout` (`/mahasiswa-lulus-do`). Each calls the corresponding NeoFeeder `Get` API through the service layer with `filter`/`limit`/`offset` pagination — a direct browsing surface for the graduation-flow verification (ENH-014) — #51
 - **Graduation wizard resume store:** `Libraries/WizardProgress` (CI4 Cache-backed, survives auth-session expiry) plus `Auth` resume-token cookie helpers (`setWizardResumeCookie`/`getWizardResumeToken`/`clearWizardResumeCookie`). Enables the PISN graduation wizard (ENH-013) to resume mid-batch after re-login, with no local database — ENH-016, #55
+- **PISN graduation wizard:** `Graduation` controller + views (`graduation/upload`, `graduation/wizard`, `graduation/guidance`) with Excel upload (`phpoffice/phpspreadsheet`), sequential per-student manual verification (identity → academic → PISN eligibility → graduation input) advanced with a Next button, resume across auth-session expiry via the ENH-016 store, and submission to NeoFeeder via `InsertMahasiswaLulusDO` (No Ijazah = "-"). PISN live API deferred — `PisnService` scaffolding seam only — ENH-013, #53
+- **Excel support:** added `phpoffice/phpspreadsheet` dependency for graduation candidate upload — ENH-013, #53
 
 ### Changed
 

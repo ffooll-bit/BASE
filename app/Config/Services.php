@@ -50,6 +50,15 @@ class Services extends BaseService
         return new \App\Libraries\WizardProgress(service('cache'));
     }
 
+    public static function pisn($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('pisn');
+        }
+
+        return new \App\Libraries\PisnService();
+    }
+
     /**
      * Authentication Service
      *

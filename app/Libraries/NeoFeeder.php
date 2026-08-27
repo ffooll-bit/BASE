@@ -191,6 +191,23 @@ class NeoFeeder
     }
 
     /**
+     * Submits a graduated/dropped-out student record to the Neo Feeder API.
+     *
+     * @param string $token  The authentication token obtained from getToken().
+     * @param array  $record The graduation record fields (InsertMahasiswaLulusDO).
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function insertMahasiswaLulusDO(string $token, array $record): array
+    {
+        return $this->sendRequest([
+            'act'    => 'InsertMahasiswaLulusDO',
+            'token'  => $token,
+            'record' => $record,
+        ]);
+    }
+
+    /**
      * Encodes a payload as JSON, returning a validated string.
      *
      * @param array $payload The payload to encode.

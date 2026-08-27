@@ -151,4 +151,24 @@ class NeoFeederTest extends CIUnitTestCase
         $this->assertSame(0, $result['error_code']);
         $this->assertSame('Lulus', $result['data'][0]['nama_jenis_keluar']);
     }
+
+    public function testInsertMahasiswaLulusDOReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode([
+            'error_code' => 0,
+            'data'       => ['nim' => '201731009'],
+        ]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->insertMahasiswaLulusDO('token-abc', ['nim' => '201731009']);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('201731009', $result['data']['nim']);
+    }
 }
