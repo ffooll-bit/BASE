@@ -171,4 +171,106 @@ class NeoFeederTest extends CIUnitTestCase
         $this->assertSame(0, $result['error_code']);
         $this->assertSame('201731009', $result['data']['nim']);
     }
+
+    public function testInsertBiodataMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => ['id_mahasiswa' => 'uuid-1']]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->insertBiodataMahasiswa('token-abc', ['nama_mahasiswa' => 'Budi']);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('uuid-1', $result['data']['id_mahasiswa']);
+    }
+
+    public function testUpdateBiodataMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => ['id_mahasiswa' => 'uuid-1']]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->updateBiodataMahasiswa('token-abc', 'uuid-1', ['nama_mahasiswa' => 'Budi']);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('uuid-1', $result['data']['id_mahasiswa']);
+    }
+
+    public function testDeleteBiodataMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => ['id_mahasiswa' => 'uuid-1']]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->deleteBiodataMahasiswa('token-abc', 'uuid-1');
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('uuid-1', $result['data']['id_mahasiswa']);
+    }
+
+    public function testInsertPerkuliahanMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => ['id_registrasi_mahasiswa' => 'r-1']]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->insertPerkuliahanMahasiswa('token-abc', ['id_registrasi_mahasiswa' => 'r-1']);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('r-1', $result['data']['id_registrasi_mahasiswa']);
+    }
+
+    public function testUpdatePerkuliahanMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => ['id_registrasi_mahasiswa' => 'r-1']]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->updatePerkuliahanMahasiswa('token-abc', 'r-1', '20231', ['ips' => '3.5']);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('r-1', $result['data']['id_registrasi_mahasiswa']);
+    }
+
+    public function testDeletePerkuliahanMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => ['id_registrasi_mahasiswa' => 'r-1']]);
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturn($response);
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->deletePerkuliahanMahasiswa('token-abc', 'r-1', '20231');
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('r-1', $result['data']['id_registrasi_mahasiswa']);
+    }
 }

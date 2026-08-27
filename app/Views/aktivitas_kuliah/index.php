@@ -63,11 +63,20 @@
                                     <?php foreach (array_keys($rows[0]) as $col): ?><th><?= esc($col) ?></th><?php endforeach; ?>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <?php foreach ($rows as $row): ?>
-                                    <tr><?php foreach ($row as $cell): ?><td><?= esc($cell) ?></td><?php endforeach; ?></tr>
-                                <?php endforeach; ?>
-                            </tbody>
+                                <tbody>
+                                    <?php foreach ($rows as $row): ?>
+                                        <tr>
+                                            <?php foreach ($row as $cell): ?><td><?= esc($cell) ?></td><?php endforeach; ?>
+                                            <td>
+                                                <a href="<?= base_url('aktivitas-kuliah/edit/' . esc($row['id_registrasi_mahasiswa']) . '/' . esc($row['id_semester'])) ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                <form method="post" action="<?= base_url('aktivitas-kuliah/delete/' . esc($row['id_registrasi_mahasiswa']) . '/' . esc($row['id_semester'])) ?>" style="display:inline">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">Hapus</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
                         </table>
                     <?php endif; ?>
                 </div>
