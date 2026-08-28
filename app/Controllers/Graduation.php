@@ -272,7 +272,7 @@ class Graduation extends BaseController
             $progress['current'] = $idx + 1;
             $this->wizard->save($token, $progress);
 
-            return $this->finish();
+            return redirect()->to('graduation/preview');
         }
 
         $progress['current'] = $idx + 1;
@@ -284,7 +284,7 @@ class Graduation extends BaseController
     /**
      * Submits every verified student to Neo Feeder, then shows guidance.
      */
-    private function finish(): string
+    public function finish(): string
     {
         $token    = $this->currentToken();
         $progress = $this->loadProgress();
@@ -335,6 +335,24 @@ class Graduation extends BaseController
         session()->setFlashdata('graduation_results', $results);
 
         return redirect()->to('graduation/guidance');
+    }
+
+    /**
+     * GET /graduation/preview — preview all verified students before submission.
+     */
+    public function preview()
+    {
+        $progress = $this->loadProgress();
+        if ($progress === null) {
+            return redirect()->to('graduation');
+        }
+
+        $username = service('auth')->getCurrentUser() ?? '';
+
+        return $this->render('graduation/preview', [
+            'username' => $username,
+            'students' => $progress['students'],
+        ]);
     }
 
     /**

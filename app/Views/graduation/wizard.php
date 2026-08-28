@@ -119,8 +119,8 @@
 
             <div class="d-flex justify-content-between">
                 <a href="<?= base_url('graduation') ?>" class="btn btn-outline-secondary">Batal</a>
-                <button type="submit" class="btn btn-primary">
-                    <?= $isLast ? 'Selesai &amp; Kirim' : 'Berikutnya' ?> <i class="fas fa-arrow-right"></i>
+<button type="submit" class="btn btn-primary">
+                    Berikutnya <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </form>
