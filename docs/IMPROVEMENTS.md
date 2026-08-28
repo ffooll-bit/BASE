@@ -361,3 +361,25 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Actual Fix:** Improve pagination in the menu pages: add a page-size selector, "Page X of Y" indicator, first/last navigation links, and accessible nav markup (reusing `BaseController::collectFilters` + the existing `limit`/`offset` wiring). Apply small UI/UX polish (column labels, empty-states) across menu and wizard pages. Implemented incrementally, not as one large rewrite.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
+
+### BUG-002 — Filter format bug in Graduation wizard causes "Gagal memuat data mahasiswa."
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-28 11:30
+- **Implemented:** `—`
+- **Problem:** Immediately after uploading Excel and starting verification on the PISN Graduation wizard, the first student shows "Gagal memuat data mahasiswa." The `Graduation::step()` method calls `getListMahasiswa()` with `filter` as an array `['nim' => '...']`, but the NeoFeeder API expects SQL WHERE-string format (`nim='...'`). The API silently returns empty data.
+- **Possible Fix:** Change the filter format in `Graduation::step()` from array to SQL-string: `['filter' => "nim='{$nimSafe}'"]` (matching BUG-001 fix pattern for `getBiodataMahasiswa`). Also apply same fix to `getAktivitasKuliahMahasiswa()` call in the same method.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-023 — Add "Batalkan sesi" button to clear wizard session
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-28 11:30
+- **Implemented:** `—`
+- **Problem:** The upload page shows "Ada sesi verifikasi yang belum selesai" with "Lanjutkan" but no way to explicitly cancel/clear the session. Old sessions remain in cache until 24h TTL expires.
+- **Possible Fix:** Add "Batalkan sesi" button on `graduation/upload` view that calls a new route `POST /graduation/cancel` → `Graduation::cancel()`, which clears the wizard cache entry and the resume cookie, then redirects to `graduation`.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
