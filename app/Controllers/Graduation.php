@@ -162,20 +162,22 @@ class Graduation extends BaseController
         $error    = null;
 
         if ($apiToken !== null) {
-            $idResp = $this->neoFeeder->getListMahasiswa(
-                $apiToken,
-                ['filter' => ['nim' => $student['nim']], 'limit' => 1]
-            );
+            $nimSafe = str_replace("'", "\'", (string) $student['nim']);
+
+            $idResp = $this->neoFeeder->getListMahasiswa($apiToken, [
+                'filter' => "nim='{$nimSafe}'",
+                'limit'  => 1,
+            ]);
             if (($idResp['error_code'] ?? -1) === 0 && isset($idResp['data'][0])) {
                 $identity = $idResp['data'][0];
             } else {
                 $error = $idResp['error_msg'] ?? 'Gagal memuat data mahasiswa.';
             }
 
-            $acResp = $this->neoFeeder->getAktivitasKuliahMahasiswa(
-                $apiToken,
-                ['filter' => ['nim' => $student['nim']], 'limit' => 50]
-            );
+            $acResp = $this->neoFeeder->getAktivitasKuliahMahasiswa($apiToken, [
+                'filter' => "nim='{$nimSafe}'",
+                'limit'  => 50,
+            ]);
             if (($acResp['error_code'] ?? -1) === 0 && isset($acResp['data'])) {
                 $academic = $acResp['data'];
             }
