@@ -364,7 +364,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### BUG-002 — Filter format bug in Graduation wizard causes "Gagal memuat data mahasiswa."
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #75
 - **Recorded:** 2026-08-28 11:30
 - **Implemented:** `—`
 - **Problem:** Immediately after uploading Excel and starting verification on the PISN Graduation wizard, the first student shows "Gagal memuat data mahasiswa." The `Graduation::step()` method calls `getListMahasiswa()` with `filter` as an array `['nim' => '...']`, but the NeoFeeder API expects SQL WHERE-string format (`nim='...'`). The API silently returns empty data.
@@ -375,7 +375,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-023 — Add "Batalkan sesi" button to clear wizard session
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #76
 - **Recorded:** 2026-08-28 11:30
 - **Implemented:** `—`
 - **Problem:** The upload page shows "Ada sesi verifikasi yang belum selesai" with "Lanjutkan" but no way to explicitly cancel/clear the session. Old sessions remain in cache until 24h TTL expires.
