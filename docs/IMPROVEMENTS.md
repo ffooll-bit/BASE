@@ -286,15 +286,14 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Verification progress for the graduation wizard can be persisted independently of the auth session; a wizard interrupted by the 2h session expiry resumes at the saved step after re-login instead of restarting the 85-record batch. No local database introduced.
 
 ### ENH-017 — Menu to review not-yet-synchronized data before pushing to Neo Feeder
-- **Status:** `verified`
+- **Status:** `rejected`
 - **Issue:** #69
 - **Recorded:** 2026-08-27 23:35
 - **Implemented:** `—`
 - **Problem:** The application can stage data intended for Neo Feeder (e.g. graduation inputs produced by the ENH-013 wizard) but has no dedicated page to preview those staged records before they are actually sent/synchronized. An admin cannot review what will be pushed, increasing the risk of transmitting wrong data.
 - **Possible Fix:** Add a read-only review menu/page that lists records pending synchronization (sourced from the graduation wizard's staged state, or a new staging store) so the admin can inspect them before submission to Neo Feeder. Exact source of "pending" data and scope to be confirmed during Verify.
 - **Actual Fix:** Add a review page that reads the active graduation-wizard state from the `WizardProgress` cache store (`Services::wizardProgress()->load(resumeToken)`) and lists every staged student with its graduation record before `finish()` submits them via `InsertMahasiswaLulusDO`. Source is the existing wizard staging — no new store.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Rejection Reason:** Redundant with ENH-019 (pre-submit preview, PR #74): `Graduation::preview()` + `/graduation/preview` + `app/Views/graduation/preview.php` already read the same `WizardProgress` store and list every staged student's graduation record (NIM, Nama, Jenis Keluar, Tgl Keluar, Periode Keluar, IPK, No Ijazah) with a "Kirim ke Neo Feeder" confirm button before submission. The only gap — a sidebar/menu entry to open the preview on demand — is out of scope for this item; the review-before-push capability already exists. Rejected by user decision 2026-08-28.
 
 ### ENH-018 — Downloadable and re-uploadable Excel template for PISN Graduation
 - **Status:** `implemented`
