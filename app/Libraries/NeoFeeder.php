@@ -191,6 +191,19 @@ class NeoFeeder
     }
 
     /**
+     * Retrieves a student's academic transcript (GetTranskripMahasiswa).
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getTranskripMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetTranskripMahasiswa', $token, $options);
+    }
+
+    /**
      * Retrieves a single student's full biodata (GetBiodataMahasiswa).
      *
      * @param string $token   The authentication token obtained from getToken().

@@ -319,15 +319,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Admins now see a consolidated preview page listing all verified students' graduation data (NIM, Nama, Jenis Keluar, Tanggal Keluar/Lulus, Periode Keluar, IPK, No Ijazah) before submission, with explicit "Kirim ke Neo Feeder" confirmation, reducing risk of transmitting incorrect data.
 
 ### ENH-020 — Completeness check of student grades (especially thesis grade) in PISN Graduation via GetTranskripMahasiswa
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #67
 - **Recorded:** 2026-08-27 23:35
-- **Implemented:** `—`
+- **Implemented:** 2026-08-28 16:40
 - **Problem:** Before submitting graduation data, the admin must ensure all grades — especially the thesis (skripsi) grade — are entered. BASE currently has no completeness check and no source for an individual student's grades.
 - **Possible Fix:** Add a validation step in the graduation wizard that confirms required grade fields are present. Source the grades from a new Neo Feeder call (candidate `GetTranskripMahasiswa`) or a new menu/endpoint; confirm the exact `act` name and response schema during Verify (and implementation). May include a new transcript menu page.
 - **Actual Fix:** Add `getTranskripMahasiswa($token, $options)` to `NeoFeeder` (filter-based Get, per WS guide 3.86) and call it in `Graduation::step` (filter by `id_registrasi_mahasiswa`/nim) to retrieve the transcript; validate that the thesis/skripsi grade field is present and non-empty before allowing Next. The exact grade field name is confirmed against the live API during implementation.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Added `NeoFeeder::getTranskripMahasiswa($token, $options)` (GetTranskripMahasiswa, WS 3.86) and a private `Graduation::checkTranscriptCompleteness()` helper. `Graduation::step()` loads the transcript via `getTranskripMahasiswa(['filter' => "id_registrasi_mahasiswa='…'"])` when identity is available, then computes completeness. The wizard view shows a "2b. Kelengkapan Transkrip" card with a green "Lengkap" / red "Belum lengkap: <reason>" badge (soft warning — Next stays enabled, matching the manual-verification design). Live-API probe (2026-08-28) confirmed: GetTranskripMahasiswa rows have NO `id_jenis_mata_kuliah` type flag and use grade fields `nilai_angka`/`nilai_huruf`/`nilai_indeks` (not `nilai_akhir`); GetAktivitasKuliahMahasiswa is per-semester summary (IPK/sks_total), not per-course grades. Thesis/skripsi is therefore detected by course name (`nama_mata_kuliah` matches `/skripsi|tugas akhir|thesis|disertasi/i`) with a non-empty `nilai_huruf`/`nilai_angka`. **Confirmed against live data:** this institution's thesis course is named `Skripsi` (also `THESIS`); `LIKE '%SKRIPSI%'` returned real rows with `nilai_huruf='A'`, and the pattern matches. NPM `202010087` (MUH ANDY RIZALDI) has 52 graded courses but no `Skripsi` row — the check correctly flags the thesis as not yet entered.
+- **Changes:** Graduation wizard now surfaces transcript completeness (thesis grade present) per student; admins get a warning when the thesis grade is missing instead of discovering it after submission.
 
 ### BUG-001 — "Data tidak ditemukan." shown when pressing EDIT/DELETE
 - **Status:** `implemented`

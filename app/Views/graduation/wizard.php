@@ -83,6 +83,26 @@
             </div>
 
             <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-clipboard-check"></i> 2b. Kelengkapan Transkrip</div>
+                <div class="card-body">
+                    <?php if ($transcript === null): ?>
+                        <div class="text-muted">Data transkrip tidak dapat dimuat.</div>
+                    <?php else: ?>
+                        <?php if (! empty($completeness['complete'])): ?>
+                            <div class="alert alert-success py-2 mb-2">
+                                <i class="fas fa-circle-check"></i> Transkrip lengkap — nilai skripsi/tugas akhir tersedia.
+                            </div>
+                        <?php else: ?>
+                            <div class="alert alert-warning py-2 mb-2">
+                                <i class="fas fa-triangle-exclamation"></i> Transkrip belum lengkap: <?= esc($completeness['reason'] ?? 'periksa nilai.') ?>
+                            </div>
+                        <?php endif; ?>
+                        <div class="text-muted small">Jumlah nilai terload: <?= esc(count($transcript)) ?></div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="card mb-3">
                 <div class="card-header"><i class="fas fa-certificate"></i> 3. Eligibilitas PISN</div>
                 <div class="card-body">
                     <?php if (! empty($pisn['available'])): ?>
