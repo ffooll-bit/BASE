@@ -12,11 +12,18 @@ class Mahasiswa extends BaseController
         $username = service('auth')->getCurrentUser();
         $rows = null;
         $error = null;
+        $total = null;
         $filters = $this->collectFilters(self::ALLOWED_FILTERS);
         $page = max(1, (int) $this->request->getGet('page'));
-        $options = $filters;
-        $options['limit'] = self::PAGE_SIZE;
-        $options['offset'] = ($page - 1) * self::PAGE_SIZE;
+        $perPage = $this->resolvePerPage();
+        $filterSql = $this->buildFilterSql(self::ALLOWED_FILTERS, $filters);
+
+        $options = [];
+        if ($filterSql !== '') {
+            $options['filter'] = $filterSql;
+        }
+        $options['limit'] = $perPage;
+        $options['offset'] = ($page - 1) * $perPage;
 
         $token = session('auth.token');
         if ($token !== null) {
@@ -26,19 +33,62 @@ class Mahasiswa extends BaseController
             } else {
                 $error = $response['error_msg'] ?? 'Gagal memuat data mahasiswa.';
             }
+
+            $countOptions = $filterSql !== '' ? ['filter' => $filterSql] : [];
+            $total = $this->parseCount(service('neoFeeder')->getCountMahasiswa($token, $countOptions));
         }
+
+        $totalPages = $total !== null ? max(1, (int) ceil($total / $perPage)) : null;
 
         return view('layout/header', ['username' => $username, 'title' => 'Daftar Mahasiswa'])
             . view('layout/sidebar', ['username' => $username])
             . view('mahasiswa/index', [
-                'username' => $username,
-                'rows'     => $rows,
-                'error'    => $error,
-                'filters'  => $filters,
-                'page'     => $page,
-                'pageSize' => self::PAGE_SIZE,
+                'username'   => $username,
+                'rows'       => $rows,
+                'error'      => $error,
+                'filters'    => $filters,
+                'page'       => $page,
+                'pageSize'   => $perPage,
+                'total'      => $total,
+                'totalPages' => $totalPages,
+                'labels'     => $this->columnLabels(),
             ])
             . view('layout/footer');
+    }
+
+    /**
+     * Human-readable column labels for the Mahasiswa list.
+     *
+     * @return array<string, string>
+     */
+    protected function columnLabels(): array
+    {
+        return [
+            'nama_mahasiswa'          => 'Nama Mahasiswa',
+            'jenis_kelamin'           => 'Jenis Kelamin',
+            'tanggal_lahir'           => 'Tanggal Lahir',
+            'id_perguruan_tinggi'     => 'ID Perguruan Tinggi',
+            'nipd'                    => 'NIPD',
+            'ipk'                     => 'IPK',
+            'total_sks'               => 'Total SKS',
+            'id_sms'                  => 'ID SMS',
+            'id_mahasiswa'            => 'ID Mahasiswa',
+            'id_agama'                => 'ID Agama',
+            'nama_agama'              => 'Agama',
+            'id_prodi'                => 'ID Prodi',
+            'nama_program_studi'      => 'Program Studi',
+            'id_status_mahasiswa'     => 'ID Status',
+            'nama_status_mahasiswa'   => 'Status Mahasiswa',
+            'nim'                     => 'NIM',
+            'id_periode'              => 'ID Periode',
+            'nama_periode_masuk'      => 'Periode Masuk',
+            'id_registrasi_mahasiswa' => 'ID Registrasi',
+            'id_periode_keluar'       => 'ID Periode Keluar',
+            'tanggal_keluar'          => 'Tanggal Keluar',
+            'last_update'             => 'Last Update',
+            'tgl_create'              => 'Tanggal Dibuat',
+            'status_sync'             => 'Status Sync',
+        ];
     }
 
     public function edit($id = null)

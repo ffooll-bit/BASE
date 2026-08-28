@@ -12,11 +12,18 @@ class AktivitasKuliah extends BaseController
         $username = service('auth')->getCurrentUser();
         $rows = null;
         $error = null;
+        $total = null;
         $filters = $this->collectFilters(self::ALLOWED_FILTERS);
         $page = max(1, (int) $this->request->getGet('page'));
-        $options = $filters;
-        $options['limit'] = self::PAGE_SIZE;
-        $options['offset'] = ($page - 1) * self::PAGE_SIZE;
+        $perPage = $this->resolvePerPage();
+        $filterSql = $this->buildFilterSql(self::ALLOWED_FILTERS, $filters);
+
+        $options = [];
+        if ($filterSql !== '') {
+            $options['filter'] = $filterSql;
+        }
+        $options['limit'] = $perPage;
+        $options['offset'] = ($page - 1) * $perPage;
 
         $token = session('auth.token');
         if ($token !== null) {
@@ -26,19 +33,55 @@ class AktivitasKuliah extends BaseController
             } else {
                 $error = $response['error_msg'] ?? 'Gagal memuat data aktivitas kuliah mahasiswa.';
             }
+
+            $countOptions = $filterSql !== '' ? ['filter' => $filterSql] : [];
+            $total = $this->parseCount(service('neoFeeder')->getCountAktivitasKuliahMahasiswa($token, $countOptions));
         }
+
+        $totalPages = $total !== null ? max(1, (int) ceil($total / $perPage)) : null;
 
         return view('layout/header', ['username' => $username, 'title' => 'Aktivitas Kuliah Mahasiswa'])
             . view('layout/sidebar', ['username' => $username])
             . view('aktivitas_kuliah/index', [
-                'username' => $username,
-                'rows'     => $rows,
-                'error'    => $error,
-                'filters'  => $filters,
-                'page'     => $page,
-                'pageSize' => self::PAGE_SIZE,
+                'username'   => $username,
+                'rows'       => $rows,
+                'error'      => $error,
+                'filters'    => $filters,
+                'page'       => $page,
+                'pageSize'   => $perPage,
+                'total'      => $total,
+                'totalPages' => $totalPages,
+                'labels'     => $this->columnLabels(),
             ])
             . view('layout/footer');
+    }
+
+    /**
+     * Human-readable column labels for the Aktivitas Kuliah list.
+     *
+     * @return array<string, string>
+     */
+    protected function columnLabels(): array
+    {
+        return [
+            'id_registrasi_mahasiswa' => 'ID Registrasi',
+            'id_mahasiswa'            => 'ID Mahasiswa',
+            'id_semester'             => 'ID Semester',
+            'nama_semester'           => 'Nama Semester',
+            'nim'                     => 'NIM',
+            'nama_mahasiswa'          => 'Nama Mahasiswa',
+            'angkatan'                => 'Angkatan',
+            'id_prodi'                => 'ID Prodi',
+            'nama_program_studi'      => 'Program Studi',
+            'id_status_mahasiswa'     => 'ID Status',
+            'nama_status_mahasiswa'   => 'Status Mahasiswa',
+            'ips'                     => 'IPS',
+            'ipk'                     => 'IPK',
+            'sks_semester'            => 'SKS Semester',
+            'sks_total'               => 'SKS Total',
+            'biaya_kuliah_smt'        => 'Biaya Kuliah/Semester',
+            'status_sync'             => 'Status Sync',
+        ];
     }
 
     public function edit($idRegistrasi = null, $idSemester = null)
