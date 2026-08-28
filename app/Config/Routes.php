@@ -27,6 +27,7 @@ $routes->get('mahasiswa-lulus-do', 'MahasiswaLulusDo::index');
  * --------------------------------------------------------------------
  */
 $routes->get('mahasiswa/edit/(:any)', 'Mahasiswa::edit/$1');
+$routes->get('mahasiswa/detail/(:any)', 'Mahasiswa::detail/$1');
 $routes->post('mahasiswa/edit/(:any)', 'Mahasiswa::editPost/$1');
 $routes->post('mahasiswa/delete/(:any)', 'Mahasiswa::delete/$1');
 $routes->get('aktivitas-kuliah/edit/(:any)/(:any)', 'AktivitasKuliah::edit/$1/$2');

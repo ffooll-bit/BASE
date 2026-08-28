@@ -68,6 +68,7 @@
                                         <tr>
                                             <?php foreach ($row as $cell): ?><td><?= esc($cell) ?></td><?php endforeach; ?>
                                             <td>
+                                                <a href="<?= base_url('mahasiswa/detail/' . esc($row['id_mahasiswa'])) ?>" class="btn btn-sm btn-info">Detail</a>
                                                 <a href="<?= base_url('mahasiswa/edit/' . esc($row['id_mahasiswa'])) ?>" class="btn btn-sm btn-warning">Edit</a>
                                                 <form method="post" action="<?= base_url('mahasiswa/delete/' . esc($row['id_mahasiswa'])) ?>" style="display:inline">
                                                     <?= csrf_field() ?>
