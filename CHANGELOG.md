@@ -45,6 +45,7 @@ _None yet._
 - **PISN graduation cancel session:** "Batalkan sesi" button on the upload page that clears the wizard progress cache and resume cookie, returning to a fresh upload form without waiting for the 24h TTL — ENH-023, #76
 - **PISN graduation transcript completeness check:** the graduation wizard loads each student's transcript (GetTranskripMahasiswa) and shows a "Kelengkapan Transkrip" card with a green "Lengkap" / red "Belum lengkap" badge when the thesis/skripsi grade is missing (soft warning, Next stays enabled) — ENH-020, #67
 - **Per-student detail page (ENH-021, #66):** new `GET /mahasiswa/detail/(:any)` → `Mahasiswa::detail()` renders a single student's full biodata record (all columns from `GetBiodataMahasiswa`) read-only, with a "Detail" button added to each row in the Mahasiswa list. Reuses the `fetchBiodata($id)` single-record fetch shared with `edit()`.
+- **Pagination & UI/UX refinements on menu pages (ENH-022, #68):** the three NeoFeeder menu pages (Mahasiswa, Aktivitas Kuliah, Mahasiswa Lulus/DO) gained a page-size selector (10/20/50/100), a "Halaman X dari Y" indicator with total count (via `GetCount*` endpoints), First/Prev/Next/Last links, and accessible `<nav>` markup; list headers now use human-readable column labels. Also fixes a latent bug where typed filters were stripped before reaching the API (filter is now built as a SQL-string).
 
 ### Changed
 

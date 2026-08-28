@@ -64,6 +64,54 @@ abstract class BaseController extends Controller
     }
 
     /**
+     * Builds a SQL WHERE-string from allowed filter fields.
+     *
+     * @param list<string>          $allowed Allowed filter field names.
+     * @param array<string, string> $filters Non-empty filter values.
+     *
+     * @return string SQL WHERE fragment (empty when no filters are present).
+     */
+    protected function buildFilterSql(array $allowed, array $filters): string
+    {
+        $parts = [];
+        foreach ($allowed as $key) {
+            if (isset($filters[$key]) && $filters[$key] !== '') {
+                $val = str_replace("'", "\'", $filters[$key]);
+                $parts[] = "{$key}='{$val}'";
+            }
+        }
+
+        return implode(' AND ', $parts);
+    }
+
+    /**
+     * Resolves the requested page size from the query string.
+     *
+     * @return int One of 10, 20, 50, 100 (defaults to 20).
+     */
+    protected function resolvePerPage(): int
+    {
+        $allowed = [10, 20, 50, 100];
+        $val = (int) $this->request->getGet('per_page');
+
+        return in_array($val, $allowed, true) ? $val : 20;
+    }
+
+    /**
+     * Parses a count endpoint response into a total, or null on failure.
+     *
+     * @return int|null
+     */
+    protected function parseCount(array $response)
+    {
+        if (($response['error_code'] ?? -1) === 0 && isset($response['data'])) {
+            return (int) $response['data'];
+        }
+
+        return null;
+    }
+
+    /**
      * @return void
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)

@@ -351,15 +351,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Admins can open a single student's full biodata record from the Mahasiswa list and see all columns (including those not shown in the table) without entering edit mode.
 
 ### ENH-022 — Pagination and general UI/UX refinements
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #68
 - **Recorded:** 2026-08-27 23:35
-- **Implemented:** `—`
+- **Implemented:** 2026-08-28 18:30
 - **Problem:** The pagination on the menu pages does not follow common UI/UX conventions, and other UI/UX areas remain rough. (Broad — scope to be narrowed in Verify.)
 - **Possible Fix:** Improve pagination (page-size control, current-page indicator, first/last links, accessible markup) and apply general UI/UX polish across the menu/wizard pages. Scope will be narrowed during Verify to concrete, bounded changes.
-- **Actual Fix:** Improve pagination in the menu pages: add a page-size selector, "Page X of Y" indicator, first/last navigation links, and accessible nav markup (reusing `BaseController::collectFilters` + the existing `limit`/`offset` wiring). Apply small UI/UX polish (column labels, empty-states) across menu and wizard pages. Implemented incrementally, not as one large rewrite.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Fix:** Improve pagination in the three menu pages (Mahasiswa, Aktivitas Kuliah, Mahasiswa Lulus/DO): add a page-size selector (10/20/50/100), "Halaman X dari Y" indicator backed by `GetCount*` endpoints, First/Prev/Next/Last links, and accessible `<nav>` markup. Fixes a latent bug where typed filters were stripped by `sendListRequest` (only `filter` SQL-string is forwarded) — the menu `index()` now builds a proper SQL-string filter and passes it to both the list and the count. Human-readable column labels applied via a per-controller `columnLabels()` map (view falls back to the raw key). Graceful fallback when a count call errors (shows "Halaman X", "Total: —").
+- **Actual Implemented:** Menu `index()` methods now build a SQL-string `filter`, call the list + `GetCount*` for the total, render a page-size `<select>` and a First/Prev/Next/Last pager with "Halaman X dari Y" + total count; list headers use `columnLabels()` maps.
+- **Changes:** `app/Controllers/BaseController.php` (added `resolvePerPage()`, `buildFilterSql()`, `parseCount()`), `app/Libraries/NeoFeeder.php` (added `getCountMahasiswa`, `getCountAktivitasKuliahMahasiswa`, `getCountMahasiswaLulusDO`), `app/Controllers/Mahasiswa.php`, `app/Controllers/AktivitasKuliah.php`, `app/Controllers/MahasiswaLulusDo.php` (index + `columnLabels()`), `app/Views/mahasiswa/index.php`, `app/Views/aktivitas_kuliah/index.php`, `app/Views/mahasiswa_lulus_do/index.php` (page-size selector, label-aware headers, accessible pager).
 
 ### BUG-002 — Filter format bug in Graduation wizard causes "Gagal memuat data mahasiswa."
 - **Status:** `implemented`

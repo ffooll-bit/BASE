@@ -191,6 +191,45 @@ class NeoFeeder
     }
 
     /**
+     * Returns the total count of students matching a filter (GetCountMahasiswa).
+     *
+     * @param string $token   The authentication token.
+     * @param array  $options Optional filter/order overrides (no limit/offset).
+     *
+     * @return array The decoded API response.
+     */
+    public function getCountMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetCountMahasiswa', $token, $options);
+    }
+
+    /**
+     * Returns the total count of student course activities (GetCountAktivitasMahasiswa).
+     *
+     * @param string $token   The authentication token.
+     * @param array  $options Optional filter/order overrides (no limit/offset).
+     *
+     * @return array The decoded API response.
+     */
+    public function getCountAktivitasKuliahMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetCountAktivitasMahasiswa', $token, $options);
+    }
+
+    /**
+     * Returns the total count of graduated/dropped-out students (GetCountMahasiswaLulusDO).
+     *
+     * @param string $token   The authentication token.
+     * @param array  $options Optional filter/order overrides (no limit/offset).
+     *
+     * @return array The decoded API response.
+     */
+    public function getCountMahasiswaLulusDO(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetCountMahasiswaLulusDO', $token, $options);
+    }
+
+    /**
      * Retrieves a student's academic transcript (GetTranskripMahasiswa).
      *
      * @param string $token   The authentication token obtained from getToken().
