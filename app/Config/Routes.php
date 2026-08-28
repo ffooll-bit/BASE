@@ -47,3 +47,4 @@ $routes->get('graduation/guidance', 'Graduation::guidance');
 $routes->get('graduation/template', 'Graduation::downloadTemplate');
 $routes->get('graduation/preview', 'Graduation::preview');
 $routes->post('graduation/finish', 'Graduation::finish');
+$routes->post('graduation/cancel', 'Graduation::cancel');
