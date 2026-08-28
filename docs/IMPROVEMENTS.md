@@ -330,15 +330,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### BUG-001 — "Data tidak ditemukan." shown when pressing EDIT/DELETE
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #65
 - **Recorded:** 2026-08-27 23:35
-- **Implemented:** `—`
+- **Implemented:** `2026-08-28 06:44`
 - **Problem:** On the menu pages (Daftar Mahasiswa, Aktivitas Kuliah Mahasiswa) added in ENH-015, pressing the Edit or Delete action opens the edit page showing "Data tidak ditemukan." instead of the record. The Get-by-key load used by the edit handler returns no row, so the form cannot be prefilled and delete cannot resolve the key.
 - **Possible Fix:** Investigate the edit loader's Get call — likely the filter `id_mahasiswa` (or `id_registrasi_mahasiswa`+`id_semester`) does not match how the Neo Feeder API filters, or the column used as the key differs from the row's actual primary-key value. Fix the key/filter so the row is returned; add a check. Root cause to be confirmed in Verify.
-- **Actual Fix:** Confirmed: `Mahasiswa::edit`/`AktivitasKuliah::edit` call the list endpoints filtered by primary key and get no row, so the form shows "Data tidak ditemukan." The WS guide provides dedicated per-record endpoints: `GetBiodataMahasiswa` (3.7, filter-based, returns full biodata) and `GetDetailPerkuliahanMahasiswa` (3.128). Fix: add `getBiodataMahasiswa($token,$options)` and `getDetailPerkuliahanMahasiswa($token,$key)` to `NeoFeeder`, and switch both edit loaders to them. The `Update`/`Delete` mutations already send the correct `key`, so the round-trip works once the loader is fixed. Exact filter/key field names confirmed via a live re-probe (re-login to refresh the token) during implementation.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Fix:** Confirmed during implementation (live Playwright + CLI re-probe): the real cause was NOT the endpoint choice but the route definition. `Mahasiswa::edit`/`AktivitasKuliah::edit` were routed as `Controller::method` (e.g. `Mahasiswa::edit`) WITHOUT a `$1`/`$2` back-reference. In CodeIgniter 4.7.4 (`Router::checkRoutes`), such routes discard the captured route parameter, so `$this->params` is empty and the controller method is called with no arguments — `$id` was always `null`, the `filter` was built from `null`, and `GetBiodataMahasiswa`/`GetDetailPerkuliahanMahasiswa` returned empty → "Data tidak ditemukan." Fix: (1) route handlers use `$1`/`$2` back-references so the parameter is forwarded; (2) loaders use the dedicated per-record endpoints with the SQL-string `filter` (`id_mahasiswa='…'`, confirmed official WS format). The `Update`/`Delete` mutations already send the correct `key`, so the round-trip works once the loader receives a real `$id`.
+- **Actual Implemented:** Routes `mahasiswa/edit/(:any)` → `Mahasiswa::edit/$1` (and `editPost`/`delete` with `$1`), `aktivitas-kuliah/edit/(:any)/(:any)` → `AktivitasKuliah::edit/$1/$2` (and `editPost`/`delete` with `$1/$2`). Added `NeoFeeder::getBiodataMahasiswa($token, $options)` (GetBiodataMahasiswa, WS 3.7) and `NeoFeeder::getDetailPerkuliahanMahasiswa($token, $key)` (GetDetailPerkuliahanMahasiswa, WS 3.128, composite key). `Mahasiswa::edit` loads via `getBiodataMahasiswa(['filter' => "id_mahasiswa='{$idSafe}'", 'limit' => 1])`; `AktivitasKuliah::edit` via `getDetailPerkuliahanMahasiswa(['filter' => "id_registrasi_mahasiswa='{$idRegistrasi}' AND id_semester='{$idSemester}'"])`. Added 2 unit tests asserting `act` + SQL-string `filter` payload.
+- **Changes:** Edit/Delete on Daftar Mahasiswa and Aktivitas Kuliah Mahasiswa now open the correct record instead of "Data tidak ditemukan."; the edit form is prefilled and Delete resolves the primary key correctly.
 
 ### ENH-021 — Per-student detail page
 - **Status:** `verified`

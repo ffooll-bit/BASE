@@ -26,12 +26,12 @@ $routes->get('mahasiswa-lulus-do', 'MahasiswaLulusDo::index');
  * Neo Feeder CRUD Routes (ENH-015)
  * --------------------------------------------------------------------
  */
-$routes->get('mahasiswa/edit/(:any)', 'Mahasiswa::edit');
-$routes->post('mahasiswa/edit/(:any)', 'Mahasiswa::editPost');
-$routes->post('mahasiswa/delete/(:any)', 'Mahasiswa::delete');
-$routes->get('aktivitas-kuliah/edit/(:any)/(:any)', 'AktivitasKuliah::edit');
-$routes->post('aktivitas-kuliah/edit/(:any)/(:any)', 'AktivitasKuliah::editPost');
-$routes->post('aktivitas-kuliah/delete/(:any)/(:any)', 'AktivitasKuliah::delete');
+$routes->get('mahasiswa/edit/(:any)', 'Mahasiswa::edit/$1');
+$routes->post('mahasiswa/edit/(:any)', 'Mahasiswa::editPost/$1');
+$routes->post('mahasiswa/delete/(:any)', 'Mahasiswa::delete/$1');
+$routes->get('aktivitas-kuliah/edit/(:any)/(:any)', 'AktivitasKuliah::edit/$1/$2');
+$routes->post('aktivitas-kuliah/edit/(:any)/(:any)', 'AktivitasKuliah::editPost/$1/$2');
+$routes->post('aktivitas-kuliah/delete/(:any)/(:any)', 'AktivitasKuliah::delete/$1/$2');
 
 /*
  * --------------------------------------------------------------------

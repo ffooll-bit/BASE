@@ -45,11 +45,15 @@ class Mahasiswa extends BaseController
     {
         $username = service('auth')->getCurrentUser();
         $row = null;
-        $error = null;
         $token = session('auth.token');
+        $error = null;
 
         if ($token !== null && $id !== null) {
-            $response = service('neoFeeder')->getListMahasiswa($token, ['filter' => ['id_mahasiswa' => $id], 'limit' => 1]);
+            $idSafe = str_replace("'", "\'", (string) $id);
+            $response = service('neoFeeder')->getBiodataMahasiswa($token, [
+                'filter' => "id_mahasiswa='{$idSafe}'",
+                'limit'  => 1,
+            ]);
             if (($response['error_code'] ?? -1) === 0 && !empty($response['data'])) {
                 $row = $response['data'][0];
             } else {

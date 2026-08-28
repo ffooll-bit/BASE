@@ -273,4 +273,54 @@ class NeoFeederTest extends CIUnitTestCase
         $this->assertSame(0, $result['error_code']);
         $this->assertSame('r-1', $result['data']['id_registrasi_mahasiswa']);
     }
+
+    public function testGetBiodataMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => [['id_mahasiswa' => 'uuid-1', 'nama_mahasiswa' => 'Budi']]]);
+        $captured     = [];
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturnCallback(function ($method, $url, $options) use (&$captured, $response) {
+            $captured = json_decode($options['body'], true);
+
+            return $response;
+        });
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getBiodataMahasiswa('token-abc', ['filter' => "id_mahasiswa='uuid-1'", 'limit' => 1]);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('GetBiodataMahasiswa', $captured['act']);
+        $this->assertSame("id_mahasiswa='uuid-1'", $captured['filter']);
+        $this->assertSame(1, $captured['limit']);
+    }
+
+    public function testGetDetailPerkuliahanMahasiswaReturnsDataOnSuccess(): void
+    {
+        $responseBody = json_encode(['error_code' => 0, 'data' => [['id_registrasi_mahasiswa' => 'r-1', 'id_semester' => '20231']]]);
+        $captured     = [];
+
+        $response = $this->createStub(ResponseInterface::class);
+        $response->method('getBody')->willReturn($responseBody);
+
+        $this->client = $this->createStub(CURLRequest::class);
+        $this->client->method('request')->willReturnCallback(function ($method, $url, $options) use (&$captured, $response) {
+            $captured = json_decode($options['body'], true);
+
+            return $response;
+        });
+
+        $neoFeeder = new NeoFeeder($this->config, $this->client);
+        $result    = $neoFeeder->getDetailPerkuliahanMahasiswa('token-abc', [
+            'id_registrasi_mahasiswa' => 'r-1',
+            'id_semester'             => '20231',
+        ]);
+
+        $this->assertSame(0, $result['error_code']);
+        $this->assertSame('GetDetailPerkuliahanMahasiswa', $captured['act']);
+        $this->assertSame("id_registrasi_mahasiswa='r-1' AND id_semester='20231'", $captured['filter']);
+    }
 }
