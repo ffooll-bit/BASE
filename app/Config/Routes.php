@@ -44,3 +44,4 @@ $routes->get('graduation/resume', 'Graduation::resume');
 $routes->get('graduation/step', 'Graduation::step');
 $routes->post('graduation/step', 'Graduation::stepPost');
 $routes->get('graduation/guidance', 'Graduation::guidance');
+$routes->get('graduation/template', 'Graduation::downloadTemplate');

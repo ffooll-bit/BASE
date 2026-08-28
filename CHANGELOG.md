@@ -40,6 +40,7 @@ _None yet._
 - **PISN graduation wizard:** `Graduation` controller + views (`graduation/upload`, `graduation/wizard`, `graduation/guidance`) with Excel upload (`phpoffice/phpspreadsheet`), sequential per-student manual verification (identity → academic → PISN eligibility → graduation input) advanced with a Next button, resume across auth-session expiry via the ENH-016 store, and submission to NeoFeeder via `InsertMahasiswaLulusDO` (No Ijazah = "-"). PISN live API deferred — `PisnService` scaffolding seam only — ENH-013, #53
 - **Excel support:** added `phpoffice/phpspreadsheet` dependency for graduation candidate upload — ENH-013, #53
 - **Neo Feeder CRUD (Biodata & Perkuliahan):** edit/delete actions on `Daftar Mahasiswa` (`/mahasiswa/edit`, `/mahasiswa/delete`) and `Aktivitas Kuliah Mahasiswa` (`/aktivitas-kuliah/edit`, `/aktivitas-kuliah/delete`) wired to NeoFeeder `Insert`/`Update`/`Delete` WS actions via the service layer. Forms are generated from the returned row columns; composite primary key (`id_registrasi_mahasiswa`+`id_semester`) handled for Perkuliahan. `Mahasiswa Lulus/DO` mutation endpoints are not documented in the available guide, so no CRUD was added there — ENH-015, #52
+- **PISN graduation Excel template:** downloadable `.xlsx` template with headers (nim, nama, jenis_keluar, tgl_keluar, periode_keluar, ipk) and an example row on `graduation/upload` page — ENH-018, #70
 
 ### Changed
 
