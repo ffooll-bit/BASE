@@ -351,6 +351,35 @@ class Graduation extends BaseController
     }
 
     /**
+     * GET /graduation/template — download Excel template for PISN graduation upload.
+     */
+    public function downloadTemplate(): void
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headers = ['nim', 'nama', 'jenis_keluar', 'tgl_keluar', 'periode_keluar', 'ipk'];
+        $columns = ['A', 'B', 'C', 'D', 'E', 'F'];
+        foreach ($headers as $i => $header) {
+            $sheet->setCellValue($columns[$i] . '1', $header);
+        }
+
+        $example = ['12345678', 'Nama Mahasiswa', 'Lulus', '2026-08-31', '2026.1', '3.75'];
+        foreach ($example as $i => $value) {
+            $sheet->setCellValue($columns[$i] . '2', $value);
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'pisn_graduation_template.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
+    }
+
+    /**
      * Parses the uploaded Excel file into a list of student records.
      *
      * @param string $path Absolute path to the uploaded temp file.

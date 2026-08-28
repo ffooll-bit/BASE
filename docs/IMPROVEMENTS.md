@@ -297,15 +297,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-018 — Downloadable and re-uploadable Excel template for PISN Graduation
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #70
 - **Recorded:** 2026-08-27 23:35
-- **Implemented:** `—`
+- **Implemented:** 2026-08-28 10:45
 - **Problem:** The PISN Graduation upload (ENH-013) accepts a free-form Excel file but offers no template for the admin to download, fill in, and re-upload. Admins must build the file from scratch, which raises formatting errors and mismatched columns.
 - **Possible Fix:** Add a "Download template" action on the graduation upload page that exports a blank/example `.xlsx` (via `phpoffice/phpspreadsheet`) with the required columns; reuse the existing upload flow for re-upload.
-- **Actual Fix:** Add a "Download template" action on `graduation/upload` that writes a blank `.xlsx` (via `phpoffice/phpspreadsheet` writer) with the required headers (nim, nama, jenis_keluar, tgl_keluar, periode_keluar, ipk); re-upload reuses the existing `parseExcel` flow. `phpoffice/phpspreadsheet` is already a dependency (ENH-013).
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Fix:** Add a "Download template" action on `graduation/upload` that writes a blank `.xlsx` (via `phpoffice/phpspreadsheet` writer) with the required headers (nim, nama, jenis_keluar, tgl_keluar, periode_keluar, ipk) and one example row (12345678, Nama Mahasiswa, Lulus, 2026-08-31, 2026.1, 3.75); re-upload reuses the existing `parseExcel` flow. `phpoffice/phpspreadsheet` is already a dependency (ENH-013).
+- **Actual Implemented:** Added route `GET /graduation/template` → `Graduation::downloadTemplate()`; added `downloadTemplate()` method generating `.xlsx` with headers + example row via phpoffice/phpspreadsheet writer; added "Unduh Template" button on `graduation/upload` view.
+- **Changes:** Admins can now download a ready-to-use Excel template with correct column headers and an example row, eliminating formatting errors when preparing graduation candidate data for upload.
 
 ### ENH-019 — Pre-submit preview of PISN Graduation data
 - **Status:** `verified`

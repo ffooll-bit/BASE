@@ -45,11 +45,17 @@
                         <label for="excel" class="form-label">Berkas Excel</label>
                         <input type="file" class="form-control" id="excel" name="excel" accept=".xlsx" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-upload"></i> Unggah &amp; Mulai Verifikasi
-                    </button>
+<div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Unggah & Mulai Verifikasi
+                        </button>
+                        <a href="<?= base_url('graduation/template') ?>" class="btn btn-outline-secondary">
+                            <i class="fas fa-download"></i> Unduh Template
+                        </a>
+                    </div>
                 </form>
             </div>
+        </div>
         </div>
     </div>
 </div>
