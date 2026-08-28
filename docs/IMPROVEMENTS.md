@@ -374,12 +374,12 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Graduation wizard step now loads student identity and academic data correctly; the "Gagal memuat data mahasiswa." error is fixed.
 
 ### ENH-023 — Add "Batalkan sesi" button to clear wizard session
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #76
 - **Recorded:** 2026-08-28 11:30
-- **Implemented:** `—`
+- **Implemented:** 2026-08-28 16:05
 - **Problem:** The upload page shows "Ada sesi verifikasi yang belum selesai" with "Lanjutkan" but no way to explicitly cancel/clear the session. Old sessions remain in cache until 24h TTL expires.
 - **Possible Fix:** Add "Batalkan sesi" button on `graduation/upload` view that calls a new route `POST /graduation/cancel` → `Graduation::cancel()`, which clears the wizard cache entry and the resume cookie, then redirects to `graduation`.
 - **Actual Fix:** Add route `POST /graduation/cancel` → `Graduation::cancel()`; controller method clears wizard cache via `$this->wizard->clear($token)` and resume cookie via `service('auth')->clearWizardResumeCookie()`, then redirects to `graduation`; view adds "Batalkan sesi" button (form POST) alongside "Lanjutkan" in the resume alert.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Added `POST /graduation/cancel` route to `Routes.php`; added `Graduation::cancel()` method that clears WizardProgress cache entry and resume cookie then redirects to upload; updated `graduation/upload.php` resume alert to include a "Batalkan sesi" form button (CSRF-protected) beside "Lanjutkan".
+- **Changes:** Graduation upload page now offers explicit session cancellation; admins no longer wait for 24h TTL to clear an unfinished verification session.

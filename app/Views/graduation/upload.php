@@ -27,7 +27,13 @@
         <?php if ($canResume): ?>
             <div class="alert alert-info d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-rotate"></i> Ada sesi verifikasi yang belum selesai.</span>
-                <a href="<?= base_url('graduation/resume') ?>" class="btn btn-sm btn-primary">Lanjutkan</a>
+                <div class="d-flex gap-2">
+                    <a href="<?= base_url('graduation/resume') ?>" class="btn btn-sm btn-primary">Lanjutkan</a>
+                    <form action="<?= base_url('graduation/cancel') ?>" method="post">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Batalkan sesi</button>
+                    </form>
+                </div>
             </div>
         <?php endif; ?>
 

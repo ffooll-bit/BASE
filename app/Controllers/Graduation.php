@@ -143,6 +143,20 @@ class Graduation extends BaseController
     }
 
     /**
+     * POST /graduation/cancel — clear an interrupted wizard session.
+     */
+    public function cancel()
+    {
+        $token = $this->currentToken();
+        if ($token !== null) {
+            $this->wizard->clear($token);
+            service('auth')->clearWizardResumeCookie();
+        }
+
+        return redirect()->to('graduation');
+    }
+
+    /**
      * GET /graduation/step — show the current student verification screen.
      */
     public function step()
