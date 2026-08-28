@@ -171,9 +171,11 @@ class Graduation extends BaseController
         $student  = $progress['students'][$idx];
         $apiToken = session('auth.token');
 
-        $identity = null;
-        $academic = null;
-        $error    = null;
+        $identity    = null;
+        $academic    = null;
+        $transcript  = null;
+        $completeness = null;
+        $error       = null;
 
         if ($apiToken !== null) {
             $nimSafe = str_replace("'", "\'", (string) $student['nim']);
@@ -195,6 +197,18 @@ class Graduation extends BaseController
             if (($acResp['error_code'] ?? -1) === 0 && isset($acResp['data'])) {
                 $academic = $acResp['data'];
             }
+
+            if ($identity !== null && isset($identity['id_registrasi_mahasiswa'])) {
+                $idReg = str_replace("'", "\'", (string) $identity['id_registrasi_mahasiswa']);
+                $trResp = $this->neoFeeder->getTranskripMahasiswa($apiToken, [
+                    'filter' => "id_registrasi_mahasiswa='{$idReg}'",
+                    'limit'  => 200,
+                ]);
+                if (($trResp['error_code'] ?? -1) === 0 && isset($trResp['data'])) {
+                    $transcript   = $trResp['data'];
+                    $completeness = $this->checkTranscriptCompleteness($transcript);
+                }
+            }
         } else {
             $error = 'Sesi token habis; silakan login ulang, lalu klik Lanjutkan.';
         }
@@ -203,17 +217,55 @@ class Graduation extends BaseController
         $total = count($progress['students']);
 
         return $this->render('graduation/wizard', [
-            'username' => $username,
-            'index'    => $idx,
-            'total'    => $total,
-            'student'  => $student,
-            'identity' => $identity,
-            'academic' => $academic,
-            'pisn'     => $pisn,
-            'error'    => $error,
-            'isLast'   => ($idx === $total - 1),
-            'saved'    => $student['saved'] ?? false,
+            'username'     => $username,
+            'index'        => $idx,
+            'total'        => $total,
+            'student'      => $student,
+            'identity'     => $identity,
+            'academic'     => $academic,
+            'transcript'   => $transcript,
+            'completeness' => $completeness,
+            'pisn'         => $pisn,
+            'error'        => $error,
+            'isLast'       => ($idx === $total - 1),
+            'saved'        => $student['saved'] ?? false,
         ]);
+    }
+
+    /**
+     * Checks whether a student's transcript is complete for graduation.
+     *
+     * The GetTranskripMahasiswa response carries per-course final grades
+     * (nilai_angka / nilai_huruf / nilai_indeks) and does NOT include an
+     * id_jenis_mata_kuliah type flag, so the thesis/skripsi course is detected
+     * by its course name. A transcript is complete when it is non-empty and
+     * contains a thesis-named row with a non-empty grade.
+     *
+     * The thesis-name pattern is a heuristic; confirm the exact course naming
+     * against a graduating student's transcript and tighten the pattern if needed.
+     *
+     * @param array $transcript Rows from GetTranskripMahasiswa.
+     *
+     * @return array{complete:bool, reason:string}
+     */
+    private function checkTranscriptCompleteness(array $transcript): array
+    {
+        if (empty($transcript)) {
+            return ['complete' => false, 'reason' => 'Transkrip kosong (tidak ada nilai).'];
+        }
+
+        $thesisPattern = '/skripsi|tugas\s*akhir|thesis|disertasi/i';
+        foreach ($transcript as $row) {
+            $name = $row['nama_mata_kuliah'] ?? '';
+            if (preg_match($thesisPattern, $name)) {
+                $nilai = $row['nilai_huruf'] ?? ($row['nilai_angka'] ?? null);
+                if ($nilai !== null && $nilai !== '') {
+                    return ['complete' => true, 'reason' => ''];
+                }
+            }
+        }
+
+        return ['complete' => false, 'reason' => 'Nilai skripsi/tugas akhir belum terdeteksi di transkrip.'];
     }
 
     /**
