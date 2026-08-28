@@ -308,15 +308,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Admins can now download a ready-to-use Excel template with correct column headers and an example row, eliminating formatting errors when preparing graduation candidate data for upload.
 
 ### ENH-019 — Pre-submit preview of PISN Graduation data
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #64
 - **Recorded:** 2026-08-27 23:35
-- **Implemented:** `—`
+- **Implemented:** 2026-08-28 11:15
 - **Problem:** After all students are verified in the ENH-013 wizard, there is no consolidated preview/confirmation screen before the data is submitted (registered) to PDDIKTI via `InsertMahasiswaLulusDO`. A mistake is only visible after submission.
 - **Possible Fix:** Add a final preview/confirmation step in the graduation wizard that lists every verified student and the values to be submitted, with an explicit "Submit" action only after review.
 - **Actual Fix:** Change `Graduation::stepPost()` so that on the last student it redirects to a new preview page (instead of calling `finish()` directly). The preview lists every verified student and the values to be submitted, with an explicit "Submit" button that triggers `finish()`. No behavior change to the submission itself.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Added routes `GET /graduation/preview` → `Graduation::preview()` and `POST /graduation/finish` → `Graduation::finish()`; modified `stepPost()` to redirect to preview on last student; made `finish()` public; added `preview()` method loading wizard progress and rendering preview view; created `app/Views/graduation/preview.php` with table of all verified students' graduation data and "Kirim ke Neo Feeder" button; updated wizard button text to "Berikutnya".
+- **Changes:** Admins now see a consolidated preview page listing all verified students' graduation data (NIM, Nama, Jenis Keluar, Tanggal Keluar/Lulus, Periode Keluar, IPK, No Ijazah) before submission, with explicit "Kirim ke Neo Feeder" confirmation, reducing risk of transmitting incorrect data.
 
 ### ENH-020 — Completeness check of student grades (especially thesis grade) in PISN Graduation via GetTranskripMahasiswa
 - **Status:** `verified`
