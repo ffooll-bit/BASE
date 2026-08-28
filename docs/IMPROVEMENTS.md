@@ -340,15 +340,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** Edit/Delete on Daftar Mahasiswa and Aktivitas Kuliah Mahasiswa now open the correct record instead of "Data tidak ditemukan."; the edit form is prefilled and Delete resolves the primary key correctly.
 
 ### ENH-021 — Per-student detail page
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #66
 - **Recorded:** 2026-08-27 23:35
-- **Implemented:** `—`
+- **Implemented:** `2026-08-28 17:15`
 - **Problem:** The menu tables hide several columns because the dataset is large (Mahasiswa ~25k, Aktivitas Kuliah ~222k rows). There is no way to open a single student and see the full detail.
 - **Possible Fix:** Add a detail page (route + view) that selects one student (by `id_mahasiswa` / by NIM) and renders all columns returned by the relevant Neo Feeder Get call, reusing the existing menu service methods.
 - **Actual Fix:** Add a per-student detail page using `getBiodataMahasiswa` (by `id_mahasiswa`, WS 3.7) and `getDetailPerkuliahanMahasiswa` (by composite key, WS 3.128) instead of the list endpoints — reusing the same single-record fetch the BUG-001 fix introduces. New route + view rendering all returned columns.
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Added `GET mahasiswa/detail/(:any)` → `Mahasiswa::detail()` reusing the `getBiodataMahasiswa` single-record fetch (extracted into a private `fetchBiodata($id)` helper shared with `edit()`), mirroring the BUG-001 route pattern. New `app/Views/mahasiswa/detail.php` renders every returned column read-only; `mahasiswa/index.php` adds a "Detail" button. The `getDetailPerkuliahanMahasiswa` academic-history section was deferred (core-only scope per user decision 2026-08-28).
+- **Changes:** Admins can open a single student's full biodata record from the Mahasiswa list and see all columns (including those not shown in the table) without entering edit mode.
 
 ### ENH-022 — Pagination and general UI/UX refinements
 - **Status:** `verified`

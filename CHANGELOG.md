@@ -44,6 +44,7 @@ _None yet._
 - **PISN graduation pre-submit preview:** consolidated preview page (`/graduation/preview`) listing all verified students' graduation data before Neo Feeder submission, with explicit "Kirim ke Neo Feeder" confirmation — ENH-019, #64
 - **PISN graduation cancel session:** "Batalkan sesi" button on the upload page that clears the wizard progress cache and resume cookie, returning to a fresh upload form without waiting for the 24h TTL — ENH-023, #76
 - **PISN graduation transcript completeness check:** the graduation wizard loads each student's transcript (GetTranskripMahasiswa) and shows a "Kelengkapan Transkrip" card with a green "Lengkap" / red "Belum lengkap" badge when the thesis/skripsi grade is missing (soft warning, Next stays enabled) — ENH-020, #67
+- **Per-student detail page (ENH-021, #66):** new `GET /mahasiswa/detail/(:any)` → `Mahasiswa::detail()` renders a single student's full biodata record (all columns from `GetBiodataMahasiswa`) read-only, with a "Detail" button added to each row in the Mahasiswa list. Reuses the `fetchBiodata($id)` single-record fetch shared with `edit()`.
 
 ### Changed
 
