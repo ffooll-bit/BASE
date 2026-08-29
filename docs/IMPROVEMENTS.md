@@ -88,15 +88,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** —
 
 ### ENH-002 — Sort academic table by id_semester ascending
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #86
 - **Recorded:** 2026-08-30 02:21
-- **Implemented:** —
+- **Implemented:** 2026-08-30 04:08
 - **Problem:** `Graduation::step()` calls `getAktivitasKuliahMahasiswa` without an order parameter (`app/Controllers/Graduation.php:193–199`), so the academic table (card 2) displays rows in the raw API response order rather than chronological semester order, making the academic-history review hard to read.
 - **Possible Fix:** Sort the academic rows by `id_semester` ascending (20261 → 20262 …). Decide between a PHP `usort` on the returned array versus passing an `order` parameter to the API; confirm during verification which approach is reliable.
 - **Actual Fix:** In `Graduation::step()`, pass `order => 'id_semester asc'` to `getAktivitasKuliahMahasiswa` (`sendListRequest` already forwards `order`; `app/Libraries/NeoFeeder.php:142–152`). As a defensive fallback, apply a PHP `usort` by `id_semester` (string ascending) on the returned array in case the API does not honor the `order` parameter. Keep the `id_semester` column visible (used for sorting and display).
-- **Actual Implemented:** —
-- **Changes:** —
+- **Actual Implemented:** `Graduation::step()` now passes `order => 'id_semester asc'` to `getAktivitasKuliahMahasiswa` and additionally applies a defensive PHP `usort` by `id_semester` (string ascending) on the returned `$academic` array, so the academic table (card 2) is always sorted oldest→newest semester regardless of API ordering. `id_semester` column remains visible.
+- **Changes:** `app/Controllers/Graduation.php` (add `order` + `usort` in `step()`).
 
 ### ENH-003 — Remove two unused inputs; make academic table inline-editable, stored in wizard
 - **Status:** `verified`

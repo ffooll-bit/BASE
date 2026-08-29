@@ -192,10 +192,14 @@ class Graduation extends BaseController
 
             $acResp = $this->neoFeeder->getAktivitasKuliahMahasiswa($apiToken, [
                 'filter' => "nim='{$nimSafe}'",
+                'order'  => 'id_semester asc',
                 'limit'  => 50,
             ]);
             if (($acResp['error_code'] ?? -1) === 0 && isset($acResp['data'])) {
                 $academic = $acResp['data'];
+            }
+            if (is_array($academic)) {
+                usort($academic, fn ($a, $b) => strcmp($a['id_semester'] ?? '', $b['id_semester'] ?? ''));
             }
 
             if ($identity !== null && isset($identity['id_registrasi_mahasiswa'])) {

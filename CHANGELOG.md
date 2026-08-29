@@ -57,6 +57,7 @@ _None yet._
 - **Release process:** added step to update `app/Config/AppVersion.php` when releasing a new version
 - **Profil PT page:** redesigned layout with visual hierarchy — hero card `card-outline-primary` (name in `display-6` + accreditation badge, identity & legalitas info in `d-flex gap-4`), two `card-info h-100` cards side by side (Contact with clickable links + Address), `fa-fw` for aligned icons, equal-height via `d-flex flex-column` + `mt-auto`, `https://` prepended to website URL, Indonesian date format via `strtr()`, max width via `col-xxl-10`
 - **Dependencies:** bumped `admin-lte` from 4.1.0 to 4.8.4 (AdminLTE 4.x line — no breaking changes, backward-compatible HTML/CSS)
+- **PISN graduation wizard:** sorts the academic verification table (card 2) by `id_semester` ascending (oldest→newest), via API `order` plus a defensive `usort` fallback — ENH-002, #86
 
 ### Fixed
 
