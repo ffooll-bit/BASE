@@ -99,15 +99,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** —
 
 ### ENH-003 — Remove two unused inputs; make academic table inline-editable, stored in wizard
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #87
 - **Recorded:** 2026-08-30 02:21
-- **Implemented:** —
+- **Implemented:** 2026-08-30 04:30
 - **Problem:** `wizard.php` lines 73–81 render a "Catatan akademik (opsional)" textarea (`academic_flag`) and a "Biaya Kuliah Semester" input (`biaya_kuliah`). `Graduation::stepPost` reads and validates them (`Graduation.php:286,288,312–314`) but `finish()` never sends them to Neo Feeder, so they are collected yet unused. The user instead wants the academic-history table (status, IPK, IPS per semester) in step 2 to be inline-editable.
 - **Possible Fix:** Remove the `academic_flag` and `biaya_kuliah` fields (view + controller read/validation). Make the academic table rows editable inline (status, IPK, IPS columns). Store the corrected values in the `WizardProgress` state and submit them at `finish()` together with the graduation data (not pushed directly to Neo Feeder). The endpoint/record schema for sending academic edits must be confirmed against the WS guide during implementation.
 - **Actual Fix:** (1) Remove the `academic_flag` textarea and `biaya_kuliah` input from `wizard.php:73–81`, and remove their read/validation in `Graduation::stepPost` (`Graduation.php:286,288,312–314`), including the `ponytail` comment at `:311`. (2) Make the academic table (card 2) rows inline-editable for the `status`, `ipk`, `ips` columns. (3) Store the edited values per student in the `WizardProgress` state. (4) At `finish()`, after building the `insertMahasiswaLulusDO` record, also push each edited academic row to Neo Feeder via `updatePerkuliahanMahasiswa` (key = `id_registrasi_mahasiswa` + `id_semester`; record = edited `status`/`ipk`/`ips`). Per user decision, the academic edits ARE pushed to Neo Feeder at `finish()`. The exact `updatePerkuliahanMahasiswa` record field names to be confirmed against `docs/NeoFeederWSGuide.md` during implementation.
-- **Actual Implemented:** —
-- **Changes:** —
+- **Actual Implemented:** `academic_flag` textarea and `biaya_kuliah` input removed from `wizard.php` (card 2); their read/validation in `Graduation::stepPost` removed. The academic table (card 2) now renders `id_status_mahasiswa`, `ips`, `ipk` as inline `<input>` cells (pre-filled, keyed by `id_semester`), while other columns stay read-only; `nama_status_mahasiswa` remains a read-only label. Edited values are stored per student in `WizardProgress` (`$student['academics']`, keyed by `id_semester`). At `finish()`, after `insertMahasiswaLulusDO`, each edited semester is pushed to Neo Feeder via `updatePerkuliahanMahasiswa(token, id_registrasi_mahasiswa, id_semester, {id_status_mahasiswa, ips, ipk})` — `id_registrasi_mahasiswa` is resolved by re-fetching `getAktivitasKuliahMahasiswa` for the student's nim. Note: `docs/NeoFeederWSGuide.md` is absent from disk, so record fields were confirmed from the existing `NeoFeeder::updatePerkuliahanMahasiswa` (accepts arbitrary record fields) and the `AktivitasKuliah` edit flow. Merge note: `id_status_mahasiswa` (a UUID) must be exempted from ENH-001's UUID-hiding so its editable input survives.
+- **Changes:** `app/Views/graduation/wizard.php` (remove 2 inputs; inline-editable academic table), `app/Controllers/Graduation.php` (`stepPost` stores `academics`; `finish()` pushes corrections via `updatePerkuliahanMahasiswa`).
 
 ### BUG-001 — Transcript completeness check must use "Cek Transkrip Mahasiswa" menu
 - **Status:** `verified`

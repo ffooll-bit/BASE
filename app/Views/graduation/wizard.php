@@ -60,25 +60,32 @@
                         <div class="text-muted">Tidak ada aktivitas kuliah untuk NIM ini.</div>
                     <?php else: ?>
                         <div class="table-responsive mb-2">
+                            <?php
+                            $editableCols = ['id_status_mahasiswa', 'ips', 'ipk'];
+                        $acCols = array_keys($academic[0]);
+                        ?>
                             <table class="table table-sm table-bordered table-striped">
-                                <thead><tr><?php foreach (array_keys($academic[0]) as $col): ?><th><?= esc($col) ?></th><?php endforeach; ?></tr></thead>
+                                <thead><tr><?php foreach ($acCols as $col): ?><th><?= esc($col) ?></th><?php endforeach; ?></tr></thead>
                                 <tbody>
                                     <?php foreach ($academic as $row): ?>
-                                        <tr><?php foreach ($row as $cell): ?><td><?= esc($cell) ?></td><?php endforeach; ?></tr>
+                                        <tr>
+                                            <?php foreach ($acCols as $col): ?>
+                                                <td>
+                                                    <?php if (in_array($col, $editableCols, true)): ?>
+                                                        <input type="text" class="form-control form-control-sm"
+                                                               name="academics[<?= esc($row['id_semester']) ?>][<?= esc($col) ?>]"
+                                                               value="<?= esc($student['academics'][$row['id_semester']][$col] ?? $row[$col] ?? '') ?>">
+                                                    <?php else: ?>
+                                                        <?= esc($row[$col] ?? '') ?>
+                                                    <?php endif; ?>
+                                                </td>
+                                            <?php endforeach; ?>
+                                        </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
                     <?php endif; ?>
-                    <div class="mb-2">
-                        <label for="academic_flag" class="form-label">Catatan akademik (opsional)</label>
-                        <textarea class="form-control" id="academic_flag" name="academic_flag" rows="2"><?= esc($student['academic_flag'] ?? '') ?></textarea>
-                        <div class="form-text">Bila ada catatan, wajib isi Biaya Kuliah Semester di bawah.</div>
-                    </div>
-                    <div class="mb-2">
-                        <label for="biaya_kuliah" class="form-label">Biaya Kuliah Semester</label>
-                        <input type="text" class="form-control" id="biaya_kuliah" name="biaya_kuliah" value="<?= esc($student['biaya_kuliah'] ?? '') ?>">
-                    </div>
                 </div>
             </div>
 
@@ -122,7 +129,7 @@
                 <div class="card-body">
                     <?php
                         $g = $student['graduation']
-                            ?? ['nim' => $student['nim'], 'nama' => $student['nama'], 'jenis_keluar' => $student['jenis_keluar'], 'tgl_keluar' => $student['tgl_keluar'], 'periode_keluar' => $student['periode_keluar'], 'ipk' => $student['ipk'], 'no_ijazah' => '-'];
+                        ?? ['nim' => $student['nim'], 'nama' => $student['nama'], 'jenis_keluar' => $student['jenis_keluar'], 'tgl_keluar' => $student['tgl_keluar'], 'periode_keluar' => $student['periode_keluar'], 'ipk' => $student['ipk'], 'no_ijazah' => '-'];
                         ?>
                     <div class="row g-2">
                         <div class="col-md-4"><label class="form-label">NPM / NIM</label><input class="form-control" name="nim" value="<?= esc($g['nim']) ?>" required></div>
