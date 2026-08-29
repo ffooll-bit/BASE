@@ -78,7 +78,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-001 — Hide UUID/random-string ID columns in PISN Graduation verification step
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #85
 - **Recorded:** 2026-08-30 02:21
 - **Implemented:** —
 - **Problem:** In `app/Views/graduation/wizard.php` the identity table (lines 41–43) and the academic table (lines 64–69) render every key returned by the Neo Feeder API, including columns whose values are random UUID strings (e.g. `id_registrasi_mahasiswa`, `id_mahasiswa`, `id_aktivitas_kuliah`). These columns are meaningless to the admin and clutter the verification UI. The same pattern exists in the Mahasiswa, Aktivitas Kuliah, and Mahasiswa Lulus-DO menus, but the current scope is PISN Graduation only.
@@ -89,7 +89,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-002 — Sort academic table by id_semester ascending
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #86
 - **Recorded:** 2026-08-30 02:21
 - **Implemented:** —
 - **Problem:** `Graduation::step()` calls `getAktivitasKuliahMahasiswa` without an order parameter (`app/Controllers/Graduation.php:193–199`), so the academic table (card 2) displays rows in the raw API response order rather than chronological semester order, making the academic-history review hard to read.
@@ -100,7 +100,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-003 — Remove two unused inputs; make academic table inline-editable, stored in wizard
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #87
 - **Recorded:** 2026-08-30 02:21
 - **Implemented:** —
 - **Problem:** `wizard.php` lines 73–81 render a "Catatan akademik (opsional)" textarea (`academic_flag`) and a "Biaya Kuliah Semester" input (`biaya_kuliah`). `Graduation::stepPost` reads and validates them (`Graduation.php:286,288,312–314`) but `finish()` never sends them to Neo Feeder, so they are collected yet unused. The user instead wants the academic-history table (status, IPK, IPS per semester) in step 2 to be inline-editable.
@@ -111,7 +111,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### BUG-001 — Transcript completeness check must use "Cek Transkrip Mahasiswa" menu
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #89
 - **Recorded:** 2026-08-30 02:21
 - **Implemented:** —
 - **Problem:** `Graduation::step()` and `checkTranscriptCompleteness` (`Graduation.php:201–211, 251–269`) assess completeness from `getTranskripMahasiswa` and detect the thesis by course name. This is inaccurate: a thesis/skripsi course may already have a grade but not yet be flagged "included in transcript", so the current logic can wrongly report the transcript as incomplete or miss it.
@@ -124,7 +124,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-004 — Format all wizard inputs to match Neo Feeder display
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #88
 - **Recorded:** 2026-08-30 02:21
 - **Implemented:** —
 - **Problem:** All inputs across the graduation wizard are not formatted to match how Neo Feeder displays/accepts the data — notably step 4 "Input Kelulusan" (`nim`, `nama`, `jenis_keluar`, `tgl_keluar`, `periode_keluar`, `ipk`, `no_ijazah` in `wizard.php:120–138`) and the academic inputs from ENH-003. Date, numeric value, period, and `jenis_keluar` representations differ from Neo Feeder's.
