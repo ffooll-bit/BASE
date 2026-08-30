@@ -244,6 +244,15 @@ class Graduation extends BaseController
             }
         }
 
+        // ENH-007: only rows whose id_semester is currently active in the Daftar
+        // Semester (a_periode_aktif) may be edited. The active set mutates.
+        $activeSemesterIds = [];
+        foreach ($semesterRows as $sm) {
+            if (! empty($sm['a_periode_aktif'])) {
+                $activeSemesterIds[] = (string) $sm['id_semester'];
+            }
+        }
+
         // ENH-005: derive periode_keluar from tgl_keluar by range-matching the
         // date against the semester reference list (Ganjil/Genap only, Pendek =
         // semester marker 3 excluded). Result is a default the admin may override.
@@ -287,6 +296,7 @@ class Graduation extends BaseController
             'statusOptions' => $statusOptions,
             'jenisKeluarOptions' => $jenisKeluarOptions,
             'semesterOptions'    => $semesterOptions,
+            'activeSemesterIds'  => $activeSemesterIds,
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
