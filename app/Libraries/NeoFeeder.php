@@ -152,6 +152,71 @@ class NeoFeeder
     }
 
     /**
+     * Builds and executes a GET request to a Neo Feeder cloud REST endpoint.
+     *
+     * The cloud REST API (e.g. /ws/transkrip/*) authenticates via a Browser
+     * Authorization header carrying the same token issued by the WS GetToken
+     * action. On success returns the decoded JSON response; on failure a
+     * structured error array with the same contract as sendRequest().
+     *
+     * @param string $url   The endpoint URL (without query string).
+     * @param array  $query Query parameters to append to the URL.
+     * @param string $token The authentication token from getToken().
+     *
+     * @return array The decoded JSON response on success, or a structured error array on failure.
+     */
+    private function cloudGet(string $url, array $query, string $token): array
+    {
+        $url .= '?' . http_build_query($query);
+
+        try {
+            $response = $this->client->request('GET', $url, [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'timeout'         => $this->config->requestTimeout,
+                'connect_timeout' => $this->config->connectionTimeout,
+            ]);
+
+            if ($response->getStatusCode() === 401) {
+                return [
+                    'error_code' => 100,
+                    'error_msg'  => 'Session Neo Feeder telah berakhir.',
+                    'data'       => null,
+                ];
+            }
+
+            $body = $response->getBody();
+            if (! is_string($body)) {
+                return [
+                    'error_code' => -2,
+                    'error_msg'  => 'Invalid response from server.',
+                    'data'       => null,
+                ];
+            }
+
+            $decoded = json_decode($body, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+                return [
+                    'error_code' => -2,
+                    'error_msg'  => 'Invalid response from server.',
+                    'data'       => null,
+                ];
+            }
+
+            return $decoded;
+        } catch (HTTPException $e) {
+            return [
+                'error_code' => -1,
+                'error_msg'  => $e->getMessage(),
+                'data'       => null,
+            ];
+        }
+    }
+
+    /**
      * Retrieves the list of students (Daftar Mahasiswa) from the Neo Feeder API.
      *
      * @param string $token   The authentication token obtained from getToken().
@@ -281,6 +346,65 @@ class NeoFeeder
     public function getTranskripMahasiswa(string $token, array $options = []): array
     {
         return $this->sendListRequest('GetTranskripMahasiswa', $token, $options);
+    }
+
+    /**
+     * Retrieves a student's per-course grades from the Neo Feeder cloud
+     * "Cek Transkrip Mahasiswa" menu.
+     *
+     * The cloud REST endpoint (GET /ws/transkrip/nilai_mahasiswa) exposes the
+     * per-course `choosed` marker ("included in transcript") that the WS act
+     * GetTranskripMahasiswa does not return. Authentication uses the same WS
+     * token but as an Authorization Bearer header on the cloud REST endpoint.
+     *
+     * @param string $token The authentication token obtained from getToken().
+     * @param string $nim   The student NIM to look up.
+     *
+     * @return array The decoded course rows on success (`data`), or a structured error array.
+     */
+    public function getCekTranskripMahasiswa(string $token, string $nim): array
+    {
+        $cloudBase = rtrim(dirname($this->config->apiBaseUrl), '/');
+
+        $search = $this->cloudGet($cloudBase . '/transkrip/cari_mahasiswa', ['nm_pd' => $nim], $token);
+        if (isset($search['error_code'])) {
+            return $search;
+        }
+
+        $student = null;
+        foreach ($search['list_mahasiswa'] ?? [] as $group) {
+            foreach (is_array($group) ? $group : [] as $candidate) {
+                if (is_array($candidate) && rtrim((string) ($candidate['nipd'] ?? '')) === $nim) {
+                    $student = $candidate;
+                    break 2;
+                }
+            }
+        }
+
+        if ($student === null) {
+            return [
+                'error_code' => -1,
+                'error_msg'  => 'Mahasiswa tidak ditemukan pada Cek Transkrip Mahasiswa.',
+                'data'       => null,
+            ];
+        }
+
+        $grades = $this->cloudGet(
+            $cloudBase . '/transkrip/nilai_mahasiswa',
+            ['mahasiswa' => json_encode($student)],
+            $token
+        );
+        if (isset($grades['error_code'])) {
+            return $grades;
+        }
+
+        $rows = $grades['nilai_mahasiswa'][0] ?? $grades['nilai_mahasiswa'] ?? [];
+
+        return [
+            'error_code' => 0,
+            'error_msg'  => '',
+            'data'       => $rows,
+        ];
     }
 
     /**

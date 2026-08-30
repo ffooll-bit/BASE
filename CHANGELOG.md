@@ -64,6 +64,7 @@ _None yet._
 
 ### Fixed
 
+- **Graduation wizard transcript completeness (BUG-001, #89):** the "Kelengkapan Transkrip" check is now sourced from the Neo Feeder "Cek Transkrip Mahasiswa" menu data (cloud REST `/ws/transkrip/nilai_mahasiswa`, using BASE's existing WS `act` token as Bearer — no separate cloud login) instead of `GetTranskripMahasiswa`. Completeness now requires the thesis/skripsi course to exist with a non-empty grade; the per-course `choosed` transcript-inclusion marker is shown as status detail (badge "Nilai ada · masuk transkrip"/"belum masuk transkrip"/"Tanpa nilai") but no longer gates the result. New `NeoFeeder::getCekTranskripMahasiswa()` + `cloudGet()` helper; card 2b renders the detected thesis course (MK, kode, semester, nilai, status).
 - **FA6 icon consistency:** `header.php` logout button and `DESIGN.md` reference still used FA5 deprecated names (`fa-sign-out-alt` → `fa-right-from-bracket`, `fa-tachometer-alt` → `fa-gauge-high`) — aligned to canonical FA6 names to match `sidebar.php`
 - **Sidebar active state:** fixed route detection — `getPath()` returned `index.php/dashboard` instead of `dashboard`; now uses `current_url()` with `basename()` which handles both URL formats
 
