@@ -195,3 +195,14 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Actual Fix:** In `wizard.php` card headers (lines 34, 58, 116, 175, 190) renumber to: `1. Identitas (cocok dengan KTP)`, `2. Akademik (status, IPK, SKS)`, `3. Kelengkapan Transkrip`, `4. Eligibilitas PISN`, `5. Input Kelulusan`. No other structural change; the transcript card becomes its own whole-numbered step. Any step references in ENH-008 (checkbox labels) and in the Upload/preview views must follow the same renumbering. (Verified the current labels: `1.`, `2.`, `2b.`, `3.`, `4.`.)
 - **Actual Implemented:** Renumbered the five wizard card headers in `app/Views/graduation/wizard.php` to whole numbers: `1. Identitas`, `2. Akademik`, `3. Kelengkapan Transkrip`, `4. Eligibilitas PISN`, `5. Input Kelulusan` (the former `2b. Kelengkapan Transkrip` became `3.`, and the old `3.`/`4.` shifted to `4.`/`5.`). No structural or logic change; the card order is unchanged. Verified no other view references step numbers (upload/preview render none).
 - **Changes:** Wizard step sequence is now a clean `1..5` with no sub-numbered step; the transcript card is its own whole-numbered step.
+
+### ENH-010 — Fill in a missing thesis grade at the end of the wizard
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-30 23:37
+- **Implemented:** `—`
+- **Problem:** During transcript-completeness verification (card 3), a thesis/skripsi course can be present in the transcript but still carry no grade (`nilai_huruf` empty). The wizard currently only detects and displays this state (BUG-001 / `transcript_ok`) and blocks completeness, but it offers the admin no way to fill the missing thesis grade through the application.
+- **Possible Fix:** Add the ability to update the missing thesis grade at the end of the process (in `finish()`, after all data is verified). The final thesis grade comes from a new column in the Excel template that holds a **letter grade** (A/B/C etc.) — one value per student. On card 3 (Kelengkapan Transkrip) the thesis course row of the detail table shows that grade (table sorted smallest→largest semester; the thesis is on the last semester). At `finish()` the letter grade is pushed to Neo Feeder **only when the thesis grade is currently missing** (`nilai_huruf` empty); the Excel value is used to fill it in and no push happens when a grade already exists. Only `nilai_huruf` is pushed. Target endpoint per USER direction: the `UpdateNilaiPerkuliahanKelas` act, filtered to update only this student on the last semester in the thesis class — its exact schema/filter must be verified live before implementation.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
