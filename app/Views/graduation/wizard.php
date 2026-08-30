@@ -157,9 +157,34 @@
                     <div class="row g-2">
                         <div class="col-md-4"><label class="form-label">NPM / NIM</label><input class="form-control" name="nim" value="<?= esc($g['nim']) ?>" required></div>
                         <div class="col-md-8"><label class="form-label">Nama</label><input class="form-control" name="nama" value="<?= esc($g['nama']) ?>" required></div>
-                        <div class="col-md-4"><label class="form-label">Jenis Keluar</label><input class="form-control" name="jenis_keluar" value="<?= esc($g['jenis_keluar']) ?>" required></div>
-                        <div class="col-md-4"><label class="form-label">Tanggal Keluar/Lulus</label><input class="form-control" name="tgl_keluar" value="<?= esc($g['tgl_keluar']) ?>" required></div>
-                        <div class="col-md-4"><label class="form-label">Periode Keluar</label><input class="form-control" name="periode_keluar" value="<?= esc($g['periode_keluar']) ?>" required></div>
+                        <div class="col-md-4"><label class="form-label">Jenis Keluar</label>
+                            <?php
+                            $jkSel = (string) $g['jenis_keluar'];
+                        $jkSel = (isset($jenisKeluarOptions[$jkSel]))
+                            ? $jkSel
+                            : (array_search($jkSel, $jenisKeluarOptions, true) !== false
+                                ? (string) array_search($jkSel, $jenisKeluarOptions, true)
+                                : '');
+                        $jkHtml = '<option value="">—</option>';
+                        foreach (($jenisKeluarOptions ?? []) as $code => $label) {
+                            $sel = ($jkSel === (string) $code) ? ' selected' : '';
+                            $jkHtml .= '<option value="' . esc($code) . '"' . $sel . '>' . esc($label) . '</option>';
+                        }
+                        ?>
+                            <select class="form-select" name="jenis_keluar" required><?= $jkHtml ?></select>
+                        </div>
+                        <div class="col-md-4"><label class="form-label">Tanggal Keluar/Lulus</label><input type="date" class="form-control" name="tgl_keluar" value="<?= esc($g['tgl_keluar']) ?>" required></div>
+                        <div class="col-md-4"><label class="form-label">Periode Keluar</label>
+                            <?php
+                        $smSel = (string) $g['periode_keluar'];
+                        $smHtml = '<option value="">—</option>';
+                        foreach (($semesterOptions ?? []) as $code => $label) {
+                            $sel = ($smSel === (string) $code) ? ' selected' : '';
+                            $smHtml .= '<option value="' . esc($code) . '"' . $sel . '>' . esc($label) . '</option>';
+                        }
+                        ?>
+                            <select class="form-select" name="periode_keluar" required><?= $smHtml ?></select>
+                        </div>
                         <div class="col-md-4"><label class="form-label">IPK</label><input class="form-control" name="ipk" value="<?= esc($g['ipk']) ?>" required></div>
                         <div class="col-md-4"><label class="form-label">No Ijazah / No Sertifikat Profesi</label><input class="form-control" name="no_ijazah" value="<?= esc($g['no_ijazah']) ?>"></div>
                     </div>

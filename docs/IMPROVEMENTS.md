@@ -123,10 +123,10 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** —
 
 ### ENH-004 — Format all wizard inputs to match Neo Feeder display
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #88
 - **Recorded:** 2026-08-30 02:21
-- **Implemented:** —
+- **Implemented:** 2026-08-30 05:50
 - **Problem:** All inputs across the graduation wizard are not formatted to match how Neo Feeder displays/accepts the data — notably step 4 "Input Kelulusan" (`nim`, `nama`, `jenis_keluar`, `tgl_keluar`, `periode_keluar`, `ipk`, `no_ijazah` in `wizard.php:120–138`) and the academic inputs from ENH-003. Date, numeric value, period, and `jenis_keluar` representations differ from Neo Feeder's.
 - **Possible Fix:** Adjust input formatting/validation across the whole wizard so values match Neo Feeder's representation (date format, period format, `jenis_keluar` allowed values, numeric/IPK formatting, etc.). Inspect Neo Feeder input types directly (Playwright permitted) to confirm the exact formats. Applies to every input in the wizard.
 - **Actual Fix:** Align the step 4 "Input Kelulusan" inputs to Neo Feeder's actual form (`#/mahasiswalulusdo/add`, observed live):
@@ -138,5 +138,5 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
   - The same date/decimal formatting applies to the ENH-003 academic edits (`status`, `ipk`, `ips`).
 
   The wizard currently sends these as free text to `insertMahasiswaLulusDO`; `jenis_keluar` and `periode_keluar` must send the codes (`id_jns_keluar`, `id_smt`), not the labels. Exact WS `record` field names to be confirmed against `docs/NeoFeederWSGuide.md` during implementation.
-- **Actual Implemented:** —
-- **Changes:** —
+- **Actual Implemented:** Rebuilt the step 4 "Input Kelulusan" inputs live-schema-driven and fixed the `InsertMahasiswaLulusDO` record. Added `NeoFeeder::getJenisKeluar()` and `getSemester()` (sendListRequest pattern). `Graduation::step()` fetches both reference lists (id→label) and passes `jenisKeluarOptions`/`semesterOptions` to the view. `wizard.php` card 4: `jenis_keluar` is now a dropdown of 7 PDDIKTI labels storing the `id_jenis_keluar` code (label→code reverse-map so a label pre-filled in Excel resolves to its code); `periode_keluar` is now a semester dropdown storing `id_semester` (`2025/2026 Genap` etc.); `tgl_keluar` is `type="date"` (`YYYY-MM-DD`). Live `GetDictionary` confirmed the real `InsertMahasiswaLulusDO` schema differs from the prior record — record rebuilt to send `id_registrasi_mahasiswa` (resolved from `getAktivitasKuliahMahasiswa`, required PK), `id_jenis_keluar`, `tanggal_keluar`, `id_periode_keluar`, `ipk`, `nomor_ijazah`; the obsolete `nim`/`nama` fields removed (not WS fields). Verified live via Playwright: dropdowns (+selection/values), `tgl_keluar type=date`, no Neo Feeder mutation.
+- **Changes:** `app/Libraries/NeoFeeder.php` (+2 methods), `app/Controllers/Graduation.php` (fetch options in `step()`, rebuild record in `finish()`), `app/Views/graduation/wizard.php` (card 4 dropdowns + date input + label→code mapping).

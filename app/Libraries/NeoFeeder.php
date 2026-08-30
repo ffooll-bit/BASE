@@ -193,6 +193,32 @@ class NeoFeeder
     }
 
     /**
+     * Retrieves the graduation exit-reason reference list (id_jenis_keluar + jenis_keluar).
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response, or a structured error array.
+     */
+    public function getJenisKeluar(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetJenisKeluar', $token, $options);
+    }
+
+    /**
+     * Retrieves the academic semester reference list (id_semester + nama_semester).
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response, or a structured error array.
+     */
+    public function getSemester(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetSemester', $token, $options);
+    }
+
+    /**
      * Retrieves the graduated/dropped-out student list (Daftar Mahasiswa Lulus/DO) from the Neo Feeder API.
      *
      * @param string $token   The authentication token obtained from getToken().

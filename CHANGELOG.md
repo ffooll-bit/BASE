@@ -60,6 +60,7 @@ _None yet._
 - **Dependencies:** bumped `admin-lte` from 4.1.0 to 4.8.4 (AdminLTE 4.x line — no breaking changes, backward-compatible HTML/CSS)
 - **PISN graduation wizard:** removed the unused `academic_flag` textarea and `biaya_kuliah` input; the academic table (card 2) is now inline-editable per semester — `status` as a dropdown sourced from Neo Feeder `GetStatusMahasiswa`, plus editable `ips`/`ipk` — with corrections pushed to Neo Feeder via `updatePerkuliahanMahasiswa` at submission — ENH-003, #87
 - **PISN graduation wizard:** sorts the academic verification table (card 2) by `id_semester` ascending (oldest→newest), via API `order` plus a defensive `usort` fallback — ENH-002, #86
+- **PISN graduation wizard:** formats the step 4 "Input Kelulusan" inputs to match Neo Feeder — `jenis_keluar` is a dropdown of PDDIKTI labels (stores the `id_jenis_keluar` code), `periode_keluar` is a semester dropdown (stores `id_semester`), `tgl_keluar` is a native date input (`YYYY-MM-DD`); the `InsertMahasiswaLulusDO` record is rebuilt to the live WS schema (`id_registrasi_mahasiswa` resolved, `id_jenis_keluar`, `tanggal_keluar`, `id_periode_keluar`, `ipk`, `nomor_ijazah`) — ENH-004, #88
 
 ### Fixed
 
