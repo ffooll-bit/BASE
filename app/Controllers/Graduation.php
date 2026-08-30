@@ -283,6 +283,14 @@ class Graduation extends BaseController
             $g['periode_keluar'] = $derivedPeriode;
         }
 
+        // ENH-006: the last academic row (largest id_semester) holds the "last
+        // IPK" that is the single source shared with the step-5 graduation IPK
+        // input. Excel IPK is only the initial default; the value is synced
+        // two-ways in the view. Rows are already sorted ascending by id_semester.
+        $lastAcademic = empty($academic) ? null : $academic[count($academic) - 1];
+        $lastIsActive = $lastAcademic !== null
+            && in_array((string) $lastAcademic['id_semester'], $activeSemesterIds, true);
+
         $pisn = $this->pisn->checkEligibility($student);
         $total = count($progress['students']);
 
@@ -297,6 +305,9 @@ class Graduation extends BaseController
             'jenisKeluarOptions' => $jenisKeluarOptions,
             'semesterOptions'    => $semesterOptions,
             'activeSemesterIds'  => $activeSemesterIds,
+            'lastAcademic'       => $lastAcademic,
+            'lastIsActive'       => $lastIsActive,
+            'excelIpk'           => $student['ipk'] ?? '',
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
