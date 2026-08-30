@@ -62,6 +62,34 @@
                     <?php elseif (empty($academic)): ?>
                         <div class="text-muted">Tidak ada aktivitas kuliah untuk NIM ini.</div>
                     <?php else: ?>
+                        <?php if ($lastAcademic !== null): ?>
+                            <?php
+                            // ENH-006: single-source "last IPK" synced two-ways between the
+                            // last academic row and the step-5 graduation IPK input.
+                            $lastIPK = trim((string) ($lastAcademic['ipk'] ?? ''));
+                            $sValue  = 'Aktif';
+                            $activeCode = null;
+                            foreach (($statusOptions ?? []) as $code => $label) {
+                                if (trim((string) $label) === $sValue) {
+                                    $activeCode = (string) $code;
+                                    break;
+                                }
+                            }
+                            ?>
+                            <?php if (! $lastIsActive): ?>
+                                <div class="alert alert-warning py-2">
+                                    Semester terakhir (<strong><?= esc($lastAcademic['id_semester']) ?></strong>) sudah tidak aktif,
+                                    sehingga IPK terakhirnya tidak dapat disinkronkan otomatis.
+                                </div>
+                            <?php elseif ($activeCode !== null && $lastIPK !== '' && trim((string) $excelIpk) !== $lastIPK): ?>
+                                <div class="alert alert-warning py-2 d-flex align-items-center justify-content-between flex-wrap gap-2" id="ipk-mismatch">
+                                    <span>IPK Excel (<strong><?= esc($excelIpk) ?></strong>) berbeda dengan IPK semester terakhir (<strong><?= esc($lastIPK) ?></strong>).</span>
+                                    <button type="button" class="btn btn-sm btn-warning" id="auto-update-ipk">
+                                        Auto-update IPK &amp; status ke Aktif
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
                         <div class="table-responsive mb-2">
                             <?php
                             $editableCols = ['id_status_mahasiswa', 'ips', 'ipk'];
@@ -81,6 +109,7 @@
                                         <?php
                                         $isActive = in_array((string) $row['id_semester'], (array) ($activeSemesterIds ?? []), true);
                                         $disabled = $isActive ? '' : ' disabled';
+                                        $isLastRow = ($lastAcademic !== null && (string) $row['id_semester'] === (string) $lastAcademic['id_semester']);
                                         ?>
                                         <tr>
                                             <?php foreach ($acCols as $col): ?>
@@ -96,12 +125,14 @@
                                                                 . esc($label) . '</option>';
                                                         }
                                                         ?>
+                                                        <?php $lastSelAttrs = ($isLastRow && ! $disabled) ? ' id="last-status"' : ''; ?>
                                                         <select class="form-select form-select-sm"
-                                                                name="academics[<?= esc($row['id_semester']) ?>][id_status_mahasiswa]"<?= $disabled ?>><?= $optionsHtml ?></select>
+                                                                name="academics[<?= esc($row['id_semester']) ?>][id_status_mahasiswa]"<?= $lastSelAttrs ?><?= $disabled ?>><?= $optionsHtml ?></select>
                                                     <?php elseif (in_array($col, $editableCols, true)): ?>
+                                                        <?php $lastIpkAttrs = ($isLastRow && $col === 'ipk' && ! $disabled) ? ' id="last-ipk"' : ''; ?>
                                                         <input type="text" class="form-control form-control-sm"
                                                                name="academics[<?= esc($row['id_semester']) ?>][<?= esc($col) ?>]"
-                                                               value="<?= esc($student['academics'][$row['id_semester']][$col] ?? $row[$col] ?? '') ?>"<?= $disabled ?>>
+                                                               value="<?= esc($student['academics'][$row['id_semester']][$col] ?? $row[$col] ?? '') ?>"<?= $lastIpkAttrs ?><?= $disabled ?>>
                                                     <?php else: ?>
                                                         <?= esc($row[$col] ?? '') ?>
                                                     <?php endif; ?>
@@ -228,7 +259,7 @@
                         ?>
                             <select class="form-select" name="periode_keluar" required><?= $smHtml ?></select>
                         </div>
-                        <div class="col-md-4"><label class="form-label">IPK</label><input class="form-control" name="ipk" value="<?= esc($g['ipk']) ?>" required></div>
+                        <div class="col-md-4"><label class="form-label">IPK</label><input class="form-control" name="ipk" id="graduation_ipk" value="<?= esc($g['ipk']) ?>" required></div>
                         <div class="col-md-4"><label class="form-label">No Ijazah / No Sertifikat Profesi</label><input class="form-control" name="no_ijazah" value="<?= esc($g['no_ijazah']) ?>"></div>
                     </div>
                     <div class="form-text">No Ijazah otomatis &quot;-&quot; bila dikosongkan; nomor ijazah dibuat di aplikasi PISN setelah sinkronisasi.</div>
@@ -242,5 +273,33 @@
                 </button>
             </div>
         </form>
+        <?php if ($lastAcademic !== null): ?>
+        <script>
+        (function () {
+            var lastIpk  = document.getElementById('last-ipk');
+            var lastStat = document.getElementById('last-status');
+            var gradIpk  = document.getElementById('graduation_ipk');
+            if (!lastIpk || !gradIpk) { return; }
+
+            function sync(a, b) {
+                if (a.value !== b.value) { b.value = a.value; }
+            }
+            lastIpk.addEventListener('input', function () { sync(lastIpk, gradIpk); });
+            gradIpk.addEventListener('input', function () { sync(gradIpk, lastIpk); });
+
+            var activeCode = <?= json_encode($activeCode) ?>;
+            var btn = document.getElementById('auto-update-ipk');
+            if (btn && lastStat && activeCode) {
+                btn.addEventListener('click', function () {
+                    lastIpk.value = <?= json_encode(trim((string) $excelIpk)) ?>;
+                    lastStat.value = activeCode;
+                    sync(lastIpk, gradIpk);
+                    var banner = document.getElementById('ipk-mismatch');
+                    if (banner) { banner.remove(); }
+                });
+            }
+        })();
+        </script>
+        <?php endif; ?>
     </div>
 </div>
