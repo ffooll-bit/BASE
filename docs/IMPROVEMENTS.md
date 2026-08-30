@@ -77,26 +77,26 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 ## Active Items
 
 ### ENH-001 — Hide UUID/random-string ID columns in PISN Graduation verification step
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #85
 - **Recorded:** 2026-08-30 02:21
-- **Implemented:** —
+- **Implemented:** 2026-08-30 03:44
 - **Problem:** In `app/Views/graduation/wizard.php` the identity table (lines 41–43) and the academic table (lines 64–69) render every key returned by the Neo Feeder API, including columns whose values are random UUID strings (e.g. `id_registrasi_mahasiswa`, `id_mahasiswa`, `id_aktivitas_kuliah`). These columns are meaningless to the admin and clutter the verification UI. The same pattern exists in the Mahasiswa, Aktivitas Kuliah, and Mahasiswa Lulus-DO menus, but the current scope is PISN Graduation only.
 - **Possible Fix:** In `wizard.php`, suppress columns whose values are UUID/random strings from both the identity and academic tables. Keep functional, non-random columns such as `id_semester`. Implement an explicit allow/deny list of column keys to hide. Other menus stay out of scope for now.
 - **Actual Fix:** In `app/Views/graduation/wizard.php`, define a deny-list of column keys whose values are UUID/random strings and skip them when rendering both the identity table (lines 41–43) and the academic table (lines 64–69). Deny-list: `id_registrasi_mahasiswa`, `id_mahasiswa`, `id_aktivitas_kuliah` (plus any other UUID-valued `*_id` keys observed in the live response). Keep `id_semester` and all human-readable columns visible. Scope: PISN Graduation wizard only; other menus stay out of scope.
-- **Actual Implemented:** —
-- **Changes:** —
+- **Actual Implemented:** Every UUID-valued column is hidden from both wizard tables. `Graduation::step()` passes `$uuidKeys` (explicit deny-list `id_registrasi_mahasiswa`, `id_mahasiswa`, `id_aktivitas_kuliah`) and `$uuidRegex` (`/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i`) to `graduation/wizard`. The identity table skips a row whose key is in `$uuidKeys` or whose value matches `$uuidRegex`; the academic table builds visible columns by skipping any column whose sample value matches `$uuidRegex` (header + cells stay aligned). `id_semester` (code e.g. `20252`, not a UUID) and all human-readable columns remain. Verified live via Playwright: 0 UUID cells in the Identitas and Akademik tables.
+- **Changes:** `app/Controllers/Graduation.php` (pass `uuidKeys` + `uuidRegex` to `graduation/wizard`), `app/Views/graduation/wizard.php` (value-based UUID skip in identity + academic tables).
 
 ### ENH-002 — Sort academic table by id_semester ascending
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #86
 - **Recorded:** 2026-08-30 02:21
-- **Implemented:** —
+- **Implemented:** 2026-08-30 04:08
 - **Problem:** `Graduation::step()` calls `getAktivitasKuliahMahasiswa` without an order parameter (`app/Controllers/Graduation.php:193–199`), so the academic table (card 2) displays rows in the raw API response order rather than chronological semester order, making the academic-history review hard to read.
 - **Possible Fix:** Sort the academic rows by `id_semester` ascending (20261 → 20262 …). Decide between a PHP `usort` on the returned array versus passing an `order` parameter to the API; confirm during verification which approach is reliable.
 - **Actual Fix:** In `Graduation::step()`, pass `order => 'id_semester asc'` to `getAktivitasKuliahMahasiswa` (`sendListRequest` already forwards `order`; `app/Libraries/NeoFeeder.php:142–152`). As a defensive fallback, apply a PHP `usort` by `id_semester` (string ascending) on the returned array in case the API does not honor the `order` parameter. Keep the `id_semester` column visible (used for sorting and display).
-- **Actual Implemented:** —
-- **Changes:** —
+- **Actual Implemented:** `Graduation::step()` now passes `order => 'id_semester asc'` to `getAktivitasKuliahMahasiswa` and additionally applies a defensive PHP `usort` by `id_semester` (string ascending) on the returned `$academic` array, so the academic table (card 2) is always sorted oldest→newest semester regardless of API ordering. `id_semester` column remains visible.
+- **Changes:** `app/Controllers/Graduation.php` (add `order` + `usort` in `step()`).
 
 ### ENH-003 — Remove two unused inputs; make academic table inline-editable, stored in wizard
 - **Status:** `implemented`

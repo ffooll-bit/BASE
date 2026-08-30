@@ -49,6 +49,7 @@ _None yet._
 
 ### Changed
 
+- **PISN graduation wizard:** hides every UUID-valued column in the identity and academic verification tables (detected by UUID pattern, including `id_registrasi_mahasiswa`, `id_mahasiswa`, `id_aktivitas_kuliah`, `id_perguruan_tinggi`, `id_sms`, `id_agama`, `id_prodi`, `id_status_mahasiswa`, `id_periode`, `id_periode_keluar`); the `id_semester` code and human-readable columns remain visible — ENH-001, #85
 - **Repo restructured to professional GitHub standard:** removed agent-only docs (`AGENTS.md`, `OPEN_ISSUES.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `.memory/`); archived Sprint 1 issues to `docs/archived/`; added `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md` (supported versions + disclosure policy), GitHub issue templates (bug report, feature request), and a release notes template (`.github/RELEASE_NOTES_TEMPLATE.md`); `CONTRIBUTING.md` now holds coding conventions + GitHub Flow workflow; LICENSE adds project copyright; all documentation translated to English
 - **Documentation shrinkage for model context:** `DESIGN.md` 1138→473 lines (removed Bootstrap 5 boilerplate, kept project-specific patterns only); `CODING_STANDARDS.md` 537→287 lines (trimmed general PHP knowledge); `OPEN_ISSUES.md` 295→54 lines (archived 9 done Sprint 1 items to `docs/archived/SPRINT1_ISSUES.md`)
 - **Documentation restructure:** `AGENTS.md` split into Golden Path (must-survive compression) + Reference sections; `CONTRIBUTING.md` deduplicated to human-focused content — lifecycle removed (delegated to AGENTS.md)
@@ -58,6 +59,7 @@ _None yet._
 - **Profil PT page:** redesigned layout with visual hierarchy — hero card `card-outline-primary` (name in `display-6` + accreditation badge, identity & legalitas info in `d-flex gap-4`), two `card-info h-100` cards side by side (Contact with clickable links + Address), `fa-fw` for aligned icons, equal-height via `d-flex flex-column` + `mt-auto`, `https://` prepended to website URL, Indonesian date format via `strtr()`, max width via `col-xxl-10`
 - **Dependencies:** bumped `admin-lte` from 4.1.0 to 4.8.4 (AdminLTE 4.x line — no breaking changes, backward-compatible HTML/CSS)
 - **PISN graduation wizard:** removed the unused `academic_flag` textarea and `biaya_kuliah` input; the academic table (card 2) is now inline-editable per semester — `status` as a dropdown sourced from Neo Feeder `GetStatusMahasiswa`, plus editable `ips`/`ipk` — with corrections pushed to Neo Feeder via `updatePerkuliahanMahasiswa` at submission — ENH-003, #87
+- **PISN graduation wizard:** sorts the academic verification table (card 2) by `id_semester` ascending (oldest→newest), via API `order` plus a defensive `usort` fallback — ENH-002, #86
 
 ### Fixed
 
