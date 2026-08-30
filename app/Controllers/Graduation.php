@@ -225,6 +225,22 @@ class Graduation extends BaseController
             }
         }
 
+        $jenisKeluarOptions = [];
+        $jkResp = $this->neoFeeder->getJenisKeluar($apiToken);
+        if (($jkResp['error_code'] ?? -1) === 0 && isset($jkResp['data'])) {
+            foreach ($jkResp['data'] as $jk) {
+                $jenisKeluarOptions[(string) $jk['id_jenis_keluar']] = trim((string) ($jk['jenis_keluar'] ?? ''));
+            }
+        }
+
+        $semesterOptions = [];
+        $smResp = $this->neoFeeder->getSemester($apiToken);
+        if (($smResp['error_code'] ?? -1) === 0 && isset($smResp['data'])) {
+            foreach ($smResp['data'] as $sm) {
+                $semesterOptions[(string) $sm['id_semester']] = trim((string) ($sm['nama_semester'] ?? ''));
+            }
+        }
+
         $pisn = $this->pisn->checkEligibility($student);
         $total = count($progress['students']);
 
@@ -236,6 +252,8 @@ class Graduation extends BaseController
             'identity'     => $identity,
             'academic'     => $academic,
             'statusOptions' => $statusOptions,
+            'jenisKeluarOptions' => $jenisKeluarOptions,
+            'semesterOptions'    => $semesterOptions,
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
@@ -381,15 +399,29 @@ class Graduation extends BaseController
                 }
 
                 $g = $student['graduation'];
-                // ponytail: record keys pending live GetListMahasiswaLulusDO schema confirmation.
+
+                // Resolve the required id_registrasi_mahasiswa (PK) via the student's academic rows.
+                $nimSafe = trim((string) ($student['nim'] ?? $g['nim']));
+                $acResp  = $this->neoFeeder->getAktivitasKuliahMahasiswa($apiToken, [
+                    'filter' => "nim='{$nimSafe}'",
+                    'limit'  => 1,
+                ]);
+                $idReg = ($acResp['error_code'] ?? -1) === 0
+                    ? ($acResp['data'][0]['id_registrasi_mahasiswa'] ?? '')
+                    : '';
+                if ($idReg === '') {
+                    $results[] = ['nim' => $g['nim'], 'success' => false, 'msg' => 'Gagal me-resolve id_registrasi_mahasiswa.'];
+                    continue;
+                }
+
+                // Record keys confirmed live via GetDictionary (InsertMahasiswaLulusDO).
                 $record = [
-                    'nim'            => $g['nim'],
-                    'nama'           => $g['nama'],
-                    'jenis_keluar'   => $g['jenis_keluar'],
-                    'tgl_keluar'     => $g['tgl_keluar'],
-                    'periode_keluar' => $g['periode_keluar'],
-                    'ipk'            => $g['ipk'],
-                    'no_ijazah'      => $g['no_ijazah'],
+                    'id_registrasi_mahasiswa' => (string) $idReg,
+                    'id_jenis_keluar'          => (string) $g['jenis_keluar'],
+                    'tanggal_keluar'           => (string) $g['tgl_keluar'],
+                    'id_periode_keluar'        => (string) $g['periode_keluar'],
+                    'ipk'                      => (string) $g['ipk'],
+                    'nomor_ijazah'             => (string) $g['no_ijazah'],
                 ];
 
                 $resp = $this->neoFeeder->insertMahasiswaLulusDO($apiToken, $record);
