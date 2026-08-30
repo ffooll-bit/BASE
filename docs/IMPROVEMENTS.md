@@ -186,12 +186,12 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-009 — Simplify step numbering (whole numbers, no 2b)
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #103
 - **Recorded:** 2026-08-30 15:18
-- **Implemented:** `—`
+- **Implemented:** 2026-08-30 16:20
 - **Problem:** The wizard uses `2b` as a step label (Kelengkapan Transkrip card is currently numbered as a sub-step of the academic step), which looks inconsistent alongside whole-numbered steps 1, 2, 3, 4.
 - **Possible Fix:** Two options were considered: (a) remove step numbering entirely, or (b) renumber all steps to whole numbers with no sub-step. **Decision (AGENT): option (b)** — renumber the transcript card from `2b` to its own whole number (2b → 3, and 3/4 shift accordingly), preserving the wizard's "which step am I on" orientation without sub-numbering.
 - **Actual Fix:** In `wizard.php` card headers (lines 34, 58, 116, 175, 190) renumber to: `1. Identitas (cocok dengan KTP)`, `2. Akademik (status, IPK, SKS)`, `3. Kelengkapan Transkrip`, `4. Eligibilitas PISN`, `5. Input Kelulusan`. No other structural change; the transcript card becomes its own whole-numbered step. Any step references in ENH-008 (checkbox labels) and in the Upload/preview views must follow the same renumbering. (Verified the current labels: `1.`, `2.`, `2b.`, `3.`, `4.`.)
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** Renumbered the five wizard card headers in `app/Views/graduation/wizard.php` to whole numbers: `1. Identitas`, `2. Akademik`, `3. Kelengkapan Transkrip`, `4. Eligibilitas PISN`, `5. Input Kelulusan` (the former `2b. Kelengkapan Transkrip` became `3.`, and the old `3.`/`4.` shifted to `4.`/`5.`). No structural or logic change; the card order is unchanged. Verified no other view references step numbers (upload/preview render none).
+- **Changes:** Wizard step sequence is now a clean `1..5` with no sub-numbered step; the transcript card is its own whole-numbered step.
