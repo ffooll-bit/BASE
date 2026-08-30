@@ -127,6 +127,45 @@
                                 <i class="fas fa-triangle-exclamation"></i> Transkrip belum lengkap: <?= esc($completeness['reason'] ?? 'periksa nilai.') ?>
                             </div>
                         <?php endif; ?>
+
+                        <?php if (empty($completeness['thesis'])): ?>
+                            <div class="text-muted small mb-2">
+                                <i class="fas fa-circle-question"></i> MK skripsi/tugas akhir tidak ditemukan di transkrip.
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-2">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>MK</th>
+                                            <th>Kode</th>
+                                            <th>Semester</th>
+                                            <th>Nilai</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($completeness['thesis'] as $t): ?>
+                                        <tr>
+                                            <td><?= esc($t['nama']) ?></td>
+                                            <td><?= esc($t['kode']) ?></td>
+                                            <td><?= esc($t['semester']) ?></td>
+                                            <td><?= $t['nilai'] ?? '<span class="text-danger">Belum ada nilai</span>' ?></td>
+                                            <td>
+                                                <?php if (! $t['hasGrade']): ?>
+                                                    <span class="badge text-bg-danger">Tanpa nilai</span>
+                                                <?php elseif ($t['choosed']): ?>
+                                                    <span class="badge text-bg-success">Nilai ada · masuk transkrip</span>
+                                                <?php else: ?>
+                                                    <span class="badge text-bg-warning">Nilai ada · belum masuk transkrip</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
                         <div class="text-muted small">Jumlah nilai terload: <?= esc(count($transcript)) ?></div>
                     <?php endif; ?>
                 </div>

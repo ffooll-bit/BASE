@@ -202,15 +202,13 @@ class Graduation extends BaseController
                 usort($academic, fn ($a, $b) => strcmp($a['id_semester'] ?? '', $b['id_semester'] ?? ''));
             }
 
-            if ($identity !== null && isset($identity['id_registrasi_mahasiswa'])) {
-                $idReg = str_replace("'", "\'", (string) $identity['id_registrasi_mahasiswa']);
-                $trResp = $this->neoFeeder->getTranskripMahasiswa($apiToken, [
-                    'filter' => "id_registrasi_mahasiswa='{$idReg}'",
-                    'limit'  => 200,
-                ]);
+            if (! empty($student['nim'])) {
+                $trResp = $this->neoFeeder->getCekTranskripMahasiswa($apiToken, (string) $student['nim']);
                 if (($trResp['error_code'] ?? -1) === 0 && isset($trResp['data'])) {
                     $transcript   = $trResp['data'];
                     $completeness = $this->checkTranscriptCompleteness($transcript);
+                } elseif (($trResp['error_code'] ?? -1) !== 0 && empty($error)) {
+                    $error = $trResp['error_msg'] ?? 'Gagal memuat data transkrip.';
                 }
             }
         } else {
@@ -268,37 +266,73 @@ class Graduation extends BaseController
     /**
      * Checks whether a student's transcript is complete for graduation.
      *
-     * The GetTranskripMahasiswa response carries per-course final grades
-     * (nilai_angka / nilai_huruf / nilai_indeks) and does NOT include an
-     * id_jenis_mata_kuliah type flag, so the thesis/skripsi course is detected
-     * by its course name. A transcript is complete when it is non-empty and
-     * contains a thesis-named row with a non-empty grade.
+     * Completeness rule (per BUG-001): the thesis/skripsi/tugas akhir course
+     * must exist in the transcript AND carry a non-empty grade. The `choosed`
+     * marker (course "included in transcript" per the cloud Cek Transkrip
+     * Mahasiswa menu) is informational only — it does NOT block completeness.
      *
-     * The thesis-name pattern is a heuristic; confirm the exact course naming
-     * against a graduating student's transcript and tighten the pattern if needed.
+     * The thesis course is detected by name
+     * (/skripsi|tugas\s*akhir|thesis|disertasi/i) because the WS/cloud
+     * transcript payloads carry no type flag.
      *
-     * @param array $transcript Rows from GetTranskripMahasiswa.
+     * @param array $transcript Rows from getCekTranskripMahasiswa()
+     *                          (cloud nilai_mahasiswa rows, kebab nm_mk/kode_mk/id_smt).
      *
-     * @return array{complete:bool, reason:string}
+     * @return array{complete:bool, reason:string, thesis:array}
+     *               thesis = detail rows of each detected thesis course.
      */
     private function checkTranscriptCompleteness(array $transcript): array
     {
         if (empty($transcript)) {
-            return ['complete' => false, 'reason' => 'Transkrip kosong (tidak ada nilai).'];
+            return [
+                'complete' => false,
+                'reason'   => 'Transkrip kosong (tidak ada nilai).',
+                'thesis'   => [],
+            ];
         }
 
         $thesisPattern = '/skripsi|tugas\s*akhir|thesis|disertasi/i';
+        $thesisRows    = [];
+
         foreach ($transcript as $row) {
-            $name = $row['nama_mata_kuliah'] ?? '';
+            $name = $row['nm_mk'] ?? ($row['nama_mata_kuliah'] ?? '');
             if (preg_match($thesisPattern, $name)) {
-                $nilai = $row['nilai_huruf'] ?? ($row['nilai_angka'] ?? null);
-                if ($nilai !== null && $nilai !== '') {
-                    return ['complete' => true, 'reason' => ''];
-                }
+                $nilai     = $row['nilai_huruf'] ?? ($row['nilai_angka'] ?? null);
+                $hasGrade  = ($nilai !== null && $nilai !== '');
+                $thesisRows[] = [
+                    'nama'     => $name,
+                    'kode'     => $row['kode_mk'] ?? ($row['kode_mata_kuliah'] ?? ''),
+                    'semester' => $row['id_smt'] ?? ($row['id_semester'] ?? ''),
+                    'nilai'    => $nilai !== null && $nilai !== '' ? $nilai : null,
+                    'hasGrade' => $hasGrade,
+                    'choosed'  => ! empty($row['choosed']),
+                ];
             }
         }
 
-        return ['complete' => false, 'reason' => 'Nilai skripsi/tugas akhir belum terdeteksi di transkrip.'];
+        if (empty($thesisRows)) {
+            return [
+                'complete' => false,
+                'reason'   => 'MK skripsi/tugas akhir tidak ditemukan di transkrip.',
+                'thesis'   => [],
+            ];
+        }
+
+        foreach ($thesisRows as $t) {
+            if ($t['hasGrade']) {
+                return [
+                    'complete' => true,
+                    'reason'   => '',
+                    'thesis'   => $thesisRows,
+                ];
+            }
+        }
+
+        return [
+            'complete' => false,
+            'reason'   => 'Nilai MK skripsi/tugas akhir belum tersedia.',
+            'thesis'   => $thesisRows,
+        ];
     }
 
     /**
