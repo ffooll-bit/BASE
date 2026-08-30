@@ -140,3 +140,58 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
   The wizard currently sends these as free text to `insertMahasiswaLulusDO`; `jenis_keluar` and `periode_keluar` must send the codes (`id_jns_keluar`, `id_smt`), not the labels. Exact WS `record` field names to be confirmed against `docs/NeoFeederWSGuide.md` during implementation.
 - **Actual Implemented:** Rebuilt the step 4 "Input Kelulusan" inputs live-schema-driven and fixed the `InsertMahasiswaLulusDO` record. Added `NeoFeeder::getJenisKeluar()` and `getSemester()` (sendListRequest pattern). `Graduation::step()` fetches both reference lists (id→label) and passes `jenisKeluarOptions`/`semesterOptions` to the view. `wizard.php` card 4: `jenis_keluar` is now a dropdown of 7 PDDIKTI labels storing the `id_jenis_keluar` code (label→code reverse-map so a label pre-filled in Excel resolves to its code); `periode_keluar` is now a semester dropdown storing `id_semester` (`2025/2026 Genap` etc.); `tgl_keluar` is `type="date"` (`YYYY-MM-DD`). Live `GetDictionary` confirmed the real `InsertMahasiswaLulusDO` schema differs from the prior record — record rebuilt to send `id_registrasi_mahasiswa` (resolved from `getAktivitasKuliahMahasiswa`, required PK), `id_jenis_keluar`, `tanggal_keluar`, `id_periode_keluar`, `ipk`, `nomor_ijazah`; the obsolete `nim`/`nama` fields removed (not WS fields). Verified live via Playwright: dropdowns (+selection/values), `tgl_keluar type=date`, no Neo Feeder mutation.
 - **Changes:** `app/Libraries/NeoFeeder.php` (+2 methods), `app/Controllers/Graduation.php` (fetch options in `step()`, rebuild record in `finish()`), `app/Views/graduation/wizard.php` (card 4 dropdowns + date input + label→code mapping).
+
+### ENH-005 — Minimal Excel template (NIM, tanggal keluar, IPK only)
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-30 15:18
+- **Implemented:** `—`
+- **Problem:** The PISN Graduation Excel upload template requires more columns than the workflow actually needs. The wizard forces the admin to fill `jenis_keluar` and `periode_keluar` in the spreadsheet even though they are derivable or constant, and `nama` is optional but currently pointless — its real purpose is validating the registered name against the KTP name. This makes the template heavier than necessary and invites errors.
+- **Possible Fix:** Reduce the template to a minimum: only **NIM** (used to look up the student), **tanggal keluar** (used as the step 4 Input Kelulusan value and to derive `periode_keluar`), and **IPK** (step 4 Input Kelulusan value). **Nama KTP** stays optional; when filled it becomes the source for validating that the registered student name matches the KTP name (feeds the step 1 auto-check from ENH-008). Drop the `jenis_keluar` column entirely (PISN Graduation is always `Lulus`) and drop `periode_keluar` (derived from `tanggal_keluar` by matching its range against the semester reference list — Daftar Semester, Ganjil/Genap only, Pendek excluded).
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-006 — Cross-check IPK against last semester row; auto-update via button, executed at finish
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-30 15:18
+- **Implemented:** `—`
+- **Problem:** The IPK submitted in the Excel file is not validated against the academic data. The admin has to spot-check manually whether the Excel IPK matches the status/IPK of the student's last academic row; mismatch anywhere goes unnoticed and would be pushed to Neo Feeder as-is.
+- **Possible Fix:** In step 2, compare the Excel IPK against the row with the latest `id_semester` in the academic table. If they differ, show a warning and a button that stages an auto-update: set the last row's IPK to the Excel value and set its `id_status_mahasiswa` to Aktif. The update is NOT applied immediately — it is stored (via the existing `WizardProgress` academics store) and executed at `finish()` through `updatePerkuliahanMahasiswa`, consistent with ENH-003's deferred-push design.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-007 — Academic table: only rows with a still-active semester are editable
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-30 15:18
+- **Implemented:** `—`
+- **Problem:** In the step 2 academic table (ENH-003 made all rows inline-editable), every semester row can be edited, including historical semesters that are no longer active. PDDIKTI only reports/accepts updates for the current active semester, so editing past rows is meaningless and risks pushing invalid corrections.
+- **Possible Fix:** Disable inline editing for rows whose `id_semester` is not still-active in the Daftar Semester (semester reference list); only the row for an active semester remains editable. The reference list of active semesters must come from the same source used elsewhere (e.g. `getSemester()`).
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-008 — Auto-check step checkboxes; all checkboxes must be checked to proceed
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-30 15:18
+- **Implemented:** `—`
+- **Problem:** Wizard steps currently lack a clear manual-verification gate structure. The admin can advance without having explicitly confirmed each verification area, and the wizard does not auto-confirm conditions that are already objectively satisfiable (name match, IPK+status, transcript inclusion).
+- **Possible Fix:** Give every step a checkbox that must be checked before advancing to the next verification step. Auto-check where the criterion is objectively verifiable: **step 1** checked when the KTP name (from Excel, per ENH-005) exactly equals the PDDIKTI registered name; **step 2** checked when the last-semester IPK matches the Excel IPK AND the status is Aktif; **step 2b** checked when a thesis/skripsi MK exists with a grade AND `choosed:true` (per BUG-001); **step 3** cannot be auto-checked. Every checkbox may still be checked manually regardless of the auto-check condition. Progression requires all checkboxes checked.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
+
+### ENH-009 — Simplify step numbering (whole numbers, no 2b)
+- **Status:** `recorded`
+- **Issue:** `—`
+- **Recorded:** 2026-08-30 15:18
+- **Implemented:** `—`
+- **Problem:** The wizard uses `2b` as a step label (Kelengkapan Transkrip card is currently numbered as a sub-step of the academic step), which looks inconsistent alongside whole-numbered steps 1, 2, 3, 4.
+- **Possible Fix:** Two options were considered: (a) remove step numbering entirely, or (b) renumber all steps to whole numbers with no sub-step. **Decision (AGENT): option (b)** — renumber the transcript card from `2b` to its own whole number (2b → 3, and 3/4 shift accordingly), preserving the wizard's "which step am I on" orientation without sub-numbering.
+- **Actual Fix:** `—`
+- **Actual Implemented:** `—`
+- **Changes:** `—`
