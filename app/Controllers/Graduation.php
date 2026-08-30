@@ -217,6 +217,14 @@ class Graduation extends BaseController
             $error = 'Sesi token habis; silakan login ulang, lalu klik Lanjutkan.';
         }
 
+        $statusOptions = [];
+        $stResp = $this->neoFeeder->getStatusMahasiswa($apiToken);
+        if (($stResp['error_code'] ?? -1) === 0 && isset($stResp['data'])) {
+            foreach ($stResp['data'] as $st) {
+                $statusOptions[(string) $st['id_status_mahasiswa']] = trim((string) ($st['nama_status_mahasiswa'] ?? ''));
+            }
+        }
+
         $pisn = $this->pisn->checkEligibility($student);
         $total = count($progress['students']);
 
@@ -227,6 +235,7 @@ class Graduation extends BaseController
             'student'      => $student,
             'identity'     => $identity,
             'academic'     => $academic,
+            'statusOptions' => $statusOptions,
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
@@ -289,9 +298,8 @@ class Graduation extends BaseController
         $student = $progress['students'][$idx];
 
         $identityOk    = $this->request->getPost('identity_ok') === '1';
-        $academicFlag  = trim((string) $this->request->getPost('academic_flag'));
         $pisnOk       = $this->request->getPost('pisn_ok') === '1';
-        $biayaKuliah  = trim((string) $this->request->getPost('biaya_kuliah'));
+        $academics    = $this->request->getPost('academics') ?? [];
 
         $nim           = trim((string) $this->request->getPost('nim'));
         $nama          = trim((string) $this->request->getPost('nama'));
@@ -314,10 +322,6 @@ class Graduation extends BaseController
         if (! $pisnOk) {
             $errors[] = 'Centang konfirmasi eligibilitas PISN (manual).';
         }
-        // ponytail: editing academics requires Biaya Kuliah Semester filled (deferred Update).
-        if ($academicFlag !== '' && $biayaKuliah === '') {
-            $errors[] = 'Bila ada catatan akademik, isi Biaya Kuliah Semester.';
-        }
 
         if (count($errors) > 0) {
             return redirect()->back()
@@ -327,8 +331,8 @@ class Graduation extends BaseController
 
         $student['saved']          = true;
         $student['identity_ok']    = $identityOk;
-        $student['academic_flag']  = $academicFlag;
         $student['pisn_ok']        = $pisnOk;
+        $student['academics']      = $academics;
         $student['graduation']     = [
             'nim'            => $nim,
             'nama'           => $nama,
@@ -393,6 +397,41 @@ class Graduation extends BaseController
                     $results[] = ['nim' => $g['nim'], 'success' => true, 'msg' => 'Terkirim ke Neo Feeder.'];
                 } else {
                     $results[] = ['nim' => $g['nim'], 'success' => false, 'msg' => $resp['error_msg'] ?? 'Gagal mengirim.'];
+                }
+
+                // Push per-semester academic corrections (status/ipk/ips) to Neo Feeder.
+                $edits = $student['academics'] ?? [];
+                if (count($edits) > 0) {
+                    $nimSafe = trim((string) ($student['nim'] ?? $g['nim']));
+                    $acResp  = $this->neoFeeder->getAktivitasKuliahMahasiswa($apiToken, [
+                        'filter' => "nim='{$nimSafe}'",
+                        'limit'  => 50,
+                    ]);
+                    if (($acResp['error_code'] ?? -1) === 0 && isset($acResp['data'])) {
+                        $regByIdSemester = [];
+                        foreach ($acResp['data'] as $r) {
+                            $regByIdSemester[$r['id_semester']] = $r['id_registrasi_mahasiswa'];
+                        }
+                        foreach ($edits as $idSemester => $edit) {
+                            if (! isset($regByIdSemester[$idSemester])) {
+                                continue;
+                            }
+                            $akRecord = [];
+                            foreach (['id_status_mahasiswa', 'ips', 'ipk'] as $field) {
+                                if (isset($edit[$field]) && (string) $edit[$field] !== '') {
+                                    $akRecord[$field] = $edit[$field];
+                                }
+                            }
+                            if (count($akRecord) > 0) {
+                                $this->neoFeeder->updatePerkuliahanMahasiswa(
+                                    $apiToken,
+                                    (string) $regByIdSemester[$idSemester],
+                                    (string) $idSemester,
+                                    $akRecord
+                                );
+                            }
+                        }
+                    }
                 }
             }
         } else {

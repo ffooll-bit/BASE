@@ -178,6 +178,21 @@ class NeoFeeder
     }
 
     /**
+     * Retrieves the list of student statuses (Daftar Status Mahasiswa) from the Neo Feeder API.
+     *
+     * Options are the standard filter/order/limit/offset overrides.
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getStatusMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetStatusMahasiswa', $token, $options);
+    }
+
+    /**
      * Retrieves the graduated/dropped-out student list (Daftar Mahasiswa Lulus/DO) from the Neo Feeder API.
      *
      * @param string $token   The authentication token obtained from getToken().
