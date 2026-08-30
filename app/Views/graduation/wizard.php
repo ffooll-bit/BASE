@@ -71,7 +71,20 @@
                                         <tr>
                                             <?php foreach ($acCols as $col): ?>
                                                 <td>
-                                                    <?php if (in_array($col, $editableCols, true)): ?>
+                                                    <?php if ($col === 'id_status_mahasiswa'): ?>
+                                                        <?php
+                                                        $stSel = $student['academics'][$row['id_semester']]['id_status_mahasiswa']
+                                                            ?? $row['id_status_mahasiswa'] ?? '';
+                                                        $optionsHtml = '<option value="">—</option>';
+                                                        foreach (($statusOptions ?? []) as $code => $label) {
+                                                            $sel = ($stSel === $code) ? ' selected' : '';
+                                                            $optionsHtml .= '<option value="' . esc($code) . '"' . $sel . '>'
+                                                                . esc($label) . '</option>';
+                                                        }
+                                                        ?>
+                                                        <select class="form-select form-select-sm"
+                                                                name="academics[<?= esc($row['id_semester']) ?>][id_status_mahasiswa]"><?= $optionsHtml ?></select>
+                                                    <?php elseif (in_array($col, $editableCols, true)): ?>
                                                         <input type="text" class="form-control form-control-sm"
                                                                name="academics[<?= esc($row['id_semester']) ?>][<?= esc($col) ?>]"
                                                                value="<?= esc($student['academics'][$row['id_semester']][$col] ?? $row[$col] ?? '') ?>">

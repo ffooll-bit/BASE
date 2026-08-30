@@ -213,6 +213,14 @@ class Graduation extends BaseController
             $error = 'Sesi token habis; silakan login ulang, lalu klik Lanjutkan.';
         }
 
+        $statusOptions = [];
+        $stResp = $this->neoFeeder->getStatusMahasiswa($apiToken);
+        if (($stResp['error_code'] ?? -1) === 0 && isset($stResp['data'])) {
+            foreach ($stResp['data'] as $st) {
+                $statusOptions[(string) $st['id_status_mahasiswa']] = trim((string) ($st['nama_status_mahasiswa'] ?? ''));
+            }
+        }
+
         $pisn = $this->pisn->checkEligibility($student);
         $total = count($progress['students']);
 
@@ -223,6 +231,7 @@ class Graduation extends BaseController
             'student'      => $student,
             'identity'     => $identity,
             'academic'     => $academic,
+            'statusOptions' => $statusOptions,
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
