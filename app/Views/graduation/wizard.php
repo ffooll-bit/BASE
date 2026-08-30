@@ -78,6 +78,10 @@
                                 <thead><tr><?php foreach ($acCols as $col): ?><th><?= esc($col) ?></th><?php endforeach; ?></tr></thead>
                                 <tbody>
                                     <?php foreach ($academic as $row): ?>
+                                        <?php
+                                        $isActive = in_array((string) $row['id_semester'], (array) ($activeSemesterIds ?? []), true);
+                                        $disabled = $isActive ? '' : ' disabled';
+                                        ?>
                                         <tr>
                                             <?php foreach ($acCols as $col): ?>
                                                 <td>
@@ -93,11 +97,11 @@
                                                         }
                                                         ?>
                                                         <select class="form-select form-select-sm"
-                                                                name="academics[<?= esc($row['id_semester']) ?>][id_status_mahasiswa]"><?= $optionsHtml ?></select>
+                                                                name="academics[<?= esc($row['id_semester']) ?>][id_status_mahasiswa]"<?= $disabled ?>><?= $optionsHtml ?></select>
                                                     <?php elseif (in_array($col, $editableCols, true)): ?>
                                                         <input type="text" class="form-control form-control-sm"
                                                                name="academics[<?= esc($row['id_semester']) ?>][<?= esc($col) ?>]"
-                                                               value="<?= esc($student['academics'][$row['id_semester']][$col] ?? $row[$col] ?? '') ?>">
+                                                               value="<?= esc($student['academics'][$row['id_semester']][$col] ?? $row[$col] ?? '') ?>"<?= $disabled ?>>
                                                     <?php else: ?>
                                                         <?= esc($row[$col] ?? '') ?>
                                                     <?php endif; ?>

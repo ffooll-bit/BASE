@@ -164,15 +164,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `—`
 
 ### ENH-007 — Academic table: only rows with a still-active semester are editable
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #101
 - **Recorded:** 2026-08-30 15:18
-- **Implemented:** `—`
+- **Implemented:** 2026-08-30 17:45
 - **Problem:** In the step 2 academic table (ENH-003 made all rows inline-editable), every semester row can be edited, including historical semesters that are no longer active. PDDIKTI only reports/accepts updates for the current active semester, so editing past rows is meaningless and risks pushing invalid corrections.
 - **Possible Fix:** Disable inline editing for rows whose `id_semester` is not still-active in the Daftar Semester (semester reference list); only the row for an active semester remains editable. The reference list of active semesters must come from the same source used elsewhere (e.g. `getSemester()`).
 - **Actual Fix:** In `Graduation::step()`, the `getSemester()` response (already fetched for `$semesterOptions`) is additionally filtered to build a set of active semester IDs where `a_periode_aktif` == '1' (verified live: the Daftar Semester currently marks three semesters active — 20252, 20253 Pendek, 20261 — and the set is mutable). Pass `$activeSemesters` to the view. In `wizard.php` card 2 table, a row is rendered editable (status `<select>` + `ips`/`ipk` inputs) ONLY when its `id_semester` is in `$activeSemesters`; every other row renders the same cells read-only (plain text). Editable state per selector is decided at implementation (native `disabled`/`readonly`; unaffected rows not submitted to `stepPost`, matching the failed rows being skipped anyway).
-- **Actual Implemented:** `—`
-- **Changes:** `—`
+- **Actual Implemented:** In `Graduation::step()`, after building `$semesterOptions` and `$semesterRows` from `getSemester()`, a new `$activeSemesterIds` set is built from rows whose `a_periode_aktif` is truthy (`! empty`), and passed to the view as `activeSemesterIds`. In `wizard.php` card 2, each academic row computes `$isActive = in_array(id_semester, activeSemesterIds)` and applies ` disabled` to the status `<select>` and the `ips`/`ipk` inputs of non-active rows; non-editable columns are untouched (read-only text). Disabled inputs are not submitted to `stepPost`, so WizardProgress keeps prior state for inactive semesters and `finish()` only pushes corrections for active ones.
+- **Changes:** Only rows for currently-active semesters (`a_periode_aktif='1'`) in the Daftar Semester are inline-editable in the step 2 academic table; historical/non-active rows are rendered read-only (disabled). Verified live that the active set is 20252, 20253 Pendek, 20261 — and that it mutates.
 
 ### ENH-008 — Auto-check step checkboxes; all checkboxes must be checked to proceed
 - **Status:** `verified`
