@@ -177,7 +177,7 @@ class Graduation extends BaseController
         $academic    = null;
         $transcript  = null;
         $completeness = null;
-        $error       = null;
+        $error       = session()->getFlashdata('graduation_error');
 
         if ($apiToken !== null) {
             $nimSafe = str_replace("'", "\'", (string) $student['nim']);
@@ -188,7 +188,7 @@ class Graduation extends BaseController
             ]);
             if (($idResp['error_code'] ?? -1) === 0 && isset($idResp['data'][0])) {
                 $identity = $idResp['data'][0];
-            } else {
+            } elseif (empty($error)) {
                 $error = $idResp['error_msg'] ?? 'Gagal memuat data mahasiswa.';
             }
 
@@ -291,6 +291,49 @@ class Graduation extends BaseController
         $lastIsActive = $lastAcademic !== null
             && in_array((string) $lastAcademic['id_semester'], $activeSemesterIds, true);
 
+        // ENH-008: server-side initial auto-check state for the step checkboxes.
+        // Step 1 (identity) and step 3 (transcript) are static per render; step 2
+        // (academic) is additionally recomputed real-time in the browser (JS).
+        $excelIpk = $student['ipk'] ?? '';
+
+        $activeCode = null;
+        foreach ($statusOptions as $code => $label) {
+            if (trim((string) $label) === 'Aktif') {
+                $activeCode = (string) $code;
+                break;
+            }
+        }
+
+        // Step 1: auto-check only when the (optional) Excel name is present and
+        // exactly equals the PDDIKTI registered name.
+        $identityOk = $student['nama'] !== ''
+            && ($identity['nama_mahasiswa'] ?? '') === $student['nama'];
+
+        // Step 2: last row matches the Excel IPK and its status is Aktif.
+        $academicOk = false;
+        if ($lastAcademic !== null && $lastIsActive && $activeCode !== null) {
+            $lastSmt = (string) $lastAcademic['id_semester'];
+            $lastIpkVal = trim((string) ($student['academics'][$lastSmt]['ipk']
+                ?? $lastAcademic['ipk'] ?? ''));
+            $lastStatusVal = (string) ($student['academics'][$lastSmt]['id_status_mahasiswa']
+                ?? $lastAcademic['id_status_mahasiswa'] ?? '');
+            $academicOk = $lastIpkVal === trim((string) $excelIpk)
+                && $lastStatusVal === (string) $activeCode;
+        }
+
+        // Step 3: a thesis course exists with a grade AND is included in the
+        // transcript (choosed:true). choosed is informational for the completeness
+        // badge but required for this auto-check gate (ENH-008 spec).
+        $transcriptOk = false;
+        if (! empty($completeness['complete'])) {
+            foreach (($completeness['thesis'] ?? []) as $t) {
+                if (! empty($t['hasGrade']) && ! empty($t['choosed'])) {
+                    $transcriptOk = true;
+                    break;
+                }
+            }
+        }
+
         $pisn = $this->pisn->checkEligibility($student);
         $total = count($progress['students']);
 
@@ -307,7 +350,11 @@ class Graduation extends BaseController
             'activeSemesterIds'  => $activeSemesterIds,
             'lastAcademic'       => $lastAcademic,
             'lastIsActive'       => $lastIsActive,
-            'excelIpk'           => $student['ipk'] ?? '',
+            'excelIpk'           => $excelIpk,
+            'identityOk'         => $identityOk,
+            'academicOk'         => $academicOk,
+            'transcriptOk'       => $transcriptOk,
+            'activeCode'         => $activeCode,
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
@@ -448,6 +495,8 @@ class Graduation extends BaseController
         $student = $progress['students'][$idx];
 
         $identityOk    = $this->request->getPost('identity_ok') === '1';
+        $academicOk    = $this->request->getPost('academic_ok') === '1';
+        $transcriptOk  = $this->request->getPost('transcript_ok') === '1';
         $pisnOk       = $this->request->getPost('pisn_ok') === '1';
         $academics    = $this->request->getPost('academics') ?? [];
 
@@ -466,6 +515,12 @@ class Graduation extends BaseController
         if (! $identityOk) {
             $errors[] = 'Centang konfirmasi identitas (cocok dengan KTP).';
         }
+        if (! $academicOk) {
+            $errors[] = 'Centang konfirmasi akademik (IPK semester terakhir sesuai & status Aktif).';
+        }
+        if (! $transcriptOk) {
+            $errors[] = 'Centang konfirmasi kelengkapan transkrip (MK skripsi bernilai & masuk transkrip).';
+        }
         if ($nim === '' || $nama === '' || $jenisKeluar === '' || $tglKeluar === '' || $periodeKeluar === '' || $ipk === '') {
             $errors[] = 'Field kelulusan wajib diisi (No Ijazah otomatis "-").';
         }
@@ -481,6 +536,8 @@ class Graduation extends BaseController
 
         $student['saved']          = true;
         $student['identity_ok']    = $identityOk;
+        $student['academic_ok']    = $academicOk;
+        $student['transcript_ok']  = $transcriptOk;
         $student['pisn_ok']        = $pisnOk;
         $student['academics']      = $academics;
         $student['graduation']     = [

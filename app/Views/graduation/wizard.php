@@ -48,7 +48,7 @@
                         </table>
                     <?php endif; ?>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="identity_ok" name="identity_ok" value="1" <?= !empty($student['identity_ok']) ? 'checked' : '' ?>>
+                        <input class="form-check-input" type="checkbox" id="identity_ok" name="identity_ok" value="1" <?= (!empty($student['identity_ok']) || !empty($identityOk)) ? 'checked' : '' ?>>
                         <label class="form-check-label" for="identity_ok">Nama &amp; jenis kelamin sesuai KTP</label>
                     </div>
                 </div>
@@ -144,6 +144,10 @@
                             </table>
                         </div>
                     <?php endif; ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="academic_ok" name="academic_ok" value="1" <?= (!empty($student['academic_ok']) || !empty($academicOk)) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="academic_ok">IPK semester terakhir sesuai &amp; status Aktif</label>
+                    </div>
                 </div>
             </div>
 
@@ -202,6 +206,10 @@
                             </div>
                         <?php endif; ?>
                         <div class="text-muted small">Jumlah nilai terload: <?= esc(count($transcript)) ?></div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="transcript_ok" name="transcript_ok" value="1" <?= (!empty($student['transcript_ok']) || !empty($transcriptOk)) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="transcript_ok">MK skripsi/tugas akhir bernilai &amp; masuk transkrip</label>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -279,15 +287,26 @@
             var lastIpk  = document.getElementById('last-ipk');
             var lastStat = document.getElementById('last-status');
             var gradIpk  = document.getElementById('graduation_ipk');
+            var acadOk   = document.getElementById('academic_ok');
             if (!lastIpk || !gradIpk) { return; }
+
+            // ENH-008: real-time auto-check for step 2. The checkbox reflects
+            // (last-row IPK === Excel IPK) AND (last-row status === Aktif).
+            var excelIpk   = <?= json_encode(trim((string) $excelIpk)) ?>;
+            var activeCode = <?= json_encode($activeCode) ?>;
+            function recomputeAcademicOk() {
+                if (!acadOk) { return; }
+                var cond = lastIpk.value === excelIpk
+                    && lastStat !== null && lastStat.value === activeCode;
+                if (cond) { acadOk.checked = true; }
+            }
 
             function sync(a, b) {
                 if (a.value !== b.value) { b.value = a.value; }
             }
-            lastIpk.addEventListener('input', function () { sync(lastIpk, gradIpk); });
-            gradIpk.addEventListener('input', function () { sync(gradIpk, lastIpk); });
+            lastIpk.addEventListener('input', function () { sync(lastIpk, gradIpk); recomputeAcademicOk(); });
+            gradIpk.addEventListener('input', function () { sync(gradIpk, lastIpk); recomputeAcademicOk(); });
 
-            var activeCode = <?= json_encode($activeCode) ?>;
             var btn = document.getElementById('auto-update-ipk');
             if (btn && lastStat && activeCode) {
                 btn.addEventListener('click', function () {
@@ -296,8 +315,11 @@
                     sync(lastIpk, gradIpk);
                     var banner = document.getElementById('ipk-mismatch');
                     if (banner) { banner.remove(); }
+                    recomputeAcademicOk();
                 });
             }
+
+            recomputeAcademicOk();
         })();
         </script>
         <?php endif; ?>
