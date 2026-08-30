@@ -41,9 +41,10 @@
             <div class="card-body">
                 <p class="text-muted">
                     Unggah berkas Excel (<code>.xlsx</code>) berisi calon wisudawan. Kolom yang dikenali
-                    (huruf kecil, baris pertama): <code>nim</code>* (wajib), <code>nama</code>,
-                    <code>jenis_keluar</code>, <code>tgl_keluar</code>, <code>periode_keluar</code>,
-                    <code>ipk</code>. Field <code>no_ijazah</code> otomatis diisi &quot;-&quot;.
+                    (huruf kecil, baris pertama): <code>nim</code>* (wajib), <code>nama</code> (opsional,
+                    isi dengan nama sesuai KTP), <code>tgl_keluar</code>, <code>ipk</code>.
+                    Jenis keluar otomatis &quot;Lulus&quot;; periode keluar diturunkan dari <code>tgl_keluar</code>.
+                    Field <code>no_ijazah</code> otomatis diisi &quot;-&quot;.
                 </p>
                 <form action="<?= base_url('graduation/upload') ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field() ?>
