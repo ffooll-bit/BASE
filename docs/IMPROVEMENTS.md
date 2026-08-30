@@ -143,7 +143,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-005 — Minimal Excel template (NIM, tanggal keluar, IPK only)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #99
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** The PISN Graduation Excel upload template requires more columns than the workflow actually needs. The wizard forces the admin to fill `jenis_keluar` and `periode_keluar` in the spreadsheet even though they are derivable or constant, and `nama` is optional but currently pointless — its real purpose is validating the registered name against the KTP name. This makes the template heavier than necessary and invites errors.
@@ -154,7 +154,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-006 — Cross-check IPK against last semester row; auto-update via button, executed at finish
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #100
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** The IPK submitted in the Excel file is not validated against the academic data. The admin has to spot-check manually whether the Excel IPK matches the status/IPK of the student's last academic row; mismatch anywhere goes unnoticed and would be pushed to Neo Feeder as-is.
@@ -165,7 +165,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-007 — Academic table: only rows with a still-active semester are editable
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #101
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** In the step 2 academic table (ENH-003 made all rows inline-editable), every semester row can be edited, including historical semesters that are no longer active. PDDIKTI only reports/accepts updates for the current active semester, so editing past rows is meaningless and risks pushing invalid corrections.
@@ -176,7 +176,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-008 — Auto-check step checkboxes; all checkboxes must be checked to proceed
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #102
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** Wizard steps currently lack a clear manual-verification gate structure. The admin can advance without having explicitly confirmed each verification area, and the wizard does not auto-confirm conditions that are already objectively satisfiable (name match, IPK+status, transcript inclusion).
@@ -187,7 +187,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-009 — Simplify step numbering (whole numbers, no 2b)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #103
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** The wizard uses `2b` as a step label (Kelengkapan Transkrip card is currently numbered as a sub-step of the academic step), which looks inconsistent alongside whole-numbered steps 1, 2, 3, 4.
