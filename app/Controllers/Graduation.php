@@ -19,14 +19,16 @@ class Graduation extends BaseController
 {
     /**
      * Excel column -> internal key map (header row is matched case-insensitively).
+     *
+     * Minimal template per ENH-005: only NIM (lookup), Nama (optional KTP-name
+     * validation source), Tanggal Keluar, and IPK are read from the spreadsheet.
+     * jenis_keluar is always "Lulus" and periode_keluar is derived from tgl_keluar.
      */
     private const EXCEL_HEADERS = [
-        'nim'            => 'nim',
-        'nama'           => 'nama',
-        'jenis_keluar'   => 'jenis_keluar',
-        'tgl_keluar'     => 'tgl_keluar',
-        'periode_keluar' => 'periode_keluar',
-        'ipk'            => 'ipk',
+        'nim'        => 'nim',
+        'nama'       => 'nama',
+        'tgl_keluar' => 'tgl_keluar',
+        'ipk'        => 'ipk',
     ];
 
     private WizardProgress $wizard;
@@ -232,11 +234,44 @@ class Graduation extends BaseController
         }
 
         $semesterOptions = [];
+        // Raw semester rows retained for periode derivation (range + Pendek exclusion).
+        $semesterRows = [];
         $smResp = $this->neoFeeder->getSemester($apiToken);
         if (($smResp['error_code'] ?? -1) === 0 && isset($smResp['data'])) {
             foreach ($smResp['data'] as $sm) {
                 $semesterOptions[(string) $sm['id_semester']] = trim((string) ($sm['nama_semester'] ?? ''));
+                $semesterRows[] = $sm;
             }
+        }
+
+        // ENH-005: derive periode_keluar from tgl_keluar by range-matching the
+        // date against the semester reference list (Ganjil/Genap only, Pendek =
+        // semester marker 3 excluded). Result is a default the admin may override.
+        $tglForDerive = $student['graduation']['tgl_keluar'] ?? $student['tgl_keluar'] ?? '';
+        $derivedPeriode = $this->derivePeriodeKeluar(['tgl_keluar' => $tglForDerive], $semesterRows);
+
+        // ENH-005: jenis_keluar defaults to "Lulus" (PISN graduation is always
+        // this jenis keluar) when the student record carries none.
+        if (! isset($student['graduation']) || ! is_array($student['graduation'])) {
+            $student['graduation'] = [
+                'nim'            => $student['nim'],
+                'nama'           => $student['nama'],
+                'jenis_keluar'   => '',
+                'tgl_keluar'     => $student['tgl_keluar'],
+                'periode_keluar' => '',
+                'ipk'            => $student['ipk'],
+                'no_ijazah'      => '-',
+            ];
+        }
+        $g = &$student['graduation'];
+        if (empty($g['jenis_keluar'])) {
+            $lulusKey = array_search('Lulus', $jenisKeluarOptions, true);
+            if ($lulusKey !== false) {
+                $g['jenis_keluar'] = (string) $lulusKey;
+            }
+        }
+        if (empty($g['periode_keluar']) && $derivedPeriode !== null) {
+            $g['periode_keluar'] = $derivedPeriode;
         }
 
         $pisn = $this->pisn->checkEligibility($student);
@@ -333,6 +368,48 @@ class Graduation extends BaseController
             'reason'   => 'Nilai MK skripsi/tugas akhir belum tersedia.',
             'thesis'   => $thesisRows,
         ];
+    }
+
+    /**
+     * Derives the periode keluar (id_semester) from a student's tgl_keluar by
+     * range-matching the date against the Daftar Semester (GetSemester) rows.
+     *
+     * Only Ganjil/Genap semesters are eligible — Pendek semesters (marker
+     * `semester` == 3) are excluded from the choices. Returns the first matching
+     * id_semester, or null when no range fits (caller leaves the field for manual
+     * selection). ENH-005.
+     *
+     * @param array       $student       Wizard student record.
+     * @param list<array> $semesterRows  Raw GetSemester rows.
+     */
+    private function derivePeriodeKeluar(array $student, array $semesterRows): ?string
+    {
+        $tglKeluar = trim((string) ($student['tgl_keluar'] ?? ''));
+        if ($tglKeluar === '') {
+            return null;
+        }
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $tglKeluar) !== 1) {
+            return null;
+        }
+
+        $date = strtotime($tglKeluar);
+        if ($date === false) {
+            return null;
+        }
+
+        foreach ($semesterRows as $sm) {
+            // Pendek (marker 3) semesters are not eligible periode choices.
+            if ((string) ($sm['semester'] ?? '') === '3') {
+                continue;
+            }
+            $mulai = strtotime((string) ($sm['tanggal_mulai'] ?? ''));
+            $selesai = strtotime((string) ($sm['tanggal_selesai'] ?? ''));
+            if ($mulai !== false && $selesai !== false && $date >= $mulai && $date <= $selesai) {
+                return (string) $sm['id_semester'];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -555,13 +632,13 @@ class Graduation extends BaseController
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $headers = ['nim', 'nama', 'jenis_keluar', 'tgl_keluar', 'periode_keluar', 'ipk'];
-        $columns = ['A', 'B', 'C', 'D', 'E', 'F'];
+        $headers = ['nim', 'nama', 'tgl_keluar', 'ipk'];
+        $columns = ['A', 'B', 'C', 'D'];
         foreach ($headers as $i => $header) {
             $sheet->setCellValue($columns[$i] . '1', $header);
         }
 
-        $example = ['12345678', 'Nama Mahasiswa', 'Lulus', '2026-08-31', '2026.1', '3.75'];
+        $example = ['12345678', 'Nama Mahasiswa (optional)', '2026-08-31', '3.75'];
         foreach ($example as $i => $value) {
             $sheet->setCellValue($columns[$i] . '2', $value);
         }
@@ -620,7 +697,7 @@ class Graduation extends BaseController
                 'nim'            => $nim,
                 'nama'           => isset($colIndex['nama']) ? trim((string) ($row[$colIndex['nama']] ?? '')) : '',
                 'jenis_keluar'   => isset($colIndex['jenis_keluar']) ? trim((string) ($row[$colIndex['jenis_keluar']] ?? '')) : '',
-                'tgl_keluar'     => isset($colIndex['tgl_keluar']) ? trim((string) ($row[$colIndex['tgl_keluar']] ?? '')) : '',
+                'tgl_keluar'     => isset($colIndex['tgl_keluar']) ? $this->normalizeTanggalKeluar($row[$colIndex['tgl_keluar']] ?? '') : '',
                 'periode_keluar' => isset($colIndex['periode_keluar']) ? trim((string) ($row[$colIndex['periode_keluar']] ?? '')) : '',
                 'ipk'            => isset($colIndex['ipk']) ? trim((string) ($row[$colIndex['ipk']] ?? '')) : '',
                 'saved'          => false,
@@ -628,5 +705,34 @@ class Graduation extends BaseController
         }
 
         return $students;
+    }
+
+    /**
+     * Normalizes a tgl_keluar cell to a plain `YYYY-MM-DD` string regardless of how
+     * PhpSpreadsheet surfaced it: a DateTime object, an Excel serial date number
+     * (with setReadDataOnly(true) date cells arrive as serials such as 46207), or a
+     * pre-formatted string. ENH-005.
+     *
+     * @param mixed $cell The raw spreadsheet cell value.
+     */
+    private function normalizeTanggalKeluar($cell): string
+    {
+        if ($cell instanceof \DateTimeInterface) {
+            return $cell->format('Y-m-d');
+        }
+
+        if (is_int($cell) || (is_string($cell) && ctype_digit($cell))) {
+            $serial = (int) $cell;
+            // Excel serial dates for plausible graduation years (2000-01-01..2099-12-31).
+            if ($serial >= 36526 && $serial <= 73049) {
+                try {
+                    return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($serial)->format('Y-m-d');
+                } catch (\Throwable $e) {
+                    // fall through to string below
+                }
+            }
+        }
+
+        return trim((string) $cell);
     }
 }
