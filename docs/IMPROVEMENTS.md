@@ -142,56 +142,56 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** `app/Libraries/NeoFeeder.php` (+2 methods), `app/Controllers/Graduation.php` (fetch options in `step()`, rebuild record in `finish()`), `app/Views/graduation/wizard.php` (card 4 dropdowns + date input + label→code mapping).
 
 ### ENH-005 — Minimal Excel template (NIM, tanggal keluar, IPK only)
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** The PISN Graduation Excel upload template requires more columns than the workflow actually needs. The wizard forces the admin to fill `jenis_keluar` and `periode_keluar` in the spreadsheet even though they are derivable or constant, and `nama` is optional but currently pointless — its real purpose is validating the registered name against the KTP name. This makes the template heavier than necessary and invites errors.
 - **Possible Fix:** Reduce the template to a minimum: only **NIM** (used to look up the student), **tanggal keluar** (used as the step 4 Input Kelulusan value and to derive `periode_keluar`), and **IPK** (step 4 Input Kelulusan value). **Nama KTP** stays optional; when filled it becomes the source for validating that the registered student name matches the KTP name (feeds the step 1 auto-check from ENH-008). Drop the `jenis_keluar` column entirely (PISN Graduation is always `Lulus`) and drop `periode_keluar` (derived from `tanggal_keluar` by matching its range against the semester reference list — Daftar Semester, Ganjil/Genap only, Pendek excluded).
-- **Actual Fix:** `—`
+- **Actual Fix:** Trim `Graduation::EXCEL_HEADERS` to `nim`, `nama`, `tgl_keluar`, `ipk` (Graduation.php:23–30) and `downloadTemplate()` headers + example row to the same four columns (lines 558–564). `parseExcel()` keeps reading them; `jenis_keluar`/`periode_keluar` default to empty in the student record. Card 4 (wizard.php): `jenis_keluar` defaults to the `Lulus` code/option (`id_jenis_keluar` for Lulus) when empty; `periode_keluar` is derived automatically from `tgl_keluar` by range-matching the date against the `GetSemester` reference list (`tanggal_mulai`–`tanggal_selesai`), excluding `semester=3` (Pendek) entries; if no range matches, the field stays empty for manual selection. The KTP-name presence check (ENH-008) compares the optional Excel `nama` against the PDDIKTI identity field `nama_mahasiswa` (verified live; identity row key from `getListMahasiswa`).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-006 — Cross-check IPK against last semester row; auto-update via button, executed at finish
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** The IPK submitted in the Excel file is not validated against the academic data. The admin has to spot-check manually whether the Excel IPK matches the status/IPK of the student's last academic row; mismatch anywhere goes unnoticed and would be pushed to Neo Feeder as-is.
 - **Possible Fix:** In step 2, compare the Excel IPK against the row with the latest `id_semester` in the academic table. If they differ, show a warning and a button that stages an auto-update: set the last row's IPK to the Excel value and set its `id_status_mahasiswa` to Aktif. The update is NOT applied immediately — it is stored (via the existing `WizardProgress` academics store) and executed at `finish()` through `updatePerkuliahanMahasiswa`, consistent with ENH-003's deferred-push design.
-- **Actual Fix:** `—`
+- **Actual Fix:** In `Graduation::step()`, after sorting `$academic` ascending by `id_semester` (already present), take the last row (largest `id_semester`) and compare its `ipk` with the Excel IPK (`$student['ipk']`). If they differ, pass a warning flag + the affected values to the view. Card 2 renders a warning alert and an "Auto-update" button; clicking it stages an override in `WizardProgress` (`$student['academics'][<last_id_semester>]` set to `id_status_mahasiswa`='A' — Aktif per live `GetStatusMahasiswa` — plus `ipk` = Excel value). No immediate mutation: `finish()` already pushes per-semester academic overrides via `updatePerkuliahanMahasiswa` (Graduation.php:468–501), so the staged edit rides the existing deferred-push path. Reached via a checkbox name (`auto_update_last_ipk`) or a separate small POST — exact UI detail decided at implementation time.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-007 — Academic table: only rows with a still-active semester are editable
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** In the step 2 academic table (ENH-003 made all rows inline-editable), every semester row can be edited, including historical semesters that are no longer active. PDDIKTI only reports/accepts updates for the current active semester, so editing past rows is meaningless and risks pushing invalid corrections.
 - **Possible Fix:** Disable inline editing for rows whose `id_semester` is not still-active in the Daftar Semester (semester reference list); only the row for an active semester remains editable. The reference list of active semesters must come from the same source used elsewhere (e.g. `getSemester()`).
-- **Actual Fix:** `—`
+- **Actual Fix:** In `Graduation::step()`, the `getSemester()` response (already fetched for `$semesterOptions`) is additionally filtered to build a set of active semester IDs where `a_periode_aktif` == '1' (verified live: the Daftar Semester currently marks three semesters active — 20252, 20253 Pendek, 20261 — and the set is mutable). Pass `$activeSemesters` to the view. In `wizard.php` card 2 table, a row is rendered editable (status `<select>` + `ips`/`ipk` inputs) ONLY when its `id_semester` is in `$activeSemesters`; every other row renders the same cells read-only (plain text). Editable state per selector is decided at implementation (native `disabled`/`readonly`; unaffected rows not submitted to `stepPost`, matching the failed rows being skipped anyway).
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-008 — Auto-check step checkboxes; all checkboxes must be checked to proceed
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** Wizard steps currently lack a clear manual-verification gate structure. The admin can advance without having explicitly confirmed each verification area, and the wizard does not auto-confirm conditions that are already objectively satisfiable (name match, IPK+status, transcript inclusion).
 - **Possible Fix:** Give every step a checkbox that must be checked before advancing to the next verification step. Auto-check where the criterion is objectively verifiable: **step 1** checked when the KTP name (from Excel, per ENH-005) exactly equals the PDDIKTI registered name; **step 2** checked when the last-semester IPK matches the Excel IPK AND the status is Aktif; **step 2b** checked when a thesis/skripsi MK exists with a grade AND `choosed:true` (per BUG-001); **step 3** cannot be auto-checked. Every checkbox may still be checked manually regardless of the auto-check condition. Progression requires all checkboxes checked.
-- **Actual Fix:** `—`
+- **Actual Fix:** Add a checkbox to each verification card in `wizard.php`: step 1 `identity_ok` (exists), step 2 `academic_ok` (new), step 3/Kelengkapan Transkrip `transcript_ok` (new, after ENH-009 renumbering), step 4/PISN `pisn_ok` (exists; cannot auto-check). Server-side auto-check at render: step 1 checked when Excel `nama` is optionally present AND equals `identity['nama_mahasiswa']` (field verified live); step 2 checked when `academic` last row (`id_semester` largest) `ipk` === Excel IPK AND `id_status_mahasiswa` is Aktif; step 3 checked when `completeness` finds a thesis MK with a grade AND `choosed:true`. Every checkbox remains manually togglable regardless of the auto-check state. `stepPost` validation (`Graduation.php:367–376`) is extended to require all four checkboxes (`identity_ok`, `academic_ok`, `transcript_ok`, `pisn_ok`) before advancing; each flag is stored on `$student`. Auto-check state is informational pre-fill (not blocking manual override), matching the manual-verification design of the wizard.
 - **Actual Implemented:** `—`
 - **Changes:** `—`
 
 ### ENH-009 — Simplify step numbering (whole numbers, no 2b)
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** `—`
 - **Recorded:** 2026-08-30 15:18
 - **Implemented:** `—`
 - **Problem:** The wizard uses `2b` as a step label (Kelengkapan Transkrip card is currently numbered as a sub-step of the academic step), which looks inconsistent alongside whole-numbered steps 1, 2, 3, 4.
 - **Possible Fix:** Two options were considered: (a) remove step numbering entirely, or (b) renumber all steps to whole numbers with no sub-step. **Decision (AGENT): option (b)** — renumber the transcript card from `2b` to its own whole number (2b → 3, and 3/4 shift accordingly), preserving the wizard's "which step am I on" orientation without sub-numbering.
-- **Actual Fix:** `—`
+- **Actual Fix:** In `wizard.php` card headers (lines 34, 58, 116, 175, 190) renumber to: `1. Identitas (cocok dengan KTP)`, `2. Akademik (status, IPK, SKS)`, `3. Kelengkapan Transkrip`, `4. Eligibilitas PISN`, `5. Input Kelulusan`. No other structural change; the transcript card becomes its own whole-numbered step. Any step references in ENH-008 (checkbox labels) and in the Upload/preview views must follow the same renumbering. (Verified the current labels: `1.`, `2.`, `2b.`, `3.`, `4.`.)
 - **Actual Implemented:** `—`
 - **Changes:** `—`
