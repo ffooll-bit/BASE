@@ -226,6 +226,8 @@ class Graduation extends BaseController
             'transcript'   => $transcript,
             'completeness' => $completeness,
             'pisn'         => $pisn,
+            'uuidKeys'     => ['id_registrasi_mahasiswa', 'id_mahasiswa', 'id_aktivitas_kuliah'],
+            'uuidRegex'    => '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
             'error'        => $error,
             'isLast'       => ($idx === $total - 1),
             'saved'        => $student['saved'] ?? false,

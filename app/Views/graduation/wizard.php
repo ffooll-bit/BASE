@@ -38,9 +38,12 @@
                     <?php else: ?>
                         <table class="table table-sm table-bordered w-auto">
                             <tbody>
-                                <?php foreach ($identity as $key => $value): ?>
-                                    <tr><th><?= esc($key) ?></th><td><?= esc($value) ?></td></tr>
-                                <?php endforeach; ?>
+                        <?php foreach ($identity as $key => $value): ?>
+                            <?php if (in_array($key, $uuidKeys, true) || (is_string($value) && preg_match($uuidRegex, $value))) {
+                                continue;
+                            } ?>
+                            <tr><th><?= esc($key) ?></th><td><?= esc($value) ?></td></tr>
+                        <?php endforeach; ?>
                             </tbody>
                         </table>
                     <?php endif; ?>
@@ -61,10 +64,20 @@
                     <?php else: ?>
                         <div class="table-responsive mb-2">
                             <table class="table table-sm table-bordered table-striped">
-                                <thead><tr><?php foreach (array_keys($academic[0]) as $col): ?><th><?= esc($col) ?></th><?php endforeach; ?></tr></thead>
+                                <?php
+                                $cols = [];
+                        foreach (array_keys($academic[0]) as $k) {
+                            $sample = $academic[0][$k] ?? '';
+                            if (in_array($k, $uuidKeys, true) || (is_string($sample) && preg_match($uuidRegex, $sample))) {
+                                continue;
+                            }
+                            $cols[] = $k;
+                        }
+                        ?>
+                                <thead><tr><?php foreach ($cols as $col): ?><th><?= esc($col) ?></th><?php endforeach; ?></tr></thead>
                                 <tbody>
                                     <?php foreach ($academic as $row): ?>
-                                        <tr><?php foreach ($row as $cell): ?><td><?= esc($cell) ?></td><?php endforeach; ?></tr>
+                                        <tr><?php foreach ($cols as $col): ?><td><?= esc($row[$col] ?? '') ?></td><?php endforeach; ?></tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
