@@ -187,7 +187,10 @@
                                     <?php foreach ($completeness['thesis'] as $t): ?>
                                         <?php
                                         $excelGrade = trim((string) ($student['nilai_skripsi'] ?? ''));
-                                        $willFill   = ! $t['hasGrade'] && $excelGrade !== '';
+                                        $targetSmt  = $targetThesisSemester ?? null;
+                                        $willFill   = ! $t['hasGrade']
+                                            && $excelGrade !== ''
+                                            && (string) ($t['semester'] ?? '') === (string) $targetSmt;
                                         ?>
                                         <tr>
                                             <td><?= esc($t['nama']) ?></td>

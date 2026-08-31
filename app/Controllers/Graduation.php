@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Libraries\NeoFeeder;
 use App\Libraries\PisnService;
 use App\Libraries\WizardProgress;
+use CodeIgniter\HTTP\RedirectResponse;
 
 /**
  * PISN graduation wizard.
@@ -336,6 +337,10 @@ class Graduation extends BaseController
             }
         }
 
+        // ENH-010 fix: only the ungraded thesis/skripsi row in the LAST semester
+        // (largest id_smt) is the one that will have its grade filled.
+        $targetThesisSemester = $this->lastUngradedThesisSemester($completeness['thesis'] ?? []);
+
         $pisn = $this->pisn->checkEligibility($student);
         $total = count($progress['students']);
 
@@ -356,6 +361,7 @@ class Graduation extends BaseController
             'identityOk'         => $identityOk,
             'academicOk'         => $academicOk,
             'transcriptOk'       => $transcriptOk,
+            'targetThesisSemester' => $targetThesisSemester,
             'activeCode'         => $activeCode,
             'transcript'   => $transcript,
             'completeness' => $completeness,
@@ -442,13 +448,21 @@ class Graduation extends BaseController
 
     /**
      * Finds the thesis/skripsi course row that is registered but still carries
-     * no grade, returning its composite key for UpdateNilaiPerkuliahanKelas.
+     * no grade and sits in the LAST semester (largest id_smt), returning its
+     * composite key for UpdateNilaiPerkuliahanKelas.
+     *
+     * A student may have several thesis/skripsi rows across semesters (e.g.
+     * repeating the course). Only the row in the last semester may receive the
+     * grade, and only while that row is still ungraded — if the last semester's
+     * thesis row already has a grade, no row is returned (we never backfill an
+     * older, ungraded row).
      *
      * @param array $transcript Rows from getCekTranskripMahasiswa()
      *                          (cloud nilai_mahasiswa rows carrying id_kls / id_reg_pd).
      *
-     * @return array|null The row's key as ['id_reg_pd', 'id_kls'], or null when
-     *                    no graded-missing thesis row exists.
+     * @return array|null The row's key as ['id_reg_pd', 'id_kls', 'id_smt'], or
+     *                    null when the last-semester thesis row is already graded
+     *                    or no thesis row exists.
      */
     private function findMissingGradeThesis(array $transcript): ?array
     {
@@ -457,26 +471,79 @@ class Graduation extends BaseController
         }
 
         $thesisPattern = '/skripsi|tugas\s*akhir|thesis|disertasi/i';
+        $thesisRows    = [];
 
         foreach ($transcript as $row) {
             $name = $row['nm_mk'] ?? ($row['nama_mata_kuliah'] ?? '');
-            if (! preg_match($thesisPattern, $name)) {
+            if (! is_string($name) || ! preg_match($thesisPattern, $name)) {
                 continue;
             }
-            $nilai    = $row['nilai_huruf'] ?? ($row['nilai_angka'] ?? null);
-            $hasGrade = ($nilai !== null && $nilai !== '');
-            if ($hasGrade) {
-                continue;
-            }
-            $idReg = $row['id_reg_pd'] ?? ($row['id_registrasi_mahasiswa'] ?? '');
-            $idKls = $row['id_kls'] ?? ($row['id_kelas_kuliah'] ?? '');
-            if ($idReg === '' || $idKls === '') {
-                continue;
-            }
-            return ['id_reg_pd' => (string) $idReg, 'id_kls' => (string) $idKls];
+            $thesisRows[] = $row;
         }
 
-        return null;
+        if (empty($thesisRows)) {
+            return null;
+        }
+
+        // The candidate is the thesis row in the LAST semester.
+        $smtKey = fn (array $r) => (string) ($r['id_smt'] ?? ($r['id_semester'] ?? ''));
+        usort($thesisRows, fn ($a, $b) => strcmp($smtKey($b), $smtKey($a)));
+        $last = $thesisRows[0];
+
+        // If the last-semester thesis row already has a grade, do nothing.
+        $grade = trim((string) ($last['nilai_huruf'] ?? ''));
+        if ($grade === '') {
+            $grade = trim((string) ($last['nilai_angka'] ?? ''));
+        }
+        if ($grade !== '') {
+            return null;
+        }
+
+        $idReg = (string) ($last['id_reg_pd'] ?? ($last['id_registrasi_mahasiswa'] ?? ''));
+        $idKls = (string) ($last['id_kls'] ?? ($last['id_kelas_kuliah'] ?? ''));
+        if ($idReg === '' || $idKls === '') {
+            return null;
+        }
+
+        return [
+            'id_reg_pd' => $idReg,
+            'id_kls'    => $idKls,
+            'id_smt'    => $smtKey($last),
+        ];
+    }
+
+    /**
+     * Returns the semester (id_smt) of the thesis/skripsi course row that sits in
+     * the LAST semester, but only when that row is still ungraded. Returns null
+     * when the last-semester thesis row already has a grade (so nothing is tagged
+     * "(akan diisi)").
+     *
+     * @param list<array> $thesisRows Rows from checkTranscriptCompleteness().
+     */
+    private function lastUngradedThesisSemester(array $thesisRows): ?string
+    {
+        if (empty($thesisRows)) {
+            return null;
+        }
+
+        $last    = null;
+        $lastRow = null;
+        foreach ($thesisRows as $t) {
+            $smt = (string) ($t['semester'] ?? '');
+            if ($smt === '') {
+                continue;
+            }
+            if ($last === null || strcmp($smt, $last) > 0) {
+                $last    = $smt;
+                $lastRow = $t;
+            }
+        }
+
+        if ($lastRow === null || ! empty($lastRow['hasGrade'])) {
+            return null;
+        }
+
+        return $last;
     }
 
     /**
@@ -610,8 +677,15 @@ class Graduation extends BaseController
     /**
      * Submits every verified student to Neo Feeder, then shows guidance.
      */
-    public function finish(): string
+    public function finish(): RedirectResponse
     {
+        // Full submission iterates the whole batch with one synchronous Neo Feeder
+        // call chain per student (InsertMahasiswaLulusDO + academic edits + thesis
+        // grade), which can exceed PHP's default 60s time limit on large batches.
+        // Allow this long-running server-side job to finish. ponytail: unbounded; a
+        // progress/queue pipeline is the upgrade if batches keep growing.
+        set_time_limit(0);
+
         $token    = $this->currentToken();
         $progress = $this->loadProgress();
         if ($progress === null) {
