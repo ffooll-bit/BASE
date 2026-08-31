@@ -50,6 +50,15 @@ class Services extends BaseService
         return new \App\Libraries\WizardProgress(service('cache'));
     }
 
+    public static function ipkVerif($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('ipkVerif');
+        }
+
+        return new \App\Libraries\VerifikasiIpkStore(service('cache'));
+    }
+
     public static function pisn($getShared = true)
     {
         if ($getShared) {

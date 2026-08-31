@@ -243,6 +243,20 @@ class NeoFeeder
     }
 
     /**
+     * Retrieves the student study-history list (Riwayat Pendidikan Mahasiswa), which
+     * carries id_pembiayaan needed for UpdatePerkuliahanMahasiswa.
+     *
+     * @param string $token   The authentication token obtained from getToken().
+     * @param array  $options Optional filter/order/limit/offset overrides.
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function getListRiwayatPendidikanMahasiswa(string $token, array $options = []): array
+    {
+        return $this->sendListRequest('GetListRiwayatPendidikanMahasiswa', $token, $options);
+    }
+
+    /**
      * Retrieves the list of student statuses (Daftar Status Mahasiswa) from the Neo Feeder API.
      *
      * Options are the standard filter/order/limit/offset overrides.
