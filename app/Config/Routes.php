@@ -49,3 +49,15 @@ $routes->get('graduation/template', 'Graduation::downloadTemplate');
 $routes->get('graduation/preview', 'Graduation::preview');
 $routes->post('graduation/finish', 'Graduation::finish');
 $routes->post('graduation/cancel', 'Graduation::cancel');
+
+/*
+ * --------------------------------------------------------------------
+ * Verifikasi IPK (bulk last-semester IPK check) Routes (ENH-011)
+ * --------------------------------------------------------------------
+ */
+$routes->get('verifikasi-ipk', 'VerifikasiIpk::index');
+$routes->post('verifikasi-ipk/upload', 'VerifikasiIpk::upload');
+$routes->get('verifikasi-ipk/verif', 'VerifikasiIpk::verif');
+$routes->post('verifikasi-ipk/apply', 'VerifikasiIpk::apply');
+$routes->get('verifikasi-ipk/results', 'VerifikasiIpk::results');
+$routes->post('verifikasi-ipk/cancel', 'VerifikasiIpk::cancel');

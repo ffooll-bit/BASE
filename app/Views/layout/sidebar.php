@@ -47,6 +47,12 @@
                             <p>PISN Graduation</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('verifikasi-ipk') ?>" class="nav-link <?= in_array($currentRoute, ['verifikasi-ipk', 'verif'], true) ? 'active' : '' ?>">
+                            <i class="nav-icon fas fa-arrow-up-short-wide"></i>
+                            <p>Verifikasi IPK</p>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
