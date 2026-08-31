@@ -198,7 +198,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### ENH-010 — Fill in a missing thesis grade at the end of the wizard
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** #110
 - **Recorded:** 2026-08-30 23:37
 - **Implemented:** `—`
 - **Problem:** During transcript-completeness verification (card 3), a thesis/skripsi course can be present in the transcript but still carry no grade (`nilai_huruf` empty). The wizard currently only detects and displays this state (BUG-001 / `transcript_ok`) and blocks completeness, but it offers the admin no way to fill the missing thesis grade through the application.
