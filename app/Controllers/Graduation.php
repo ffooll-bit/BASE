@@ -736,6 +736,10 @@ class Graduation extends BaseController
                 }
 
                 // Push per-semester academic corrections (status/ipk/ips) to Neo Feeder.
+                // Neo Feeder rejects partial UpdatePerkuliahanMahasiswa records
+                // (id_status_mahasiswa, biaya_kuliah_smt, id_pembiayaan are all
+                // enforced live), so we send the full row + id_pembiayaan with the
+                // edited fields overridden — same record shape as Verifikasi IPK.
                 $edits = $student['academics'] ?? [];
                 if (count($edits) > 0) {
                     $nimSafe = trim((string) ($student['nim'] ?? $g['nim']));
@@ -744,27 +748,45 @@ class Graduation extends BaseController
                         'limit'  => 50,
                     ]);
                     if (($acResp['error_code'] ?? -1) === 0 && isset($acResp['data'])) {
-                        $regByIdSemester = [];
+                        $rowByIdSemester = [];
                         foreach ($acResp['data'] as $r) {
-                            $regByIdSemester[$r['id_semester']] = $r['id_registrasi_mahasiswa'];
+                            $rowByIdSemester[$r['id_semester']] = $r;
                         }
+
+                        // id_pembiayaan is not present on activity rows; resolve it once
+                        // per student from the riwayat record (same as Verifikasi IPK).
+                        $pembiayaan = '';
+                        $rivResp    = $this->neoFeeder->getListRiwayatPendidikanMahasiswa($apiToken, [
+                            'filter' => "nim='{$nimSafe}'",
+                            'limit'  => 1,
+                        ]);
+                        if (($rivResp['error_code'] ?? -1) === 0 && isset($rivResp['data'][0]['id_pembiayaan'])) {
+                            $pembiayaan = (string) $rivResp['data'][0]['id_pembiayaan'];
+                        }
+
                         foreach ($edits as $idSemester => $edit) {
-                            if (! isset($regByIdSemester[$idSemester])) {
+                            if (! isset($rowByIdSemester[$idSemester])) {
                                 continue;
                             }
-                            $akRecord = [];
+                            $row   = $rowByIdSemester[$idSemester];
+                            $record = $row;
+                            unset($record['id_registrasi_mahasiswa'], $record['id_semester']);
+                            $record['id_pembiayaan'] = $pembiayaan;
                             foreach (['id_status_mahasiswa', 'ips', 'ipk'] as $field) {
                                 if (isset($edit[$field]) && (string) $edit[$field] !== '') {
-                                    $akRecord[$field] = $edit[$field];
+                                    $record[$field] = $edit[$field];
                                 }
                             }
-                            if (count($akRecord) > 0) {
-                                $this->neoFeeder->updatePerkuliahanMahasiswa(
-                                    $apiToken,
-                                    (string) $regByIdSemester[$idSemester],
-                                    (string) $idSemester,
-                                    $akRecord
-                                );
+                            $akResp = $this->neoFeeder->updatePerkuliahanMahasiswa(
+                                $apiToken,
+                                (string) $row['id_registrasi_mahasiswa'],
+                                (string) $idSemester,
+                                $record
+                            );
+                            if (($akResp['error_code'] ?? -1) === 0) {
+                                $results[] = ['nim' => $g['nim'], 'success' => true, 'msg' => "Akademik semester {$idSemester} terupdate."];
+                            } else {
+                                $results[] = ['nim' => $g['nim'], 'success' => false, 'msg' => $akResp['error_msg'] ?? "Gagal update akademik semester {$idSemester}."];
                             }
                         }
                     }
