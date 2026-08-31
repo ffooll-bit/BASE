@@ -220,23 +220,23 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** New `app/Controllers/VerifikasiIpk.php`, `app/Libraries/VerifikasiIpkStore.php`, `app/Views/verifikasi_ipk/*`; `NeoFeeder.php` gained `getListRiwayatPendidikanMahasiswa()`; routes + sidebar menu added.
 
 ### DOC-001 — Determine the fate of ARCHITECTURE.md & STRUCTURE.md (commit the pending documentation updates)
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** —
 - **Recorded:** 2026-08-31 15:42
 - **Implemented:** —
 - **Problem:** `ARCHITECTURE.md` and `STRUCTURE.md` carry uncommitted changes left over from earlier sessions — they document features that were already implemented and merged (PISN routes and controllers `Mahasiswa`, `AktivitasKuliah`, `MahasiswaLulusDo`, `Graduation`; the `Auth`/`NeoFeeder`/`PisnService`/`WizardProgress` libraries; the graduation wizard flow and the wizard-resume cookie), yet they were deliberately left unstaged so they now drift from the actual code.
 - **Possible Fix:** Stage `ARCHITECTURE.md` + `STRUCTURE.md` and commit them atomically with a conventional `docs:` message, ending the deliberate hold and re-syncing the documentation with the current code.
-- **Actual Fix:** —
+- **Actual Fix:** Commit the two files **as-is** (they already document the merged PISN features and match the code). Stage `ARCHITECTURE.md` + `STRUCTURE.md` from the saved stash and commit them atomically with a conventional `docs:` message. The docs are committed exactly as they stand — they are NOT extended to also cover the newer `VerifikasiIpk` controller/store/routes (out of scope for this item).
 - **Actual Implemented:** —
 - **Changes:** —
 
 ### DOC-002 — Update README to reflect the current project state, including a record of the Neo Feeder API endpoints used (focus GetDictionary)
-- **Status:** `recorded`
+- **Status:** `verified`
 - **Issue:** —
 - **Recorded:** 2026-08-31 15:42
 - **Implemented:** —
 - **Problem:** `README.md` does not yet reflect the current project state (menus/features: Mahasiswa, AktivitasKuliah, MahasiswaLulusDo, the PISN Graduation wizard, Verifikasi IPK; updated dependencies), and its API section documents only `GetToken`. The other Neo Feeder endpoints the project consumes are not recorded, so adding a new feature later requires re-testing endpoints that are already in use, and the `GetDictionary` endpoint (whose `fungsi` parameter reveals the actual `key`/`record` schema of a WS function, and which we already use to inspect schemas) is not captured.
 - **Possible Fix:** Extend `README.md` — (1) align the feature/status summary and directory structure with the current state; (2) add a record of the Neo Feeder endpoints the project actually uses: per endpoint the request (act/token/params) and the response, including a dedicated `GetDictionary` subsection (payload `{'act':'GetDictionary','token':...,'fungsi':'<Fungsi>'}` with an example schema response) so new endpoints can be vetted without re-testing existing ones.
-- **Actual Fix:** —
+- **Actual Fix:** In `README.md`: (1) update the feature/status summary and Development Status to reflect the current menus (Mahasiswa, AktivitasKuliah, MahasiswaLulusDo, PISN Graduation wizard, Verifikasi IPK) and dependencies; (2) replace the current minimal API section with a record of the Neo Feeder endpoints the project actually consumes, per endpoint noting the WS act (or cloud path), request params (act/token and, where used, filter/order/key/record), and a concise response summary (error_code/data). Include a dedicated `GetDictionary` subsection documenting it as a schema-inspection tool called ad-hoc (not part of the app's runtime request path): payload `{'act':'GetDictionary','token':...,'fungsi':'<NamaFungsi>'}` and a short example schema response; the endpoint list is derived from the methods in `app/Libraries/NeoFeeder.php` (WS acts: GetToken, GetProfilPT, GetListMahasiswa, GetAktivitasKuliahMahasiswa, GetListRiwayatPendidikanMahasiswa, GetStatusMahasiswa, GetJenisKeluar, GetSemester, GetListMahasiswaLulusDO, GetCountMahasiswa, GetCountAktivitasKuliahMahasiswa, GetCountMahasiswaLulusDO, GetTranskripMahasiswa, GetBiodataMahasiswa, GetDetailPerkuliahanMahasiswa, InsertMahasiswaLulusDO, Insert/Update/Delete BiodataMahasiswa, Insert/Update/Delete PerkuliahanMahasiswa, UpdateNilaiPerkuliahanKelas; plus cloud REST `/ws/transkrip/cari_mahasiswa` + `/ws/transkrip/nilai_mahasiswa`). Schema facts are summarized from prior live-verified test results (already recorded in the tracker), not re-tested.
 - **Actual Implemented:** —
 - **Changes:** —
