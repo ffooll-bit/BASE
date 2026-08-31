@@ -218,3 +218,25 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Actual Fix:** Added `VerifikasiIpk` controller (`/verifikasi-ipk`, batch-by-batch comparison) + `VerifikasiIpkStore` library (cache prefix `ipk_verif_`, resume cookie `ipk_verif_resume`), routes, sidebar menu, and views (`index`/`verification`/`results`). The push uses a full `UpdatePerkuliahanMahasiswa` record — the whole active last-semester row from `getAktivitasKuliahMahasiswa` (minus the key) plus `id_pembiayaan` resolved via `GetListRiwayatPendidikanMahasiswa` and the `ipk` overridden with the Excel value — because Neo Feeder rejects partial records (`id_status_mahasiswa`, `biaya_kuliah_smt`, `id_pembiayaan` all demanded even though the GetDictionary schema lists only `id_status_mahasiswa` as NOT NULL). Per-row results (success/failure with the Neo Feeder error message) are shown on the `results` page. `apply()` uses `set_time_limit(0)` for large batches.
 - **Actual Implemented:** 2026-08-31
 - **Changes:** New `app/Controllers/VerifikasiIpk.php`, `app/Libraries/VerifikasiIpkStore.php`, `app/Views/verifikasi_ipk/*`; `NeoFeeder.php` gained `getListRiwayatPendidikanMahasiswa()`; routes + sidebar menu added.
+
+### DOC-001 — Determine the fate of ARCHITECTURE.md & STRUCTURE.md (commit the pending documentation updates)
+- **Status:** `recorded`
+- **Issue:** —
+- **Recorded:** 2026-08-31 15:42
+- **Implemented:** —
+- **Problem:** `ARCHITECTURE.md` and `STRUCTURE.md` carry uncommitted changes left over from earlier sessions — they document features that were already implemented and merged (PISN routes and controllers `Mahasiswa`, `AktivitasKuliah`, `MahasiswaLulusDo`, `Graduation`; the `Auth`/`NeoFeeder`/`PisnService`/`WizardProgress` libraries; the graduation wizard flow and the wizard-resume cookie), yet they were deliberately left unstaged so they now drift from the actual code.
+- **Possible Fix:** Stage `ARCHITECTURE.md` + `STRUCTURE.md` and commit them atomically with a conventional `docs:` message, ending the deliberate hold and re-syncing the documentation with the current code.
+- **Actual Fix:** —
+- **Actual Implemented:** —
+- **Changes:** —
+
+### DOC-002 — Update README to reflect the current project state, including a record of the Neo Feeder API endpoints used (focus GetDictionary)
+- **Status:** `recorded`
+- **Issue:** —
+- **Recorded:** 2026-08-31 15:42
+- **Implemented:** —
+- **Problem:** `README.md` does not yet reflect the current project state (menus/features: Mahasiswa, AktivitasKuliah, MahasiswaLulusDo, the PISN Graduation wizard, Verifikasi IPK; updated dependencies), and its API section documents only `GetToken`. The other Neo Feeder endpoints the project consumes are not recorded, so adding a new feature later requires re-testing endpoints that are already in use, and the `GetDictionary` endpoint (whose `fungsi` parameter reveals the actual `key`/`record` schema of a WS function, and which we already use to inspect schemas) is not captured.
+- **Possible Fix:** Extend `README.md` — (1) align the feature/status summary and directory structure with the current state; (2) add a record of the Neo Feeder endpoints the project actually uses: per endpoint the request (act/token/params) and the response, including a dedicated `GetDictionary` subsection (payload `{'act':'GetDictionary','token':...,'fungsi':'<Fungsi>'}` with an example schema response) so new endpoints can be vetted without re-testing existing ones.
+- **Actual Fix:** —
+- **Actual Implemented:** —
+- **Changes:** —
