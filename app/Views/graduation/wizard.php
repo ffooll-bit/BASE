@@ -185,11 +185,23 @@
                                     </thead>
                                     <tbody>
                                     <?php foreach ($completeness['thesis'] as $t): ?>
+                                        <?php
+                                        $excelGrade = trim((string) ($student['nilai_skripsi'] ?? ''));
+                                        $willFill   = ! $t['hasGrade'] && $excelGrade !== '';
+                                        ?>
                                         <tr>
                                             <td><?= esc($t['nama']) ?></td>
                                             <td><?= esc($t['kode']) ?></td>
                                             <td><?= esc($t['semester']) ?></td>
-                                            <td><?= $t['nilai'] ?? '<span class="text-danger">Belum ada nilai</span>' ?></td>
+                                            <td>
+                                                <?php if ($t['nilai']): ?>
+                                                    <?= esc($t['nilai']) ?>
+                                                <?php elseif ($willFill): ?>
+                                                    <?= esc($excelGrade) ?> <span class="text-success small">(akan diisi)</span>
+                                                <?php else: ?>
+                                                    <span class="text-danger">Belum ada nilai</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td>
                                                 <?php if (! $t['hasGrade']): ?>
                                                     <span class="badge text-bg-danger">Tanpa nilai</span>
