@@ -20,15 +20,17 @@ class Graduation extends BaseController
     /**
      * Excel column -> internal key map (header row is matched case-insensitively).
      *
-     * Minimal template per ENH-005: only NIM (lookup), Nama (optional KTP-name
-     * validation source), Tanggal Keluar, and IPK are read from the spreadsheet.
+     * Minimal template: NIM (lookup), Nama (optional KTP-name validation
+     * source), Tanggal Keluar, IPK, and a letter grade for the thesis/skripsi
+     * course (nilai_skripsi).
      * jenis_keluar is always "Lulus" and periode_keluar is derived from tgl_keluar.
      */
     private const EXCEL_HEADERS = [
-        'nim'        => 'nim',
-        'nama'       => 'nama',
-        'tgl_keluar' => 'tgl_keluar',
-        'ipk'        => 'ipk',
+        'nim'           => 'nim',
+        'nama'          => 'nama',
+        'tgl_keluar'    => 'tgl_keluar',
+        'ipk'           => 'ipk',
+        'nilai_skripsi' => 'nilai_skripsi',
     ];
 
     private WizardProgress $wizard;
@@ -439,6 +441,45 @@ class Graduation extends BaseController
     }
 
     /**
+     * Finds the thesis/skripsi course row that is registered but still carries
+     * no grade, returning its composite key for UpdateNilaiPerkuliahanKelas.
+     *
+     * @param array $transcript Rows from getCekTranskripMahasiswa()
+     *                          (cloud nilai_mahasiswa rows carrying id_kls / id_reg_pd).
+     *
+     * @return array|null The row's key as ['id_reg_pd', 'id_kls'], or null when
+     *                    no graded-missing thesis row exists.
+     */
+    private function findMissingGradeThesis(array $transcript): ?array
+    {
+        if (empty($transcript)) {
+            return null;
+        }
+
+        $thesisPattern = '/skripsi|tugas\s*akhir|thesis|disertasi/i';
+
+        foreach ($transcript as $row) {
+            $name = $row['nm_mk'] ?? ($row['nama_mata_kuliah'] ?? '');
+            if (! preg_match($thesisPattern, $name)) {
+                continue;
+            }
+            $nilai    = $row['nilai_huruf'] ?? ($row['nilai_angka'] ?? null);
+            $hasGrade = ($nilai !== null && $nilai !== '');
+            if ($hasGrade) {
+                continue;
+            }
+            $idReg = $row['id_reg_pd'] ?? ($row['id_registrasi_mahasiswa'] ?? '');
+            $idKls = $row['id_kls'] ?? ($row['id_kelas_kuliah'] ?? '');
+            if ($idReg === '' || $idKls === '') {
+                continue;
+            }
+            return ['id_reg_pd' => (string) $idReg, 'id_kls' => (string) $idKls];
+        }
+
+        return null;
+    }
+
+    /**
      * Derives the periode keluar (id_semester) from a student's tgl_keluar by
      * range-matching the date against the Daftar Semester (GetSemester) rows.
      *
@@ -654,6 +695,29 @@ class Graduation extends BaseController
                         }
                     }
                 }
+
+                // ENH-010: fill in a missing thesis/skripsi grade from the Excel value.
+                $thesisGrade = trim((string) ($student['nilai_skripsi'] ?? ''));
+                if ($thesisGrade !== '') {
+                    $nimSafe   = trim((string) ($student['nim'] ?? $g['nim']));
+                    $trResp    = $this->neoFeeder->getCekTranskripMahasiswa($apiToken, $nimSafe);
+                    $thesisRow = ($trResp['error_code'] ?? -1) === 0
+                        ? $this->findMissingGradeThesis($trResp['data'] ?? [])
+                        : null;
+                    if ($thesisRow !== null) {
+                        $gradeResp = $this->neoFeeder->updateNilaiPerkuliahanKelas(
+                            $apiToken,
+                            (string) $thesisRow['id_reg_pd'],
+                            (string) $thesisRow['id_kls'],
+                            ['nilai_huruf' => $thesisGrade]
+                        );
+                        if (($gradeResp['error_code'] ?? -1) === 0) {
+                            $results[] = ['nim' => $g['nim'], 'success' => true, 'msg' => 'Nilai skripsi terisi.'];
+                        } else {
+                            $results[] = ['nim' => $g['nim'], 'success' => false, 'msg' => $gradeResp['error_msg'] ?? 'Gagal mengisi nilai skripsi.'];
+                        }
+                    }
+                }
             }
         } else {
             foreach ($progress['students'] as $student) {
@@ -710,13 +774,13 @@ class Graduation extends BaseController
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $headers = ['nim', 'nama', 'tgl_keluar', 'ipk'];
-        $columns = ['A', 'B', 'C', 'D'];
+        $headers = ['nim', 'nama', 'tgl_keluar', 'ipk', 'nilai_skripsi'];
+        $columns = ['A', 'B', 'C', 'D', 'E'];
         foreach ($headers as $i => $header) {
             $sheet->setCellValue($columns[$i] . '1', $header);
         }
 
-        $example = ['12345678', 'Nama Mahasiswa (optional)', '2026-08-31', '3.75'];
+        $example = ['12345678', 'Nama Mahasiswa (optional)', '2026-08-31', '3.75', 'A'];
         foreach ($example as $i => $value) {
             $sheet->setCellValue($columns[$i] . '2', $value);
         }
@@ -778,6 +842,7 @@ class Graduation extends BaseController
                 'tgl_keluar'     => isset($colIndex['tgl_keluar']) ? $this->normalizeTanggalKeluar($row[$colIndex['tgl_keluar']] ?? '') : '',
                 'periode_keluar' => isset($colIndex['periode_keluar']) ? trim((string) ($row[$colIndex['periode_keluar']] ?? '')) : '',
                 'ipk'            => isset($colIndex['ipk']) ? trim((string) ($row[$colIndex['ipk']] ?? '')) : '',
+                'nilai_skripsi'  => isset($colIndex['nilai_skripsi']) ? strtoupper(trim((string) ($row[$colIndex['nilai_skripsi']] ?? ''))) : '',
                 'saved'          => false,
             ];
         }

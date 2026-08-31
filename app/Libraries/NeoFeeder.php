@@ -555,6 +555,24 @@ class NeoFeeder
     }
 
     /**
+     * Updates the grade of a student in a class (UpdateNilaiPerkuliahanKelas).
+     *
+     * @param string $token       The authentication token obtained from getToken().
+     * @param string $idRegistrasi The primary key (id_registrasi_mahasiswa).
+     * @param string $idKelas      The primary key (id_kelas_kuliah).
+     * @param array  $record       The class-grade record fields (e.g. nilai_huruf).
+     *
+     * @return array The decoded API response on success, or a structured error array.
+     */
+    public function updateNilaiPerkuliahanKelas(string $token, string $idRegistrasi, string $idKelas, array $record): array
+    {
+        return $this->sendMutation('UpdateNilaiPerkuliahanKelas', $token, $record, [
+            'id_registrasi_mahasiswa' => $idRegistrasi,
+            'id_kelas_kuliah'         => $idKelas,
+        ]);
+    }
+
+    /**
      * Deletes a student course-activity record (DeletePerkuliahanMahasiswa).
      *
      * @param string $token        The authentication token obtained from getToken().
