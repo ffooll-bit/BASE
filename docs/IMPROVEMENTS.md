@@ -220,15 +220,15 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 - **Changes:** New `app/Controllers/VerifikasiIpk.php`, `app/Libraries/VerifikasiIpkStore.php`, `app/Views/verifikasi_ipk/*`; `NeoFeeder.php` gained `getListRiwayatPendidikanMahasiswa()`; routes + sidebar menu added.
 
 ### DOC-001 — Determine the fate of ARCHITECTURE.md & STRUCTURE.md (commit the pending documentation updates)
-- **Status:** `verified`
+- **Status:** `implemented`
 - **Issue:** #119
 - **Recorded:** 2026-08-31 15:42
-- **Implemented:** —
+- **Implemented:** 2026-08-31 16:09
 - **Problem:** `ARCHITECTURE.md` and `STRUCTURE.md` carry uncommitted changes left over from earlier sessions — they document features that were already implemented and merged (PISN routes and controllers `Mahasiswa`, `AktivitasKuliah`, `MahasiswaLulusDo`, `Graduation`; the `Auth`/`NeoFeeder`/`PisnService`/`WizardProgress` libraries; the graduation wizard flow and the wizard-resume cookie), yet they were deliberately left unstaged so they now drift from the actual code.
 - **Possible Fix:** Stage `ARCHITECTURE.md` + `STRUCTURE.md` and commit them atomically with a conventional `docs:` message, ending the deliberate hold and re-syncing the documentation with the current code.
 - **Actual Fix:** Commit the two files **as-is** (they already document the merged PISN features and match the code). Stage `ARCHITECTURE.md` + `STRUCTURE.md` from the saved stash and commit them atomically with a conventional `docs:` message. The docs are committed exactly as they stand — they are NOT extended to also cover the newer `VerifikasiIpk` controller/store/routes (out of scope for this item).
-- **Actual Implemented:** —
-- **Changes:** —
+- **Actual Implemented:** Committed `ARCHITECTURE.md` (+157) and `STRUCTURE.md` (+25/−19) as-is (extracted from the saved stash onto branch `docs/architecture-structure-commit` from `main`). The docs were NOT extended to cover `VerifikasiIpk` (kept out of scope per the Actual Fix).
+- **Changes:** `ARCHITECTURE.md` and `STRUCTURE.md` no longer drift from the code — the pending documentation of the merged PISN features (routes/controllers, libraries, wizard flow, resume cookie) is now committed and tracked in git.
 
 ### DOC-002 — Update README to reflect the current project state, including a record of the Neo Feeder API endpoints used (focus GetDictionary)
 - **Status:** `verified`
