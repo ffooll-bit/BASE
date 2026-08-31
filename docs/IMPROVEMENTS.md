@@ -221,7 +221,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### DOC-001 — Determine the fate of ARCHITECTURE.md & STRUCTURE.md (commit the pending documentation updates)
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #119
 - **Recorded:** 2026-08-31 15:42
 - **Implemented:** —
 - **Problem:** `ARCHITECTURE.md` and `STRUCTURE.md` carry uncommitted changes left over from earlier sessions — they document features that were already implemented and merged (PISN routes and controllers `Mahasiswa`, `AktivitasKuliah`, `MahasiswaLulusDo`, `Graduation`; the `Auth`/`NeoFeeder`/`PisnService`/`WizardProgress` libraries; the graduation wizard flow and the wizard-resume cookie), yet they were deliberately left unstaged so they now drift from the actual code.
@@ -232,7 +232,7 @@ The label is encoded directly in the ID prefix. When a valid item becomes a GitH
 
 ### DOC-002 — Update README to reflect the current project state, including a record of the Neo Feeder API endpoints used (focus GetDictionary)
 - **Status:** `verified`
-- **Issue:** —
+- **Issue:** #120
 - **Recorded:** 2026-08-31 15:42
 - **Implemented:** —
 - **Problem:** `README.md` does not yet reflect the current project state (menus/features: Mahasiswa, AktivitasKuliah, MahasiswaLulusDo, the PISN Graduation wizard, Verifikasi IPK; updated dependencies), and its API section documents only `GetToken`. The other Neo Feeder endpoints the project consumes are not recorded, so adding a new feature later requires re-testing endpoints that are already in use, and the `GetDictionary` endpoint (whose `fungsi` parameter reveals the actual `key`/`record` schema of a WS function, and which we already use to inspect schemas) is not captured.
