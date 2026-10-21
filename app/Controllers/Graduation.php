@@ -22,8 +22,8 @@ class Graduation extends BaseController
      * Excel column -> internal key map (header row is matched case-insensitively).
      *
      * Minimal template: NIM (lookup), Nama (optional KTP-name validation
-     * source), Tanggal Keluar, IPK, and a letter grade for the thesis/skripsi
-     * course (nilai_skripsi).
+     * source), Tanggal Keluar, IPK, and a letter grade for the final-project
+     * course (nilai_skripsi; kept for template compatibility).
      * jenis_keluar is always "Lulus" and periode_keluar is derived from tgl_keluar.
      */
     private const EXCEL_HEADERS = [
@@ -32,6 +32,24 @@ class Graduation extends BaseController
         'tgl_keluar'    => 'tgl_keluar',
         'ipk'           => 'ipk',
         'nilai_skripsi' => 'nilai_skripsi',
+    ];
+
+    /**
+     * Final-project course names per jenjang, verified live:
+     * - S1: Skripsi / THESIS / Tugas Akhir.
+     * - S2: Tesis, "Ujian Hasil Penelitian dan Tutup" (Manajemen), and "Ujian
+     *   Tutup" (Akuntansi). Plain "Ujian Hasil Penelitian" is an intermediate
+     *   milestone and must not match.
+     * - S3: only "Ujian Terbuka (Promosi)". S3 also uses "Ujian Tutup" as an
+     *   intermediate milestone before the open exam, so it cannot be accepted.
+     *
+     * Generic "disertasi"/"penelitian" is deliberately excluded so intermediate
+     * milestones are not mistaken for the final requirement.
+     */
+    private const FINAL_PROJECT_PATTERNS = [
+        'S1' => '/skripsi|tugas\s*akhir|thesis|\btesis\b/i',
+        'S2' => '/\btesis\b|skripsi|tugas\s*akhir|thesis|ujian\s+hasil\s+penelitian\s+dan\s+tutup|\bujian\s+tutup\b/i',
+        'S3' => '/ujian\s+terbuka|promosi/i',
     ];
 
     private WizardProgress $wizard;
@@ -195,6 +213,19 @@ class Graduation extends BaseController
                 $error = $idResp['error_msg'] ?? 'Gagal memuat data mahasiswa.';
             }
 
+            // The final-project course name differs per jenjang/prodi (S2
+            // Akuntansi vs S2 Manajemen vs S3), so keep the program name in the
+            // wizard state for the completeness check and for finish().
+            $programStudi = (string) ($identity['nama_program_studi'] ?? ($student['program_studi'] ?? ''));
+            if ($programStudi !== '' && ($progress['students'][$idx]['program_studi'] ?? '') !== $programStudi) {
+                $progress['students'][$idx]['program_studi'] = $programStudi;
+                $student['program_studi']                   = $programStudi;
+                $resumeToken                                = $this->currentToken();
+                if ($resumeToken !== null) {
+                    $this->wizard->save($resumeToken, $progress);
+                }
+            }
+
             $acResp = $this->neoFeeder->getAktivitasKuliahMahasiswa($apiToken, [
                 'filter' => "nim='{$nimSafe}'",
                 'order'  => 'id_semester asc',
@@ -211,7 +242,7 @@ class Graduation extends BaseController
                 $trResp = $this->neoFeeder->getCekTranskripMahasiswa($apiToken, (string) $student['nim']);
                 if (($trResp['error_code'] ?? -1) === 0 && isset($trResp['data'])) {
                     $transcript   = $trResp['data'];
-                    $completeness = $this->checkTranscriptCompleteness($transcript);
+                    $completeness = $this->checkTranscriptCompleteness($transcript, $programStudi);
                 } elseif (($trResp['error_code'] ?? -1) !== 0 && empty($error)) {
                     $error = $trResp['error_msg'] ?? 'Gagal memuat data transkrip.';
                 }
@@ -324,20 +355,12 @@ class Graduation extends BaseController
                 && $lastStatusVal === (string) $activeCode;
         }
 
-        // Step 3: a thesis course exists with a grade AND is included in the
-        // transcript (choosed:true). choosed is informational for the completeness
-        // badge but required for this auto-check gate (ENH-008 spec).
-        $transcriptOk = false;
-        if (! empty($completeness['complete'])) {
-            foreach (($completeness['thesis'] ?? []) as $t) {
-                if (! empty($t['hasGrade']) && ! empty($t['choosed'])) {
-                    $transcriptOk = true;
-                    break;
-                }
-            }
-        }
+        // Step 3: a final-project course exists with a grade. `choosed` stays
+        // informational only (BUG-001): live postgraduate rows are all
+        // choosed:false, so requiring it would keep this gate permanently off.
+        $transcriptOk = ! empty($completeness['complete']);
 
-        // ENH-010 fix: only the ungraded thesis/skripsi row in the LAST semester
+        // ENH-010 fix: only the ungraded final-project row in the LAST semester
         // (largest id_smt) is the one that will have its grade filled.
         $targetThesisSemester = $this->lastUngradedThesisSemester($completeness['thesis'] ?? []);
 
@@ -375,24 +398,41 @@ class Graduation extends BaseController
     }
 
     /**
+     * Selects the final-project pattern from the program name ("S2 Ilmu
+     * Akuntansi", "S3 Ilmu Manajemen"). Unknown/blank names fall back to the S1
+     * pattern, which never matches the postgraduate-only "Ujian ..." names.
+     */
+    private static function finalProjectPattern(string $programStudi): string
+    {
+        if (preg_match('/^\s*S3\b/i', $programStudi) === 1) {
+            return self::FINAL_PROJECT_PATTERNS['S3'];
+        }
+        if (preg_match('/^\s*S2\b/i', $programStudi) === 1) {
+            return self::FINAL_PROJECT_PATTERNS['S2'];
+        }
+
+        return self::FINAL_PROJECT_PATTERNS['S1'];
+    }
+
+    /**
      * Checks whether a student's transcript is complete for graduation.
      *
-     * Completeness rule (per BUG-001): the thesis/skripsi/tugas akhir course
-     * must exist in the transcript AND carry a non-empty grade. The `choosed`
-     * marker (course "included in transcript" per the cloud Cek Transkrip
-     * Mahasiswa menu) is informational only — it does NOT block completeness.
+     * Completeness rule (per BUG-001): the final-project course must exist in
+     * the transcript AND carry a non-empty grade. The `choosed` marker (course
+     * "included in transcript" per the cloud Cek Transkrip Mahasiswa menu) is
+     * informational only — it does NOT block completeness.
      *
-     * The thesis course is detected by name
-     * (/skripsi|tugas\s*akhir|thesis|disertasi/i) because the WS/cloud
-     * transcript payloads carry no type flag.
+     * The course is detected by name (FINAL_PROJECT_PATTERNS selected from the
+     * program studi) because the WS/cloud transcript payloads carry no type flag.
      *
-     * @param array $transcript Rows from getCekTranskripMahasiswa()
-     *                          (cloud nilai_mahasiswa rows, kebab nm_mk/kode_mk/id_smt).
+     * @param array  $transcript    Rows from getCekTranskripMahasiswa()
+     *                              (cloud nilai_mahasiswa rows, kebab nm_mk/kode_mk/id_smt).
+     * @param string $programStudi  Program name, e.g. "S2 Ilmu Akuntansi".
      *
      * @return array{complete:bool, reason:string, thesis:array}
-     *               thesis = detail rows of each detected thesis course.
+     *               thesis = detail rows of each detected final-project course.
      */
-    private function checkTranscriptCompleteness(array $transcript): array
+    private function checkTranscriptCompleteness(array $transcript, string $programStudi = ''): array
     {
         if (empty($transcript)) {
             return [
@@ -402,12 +442,12 @@ class Graduation extends BaseController
             ];
         }
 
-        $thesisPattern = '/skripsi|tugas\s*akhir|thesis|disertasi/i';
-        $thesisRows    = [];
+        $pattern    = self::finalProjectPattern($programStudi);
+        $thesisRows = [];
 
         foreach ($transcript as $row) {
             $name = $row['nm_mk'] ?? ($row['nama_mata_kuliah'] ?? '');
-            if (preg_match($thesisPattern, $name)) {
+            if (preg_match($pattern, $name)) {
                 $nilai     = $row['nilai_huruf'] ?? ($row['nilai_angka'] ?? null);
                 $hasGrade  = ($nilai !== null && $nilai !== '');
                 $thesisRows[] = [
@@ -424,7 +464,7 @@ class Graduation extends BaseController
         if (empty($thesisRows)) {
             return [
                 'complete' => false,
-                'reason'   => 'MK skripsi/tugas akhir tidak ditemukan di transkrip.',
+                'reason'   => 'MK karya akhir (skripsi/tesis/ujian akhir) tidak ditemukan di transkrip.',
                 'thesis'   => [],
             ];
         }
@@ -441,41 +481,42 @@ class Graduation extends BaseController
 
         return [
             'complete' => false,
-            'reason'   => 'Nilai MK skripsi/tugas akhir belum tersedia.',
+            'reason'   => 'Nilai MK karya akhir (skripsi/tesis/ujian akhir) belum tersedia.',
             'thesis'   => $thesisRows,
         ];
     }
 
     /**
-     * Finds the thesis/skripsi course row that is registered but still carries
+     * Finds the final-project course row that is registered but still carries
      * no grade and sits in the LAST semester (largest id_smt), returning its
      * composite key for UpdateNilaiPerkuliahanKelas.
      *
-     * A student may have several thesis/skripsi rows across semesters (e.g.
+     * A student may have several final-project rows across semesters (e.g.
      * repeating the course). Only the row in the last semester may receive the
      * grade, and only while that row is still ungraded — if the last semester's
-     * thesis row already has a grade, no row is returned (we never backfill an
-     * older, ungraded row).
+     * row already has a grade, no row is returned (we never backfill an older,
+     * ungraded row).
      *
-     * @param array $transcript Rows from getCekTranskripMahasiswa()
-     *                          (cloud nilai_mahasiswa rows carrying id_kls / id_reg_pd).
+     * @param array  $transcript   Rows from getCekTranskripMahasiswa()
+     *                             (cloud nilai_mahasiswa rows carrying id_kls / id_reg_pd).
+     * @param string $programStudi Program name, e.g. "S2 Ilmu Akuntansi".
      *
      * @return array|null The row's key as ['id_reg_pd', 'id_kls', 'id_smt'], or
-     *                    null when the last-semester thesis row is already graded
-     *                    or no thesis row exists.
+     *                    null when the last-semester row is already graded
+     *                    or no final-project row exists.
      */
-    private function findMissingGradeThesis(array $transcript): ?array
+    private function findMissingGradeThesis(array $transcript, string $programStudi = ''): ?array
     {
         if (empty($transcript)) {
             return null;
         }
 
-        $thesisPattern = '/skripsi|tugas\s*akhir|thesis|disertasi/i';
-        $thesisRows    = [];
+        $pattern    = self::finalProjectPattern($programStudi);
+        $thesisRows = [];
 
         foreach ($transcript as $row) {
             $name = $row['nm_mk'] ?? ($row['nama_mata_kuliah'] ?? '');
-            if (! is_string($name) || ! preg_match($thesisPattern, $name)) {
+            if (! is_string($name) || ! preg_match($pattern, $name)) {
                 continue;
             }
             $thesisRows[] = $row;
@@ -485,12 +526,12 @@ class Graduation extends BaseController
             return null;
         }
 
-        // The candidate is the thesis row in the LAST semester.
+        // The candidate is the final-project row in the LAST semester.
         $smtKey = fn (array $r) => (string) ($r['id_smt'] ?? ($r['id_semester'] ?? ''));
         usort($thesisRows, fn ($a, $b) => strcmp($smtKey($b), $smtKey($a)));
         $last = $thesisRows[0];
 
-        // If the last-semester thesis row already has a grade, do nothing.
+        // If the last-semester final-project row already has a grade, do nothing.
         $grade = trim((string) ($last['nilai_huruf'] ?? ''));
         if ($grade === '') {
             $grade = trim((string) ($last['nilai_angka'] ?? ''));
@@ -513,9 +554,9 @@ class Graduation extends BaseController
     }
 
     /**
-     * Returns the semester (id_smt) of the thesis/skripsi course row that sits in
+     * Returns the semester (id_smt) of the final-project course row that sits in
      * the LAST semester, but only when that row is still ungraded. Returns null
-     * when the last-semester thesis row already has a grade (so nothing is tagged
+     * when the last-semester row already has a grade (so nothing is tagged
      * "(akan diisi)").
      *
      * @param list<array> $thesisRows Rows from checkTranscriptCompleteness().
@@ -627,7 +668,7 @@ class Graduation extends BaseController
             $errors[] = 'Centang konfirmasi akademik (IPK semester terakhir sesuai & status Aktif).';
         }
         if (! $transcriptOk) {
-            $errors[] = 'Centang konfirmasi kelengkapan transkrip (MK skripsi bernilai & masuk transkrip).';
+            $errors[] = 'Centang konfirmasi kelengkapan transkrip (MK karya akhir bernilai).';
         }
         if ($nim === '' || $nama === '' || $jenisKeluar === '' || $tglKeluar === '' || $periodeKeluar === '' || $ipk === '') {
             $errors[] = 'Field kelulusan wajib diisi (No Ijazah otomatis "-").';
@@ -680,7 +721,7 @@ class Graduation extends BaseController
     public function finish(): RedirectResponse
     {
         // Full submission iterates the whole batch with one synchronous Neo Feeder
-        // call chain per student (InsertMahasiswaLulusDO + academic edits + thesis
+        // call chain per student (InsertMahasiswaLulusDO + academic edits + final-project
         // grade), which can exceed PHP's default 60s time limit on large batches.
         // Allow this long-running server-side job to finish. ponytail: unbounded; a
         // progress/queue pipeline is the upgrade if batches keep growing.
@@ -792,13 +833,21 @@ class Graduation extends BaseController
                     }
                 }
 
-                // ENH-010: fill in a missing thesis/skripsi grade from the Excel value.
+                // ENH-010: fill in a missing final-project grade from the Excel value.
                 $thesisGrade = trim((string) ($student['nilai_skripsi'] ?? ''));
                 if ($thesisGrade !== '') {
                     $nimSafe   = trim((string) ($student['nim'] ?? $g['nim']));
+                    $programStudi = (string) ($student['program_studi'] ?? '');
+                    if ($programStudi === '') {
+                        $idResp = $this->neoFeeder->getListMahasiswa($apiToken, [
+                            'filter' => "nim='{$nimSafe}'",
+                            'limit'  => 1,
+                        ]);
+                        $programStudi = (string) ($idResp['data'][0]['nama_program_studi'] ?? '');
+                    }
                     $trResp    = $this->neoFeeder->getCekTranskripMahasiswa($apiToken, $nimSafe);
                     $thesisRow = ($trResp['error_code'] ?? -1) === 0
-                        ? $this->findMissingGradeThesis($trResp['data'] ?? [])
+                        ? $this->findMissingGradeThesis($trResp['data'] ?? [], $programStudi)
                         : null;
                     if ($thesisRow !== null) {
                         $gradeResp = $this->neoFeeder->updateNilaiPerkuliahanKelas(
@@ -808,9 +857,9 @@ class Graduation extends BaseController
                             ['nilai_huruf' => $thesisGrade]
                         );
                         if (($gradeResp['error_code'] ?? -1) === 0) {
-                            $results[] = ['nim' => $g['nim'], 'success' => true, 'msg' => 'Nilai skripsi terisi.'];
+                            $results[] = ['nim' => $g['nim'], 'success' => true, 'msg' => 'Nilai karya akhir terisi.'];
                         } else {
-                            $results[] = ['nim' => $g['nim'], 'success' => false, 'msg' => $gradeResp['error_msg'] ?? 'Gagal mengisi nilai skripsi.'];
+                            $results[] = ['nim' => $g['nim'], 'success' => false, 'msg' => $gradeResp['error_msg'] ?? 'Gagal mengisi nilai karya akhir.'];
                         }
                     }
                 }

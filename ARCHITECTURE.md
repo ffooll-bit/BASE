@@ -318,7 +318,7 @@ Validation fails fast with aggregated errors; the step re-renders with input pre
 
 ### Transcript Completeness Check (ENH-020)
 
-`Graduation::checkTranscriptCompleteness()` scans `GetTranskripMahasiswa` rows for a thesis/skripsi course (name matching `/skripsi|tugas\s*akhir|thesis|disertasi/i`) with a non-empty grade (`nilai_huruf` or `nilai_angka`). Returns `{complete: bool, reason: string}`. This is a heuristic — confirm naming against real data and tighten pattern if needed.
+`Graduation::checkTranscriptCompleteness()` scans transcript rows from the Neo Feeder cloud "Cek Transkrip Mahasiswa" endpoints (`NeoFeeder::getCekTranskripMahasiswa()`) for a final-project course with a non-empty grade (`nilai_huruf` or `nilai_angka`). Course names differ per program studi, so the pattern is selected from `nama_program_studi` (persisted in wizard progress): S1 matches `skripsi|tugas akhir|thesis|tesis`, S2 matches `tesis|skripsi|tugas akhir|thesis|ujian hasil penelitian dan tutup|ujian tutup`, and S3 matches only `ujian terbuka|promosi`. S3's `Ujian Tutup` is an intermediate milestone, so it is deliberately excluded there. Returns `{complete: bool, reason: string}`. The per-course `choosed` marker is informational only and does not gate completeness.
 
 ### PISN Eligibility (Stubbed)
 
