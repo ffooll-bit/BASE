@@ -159,7 +159,7 @@
                     <?php else: ?>
                         <?php if (! empty($completeness['complete'])): ?>
                             <div class="alert alert-success py-2 mb-2">
-                                <i class="fas fa-circle-check"></i> Transkrip lengkap — nilai skripsi/tugas akhir tersedia.
+                                <i class="fas fa-circle-check"></i> Transkrip lengkap — nilai karya akhir tersedia.
                             </div>
                         <?php else: ?>
                             <div class="alert alert-warning py-2 mb-2">
@@ -169,7 +169,7 @@
 
                         <?php if (empty($completeness['thesis'])): ?>
                             <div class="text-muted small mb-2">
-                                <i class="fas fa-circle-question"></i> MK skripsi/tugas akhir tidak ditemukan di transkrip.
+                                <i class="fas fa-circle-question"></i> MK karya akhir (skripsi/tesis/ujian akhir) tidak ditemukan di transkrip.
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
@@ -223,7 +223,7 @@
                         <div class="text-muted small">Jumlah nilai terload: <?= esc(count($transcript)) ?></div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="transcript_ok" name="transcript_ok" value="1" <?= (!empty($student['transcript_ok']) || !empty($transcriptOk)) ? 'checked' : '' ?>>
-                            <label class="form-check-label" for="transcript_ok">MK skripsi/tugas akhir bernilai &amp; masuk transkrip</label>
+                            <label class="form-check-label" for="transcript_ok">MK karya akhir bernilai (skripsi/tesis/ujian akhir)</label>
                         </div>
                     <?php endif; ?>
                 </div>
