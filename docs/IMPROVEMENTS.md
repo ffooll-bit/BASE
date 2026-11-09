@@ -36,7 +36,7 @@ Item IDs follow the format `<LABEL_CODE>-<NNN>` built from the default GitHub la
 
 ### ENH-001 — Decide the platform path for the blocked phpunit 10 → 13 upgrade
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** `#136`
 - **Recorded:** 2026-11-09 14:48
 - **Implemented:** `—`
 - **Problem:** The Dependabot pull request upgrading `phpunit/phpunit` from 10.5.27 to 13.4.6 cannot be merged. It is not a test failure: `phpunit 13.4.6`, the `sebastian/*` packages, and `php-code-coverage 14.5.1` all require PHP >= 8.4 / 8.4.1, while the project pins `"php": "^8.2"` in `composer.json` and CI runs PHP 8.2, so `composer install` aborts with `Problem 1`. Until the platform decision is made the pull request stays open, and the next developer-tool upgrade risks hitting the same wall.
@@ -48,7 +48,7 @@ Item IDs follow the format `<LABEL_CODE>-<NNN>` built from the default GitHub la
 
 ### ENH-002 — Export the full student roster to Excel (port GetMahasiswaFeeder)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** `#137`
 - **Recorded:** 2026-11-09 14:48
 - **Implemented:** `—`
 - **Problem:** The `Mahasiswa` page in BASE only browses paginated student data; there is no way to download the entire roster as one Excel workbook with the derived columns and data-quality notes produced by the local `GetMahasiswaFeeder` bot. That capability currently exists only in a separate Flask application that stores its own Neo Feeder credentials in `.env` and runs on `127.0.0.1:5001`, so producing the report means leaving BASE and maintaining a second deployment.
@@ -60,7 +60,7 @@ Item IDs follow the format `<LABEL_CODE>-<NNN>` built from the default GitHub la
 
 ### ENH-003 — Bulk transcript-grade download per semester (port GetNilaiFeeder)
 - **Status:** `verified`
-- **Issue:** `—`
+- **Issue:** `#138`
 - **Recorded:** 2026-11-09 14:48
 - **Implemented:** `—`
 - **Problem:** BASE has no page for downloading course grades in bulk; transcript inspection in the PISN wizard is per student, inside a wizard step. The local `GetNilaiFeeder` bot provides a flow with no BASE equivalent: upload a NIM list, review NIM and name, pick semesters, fetch `GetRiwayatNilaiMahasiswa` and `GetAktivitasKuliahMahasiswa`, and receive an Excel workbook with one sheet per semester where each student is a block (header `NIM | Nama | Program Studi (Jenjang)`, then course rows, then an `IPS | IPK | Status` summary row, then a blank row) with live progress.
